@@ -1,0 +1,37 @@
+name: GESS Price Crawler
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # 매 정각 1시간마다
+  workflow_dispatch:        # 수동 실행 버튼도 활성화
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # prices.json 커밋 권한
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 의존성 설치
+        run: pip install httpx
+
+      - name: 가격 크롤링 실행
+        env:
+          SMM_API_KEY: ${{ secrets.SMM_API_KEY }}
+        run: python fetch_prices.py
+
+      - name: prices.json 커밋 & 푸시
+        run: |
+          git config user.name  "GESS Bot"
+          git config user.email "gess-bot@noreply"
+          git add data/prices.json
+          git diff --staged --quiet || git commit -m "📊 가격 업데이트: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push
