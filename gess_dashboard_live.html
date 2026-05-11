@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GESS · Raw Material Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:'Outfit',system-ui,sans-serif;background:#06090F;color:#C8C6C2;overflow:hidden}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:#06090F}
+::-webkit-scrollbar-thumb{background:#1C2340;border-radius:4px}
+#auth{position:fixed;inset:0;background:radial-gradient(ellipse at 30% 40%,#0D1535,#060A18 60%,#080D1E);display:flex;align-items:center;justify-content:center;z-index:9999}
+.auth-card{background:rgba(13,18,48,.92);border:1px solid #1C2340;border-radius:20px;padding:44px 40px;width:420px;text-align:center;backdrop-filter:blur(20px)}
+.auth-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#3ECFA0,#3D8ECC);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#06090F;margin:0 auto 14px}
+.auth-card h1{font-size:20px;font-weight:800;color:#fff;margin-bottom:3px}
+.auth-card p{font-size:11px;color:#3a4060;font-family:'JetBrains Mono',monospace;margin-bottom:18px}
+.api-info{background:#0C1128;border:1px solid #1C2340;border-radius:10px;padding:12px 14px;margin-bottom:14px;text-align:left}
+.api-label{font-size:9px;color:#3a4060;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.api-url{font-size:10px;color:#3ECFA0;font-family:'JetBrains Mono',monospace;line-height:1.5}
+.api-stat{display:flex;align-items:center;gap:6px;margin-top:7px;font-size:10px}
+.adot{width:6px;height:6px;border-radius:50%;flex-shrink:0;background:#3a4060;transition:background .3s}
+hr.sep{border:none;border-top:1px solid #1C2340;margin:14px 0}
+.auth-lbl{font-size:10px;color:#3a4060;text-align:left;margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.auth-card input{width:100%;padding:11px;border-radius:9px;border:1px solid #1C2340;background:#0C1128;color:#fff;font-size:14px;text-align:center;outline:none;margin-bottom:10px;font-family:inherit;letter-spacing:3px;transition:border-color .2s}
+.auth-card input:focus{border-color:#3ECFA0}
+.auth-btn{width:100%;padding:12px;border-radius:9px;border:none;background:linear-gradient(90deg,#3ECFA0,#3D8ECC);color:#06090F;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer}
+.auth-btn:hover{opacity:.88}
+.auth-err{color:#E05D5D;font-size:11px;margin-top:8px;display:none;font-weight:600}
+
+.app{display:none;flex-direction:column;height:100vh}
+.app.on{display:flex}
+.topbar{background:#0C1128;border-bottom:1px solid #1C2340;padding:0 14px;display:flex;align-items:center;gap:10px;height:50px;flex-shrink:0}
+.tl{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#3ECFA0,#3D8ECC);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#06090F;flex-shrink:0}
+.tt{font-size:14px;font-weight:800;color:#fff}
+.ts{font-size:9px;color:#3a4060}
+.tdiv{width:1px;height:18px;background:#1C2340;flex-shrink:0}
+.tbadge{display:flex;align-items:center;gap:4px;font-size:11px;color:#5a6080;padding:3px 9px;background:#0C1128;border-radius:16px;border:1px solid #1C2340;white-space:nowrap;flex-shrink:0}
+.tbadge strong{font-weight:700}
+.tsp{flex:1}
+.tupd{font-size:9px;color:#3a4060;font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.tref{padding:4px 11px;border-radius:16px;border:1px solid #1C2340;background:transparent;color:#3ECFA0;font-size:11px;font-family:inherit;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;transition:all .15s}
+.tref:hover{background:rgba(62,207,160,.08);border-color:#3ECFA0}
+.tref:disabled{opacity:.4;cursor:not-allowed}
+.ri{display:inline-block}
+.spinning .ri{animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tabs{display:flex;gap:3px;flex-shrink:0}
+.tab{padding:4px 12px;border-radius:16px;font-size:11px;cursor:pointer;border:1px solid #1C2340;background:transparent;color:#5a6080;font-family:inherit;font-weight:500;transition:all .15s}
+.tab.on{background:linear-gradient(90deg,rgba(62,207,160,.15),rgba(61,142,204,.15));color:#3ECFA0;border-color:#3ECFA0;font-weight:700}
+.pdot{width:5px;height:5px;border-radius:50%;background:#3ECFA0;display:inline-block;animation:pd 2s ease-in-out infinite}
+@keyframes pd{0%,100%{opacity:1}50%{opacity:.2}}
+
+.main{display:flex;flex:1;overflow:hidden}
+.left{width:292px;background:#080C1C;border-right:1px solid #111830;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
+.right{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.tc{display:none;flex-direction:column;flex:1;overflow:hidden}
+.tc.on{display:flex}
+.scr{flex:1;overflow-y:auto;padding:13px}
+.sh{padding:8px 12px 5px;font-size:9px;color:#3a4060;font-weight:700;text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid #111830;display:flex;align-items:center;justify-content:space-between}
+.sbadge{font-size:8px;padding:2px 6px;border-radius:5px;font-weight:600;text-transform:none;letter-spacing:0}
+.live{background:rgba(62,207,160,.1);color:#3ECFA0;border:1px solid rgba(62,207,160,.3)}
+.warn{background:rgba(224,168,61,.1);color:#E0A83D;border:1px solid rgba(224,168,61,.3)}
+.cc{margin:8px 10px;background:#0C1128;border:1px solid #1C2340;border-radius:11px;padding:12px;cursor:pointer;position:relative;overflow:hidden;transition:all .15s}
+.cc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c)}
+.cc:hover{border-color:#2a3060;background:#111830}
+.cc.sel{border-color:var(--c)}
+.cch{display:flex;align-items:center;gap:7px;margin-bottom:9px}
+.cci{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;background:var(--cb);flex-shrink:0}
+.ccn{font-size:12px;font-weight:700;color:#fff;line-height:1.2}
+.ccu{font-size:9px;color:#3a4060;font-family:'JetBrains Mono',monospace;margin-top:1px}
+.ccs{font-size:8px;padding:1px 5px;border-radius:3px;background:#111830;color:#3a4060;border:1px solid #1C2340;display:inline-block;margin-top:2px}
+.ccp{font-size:22px;font-weight:900;color:var(--c);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1}
+.ccpr{display:flex;align-items:flex-end;gap:7px;margin-bottom:7px}
+.chg{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px}
+.up{color:#3ECFA0;background:rgba(62,207,160,.12)}
+.dn{color:#E05D5D;background:rgba(224,93,93,.12)}
+.fl{color:#5a6080;background:#111830}
+.ccm{font-size:9px;color:#3a4060;display:flex;gap:8px;flex-wrap:wrap}
+.ccup{font-size:8px;color:#252A40;margin-top:4px;font-family:'JetBrains Mono',monospace}
+.spark{margin-top:7px;height:32px}
+.spark canvas{width:100%;height:100%}
+.smmc{margin:8px 10px;background:#0C1128;border:1px solid #1C2340;border-radius:11px;padding:12px}
+.smmttl{font-size:10px;font-weight:700;color:#fff;margin-bottom:9px;display:flex;align-items:center;gap:5px}
+.smmb{font-size:8px;padding:2px 6px;border-radius:4px;background:rgba(61,142,204,.15);color:#5B9BD5;border:1px solid rgba(61,142,204,.3)}
+.smmr{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #111830}
+.smmr:last-child{border:none;padding-bottom:0}
+.smml{font-size:10px;color:#7a8090;font-weight:500}
+.smms{font-size:8px;color:#3a4060;margin-top:1px}
+.smmv{font-size:15px;font-weight:800;color:#fff;font-family:'JetBrains Mono',monospace}
+.smmv span{font-size:9px;color:#3a4060;font-weight:400}
+.barbg{height:3px;background:#111830;border-radius:2px;margin-top:4px;width:100px;overflow:hidden}
+.barfill{height:100%;border-radius:2px;transition:width 1s}
+.smmnote{font-size:8px;color:#252A40;margin-top:7px;padding-top:7px;border-top:1px solid #111830}
+.errbar{background:rgba(224,93,93,.07);border:1px solid rgba(224,93,93,.2);border-radius:7px;padding:7px 11px;font-size:10px;color:#E05D5D;display:none;align-items:center;gap:6px;margin:7px 10px}
+.errbar.on{display:flex}
+
+.kg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.kpi{background:#0C1128;border:1px solid #1C2340;border-radius:11px;padding:14px;position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;top:-18px;right:-18px;width:64px;height:64px;border-radius:50%;background:var(--kc);opacity:.07}
+.kpil{font-size:9px;color:#3a4060;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.kpisrc{font-size:8px;color:#252A40;padding:1px 4px;background:#111830;border-radius:3px;font-weight:400;text-transform:none;letter-spacing:0}
+.kpiv{font-size:22px;font-weight:900;color:var(--kc,#fff);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1}
+.kpiu{font-size:9px;font-weight:400;color:#3a4060;margin-left:2px}
+.kpis{font-size:10px;color:#3a4060;margin-top:5px;display:flex;align-items:center;gap:4px}
+.kt{font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px}
+.kt.up{color:#3ECFA0;background:rgba(62,207,160,.1)}
+.kt.dn{color:#E05D5D;background:rgba(224,93,93,.1)}
+.hist-info{background:#0C1128;border:1px solid #1C2340;border-radius:8px;padding:8px 12px;font-size:10px;color:#3a6050;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.cbox{background:#0C1128;border:1px solid #1C2340;border-radius:11px;padding:13px;margin-bottom:12px;position:relative}
+.chdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.cttl{font-size:12px;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px}
+.cctrl{display:flex;gap:3px}
+.cbtn{padding:3px 8px;border-radius:12px;font-size:10px;cursor:pointer;border:1px solid #1C2340;background:transparent;color:#4a5070;font-family:inherit;font-weight:600;transition:all .12s}
+.cbtn.on{border-color:#3ECFA0;color:#3ECFA0;background:rgba(62,207,160,.08)}
+.cw{height:185px;position:relative}
+.cw canvas{width:100%!important;height:100%!important}
+.cov{position:absolute;inset:0;background:rgba(6,9,15,.8);display:none;align-items:center;justify-content:center;border-radius:8px;backdrop-filter:blur(4px)}
+.cov.on{display:flex}
+.spinn{width:24px;height:24px;border:2px solid #1C2340;border-top-color:#3ECFA0;border-radius:50%;animation:spin .7s linear infinite}
+.tblw{background:#0C1128;border:1px solid #1C2340;border-radius:11px;overflow:hidden;margin-bottom:12px}
+.tblh{padding:10px 13px;border-bottom:1px solid #1C2340}
+.tblttl{font-size:12px;font-weight:700;color:#fff}
+.tblsub{font-size:9px;color:#3a4060;margin-top:1px}
+table{width:100%;border-collapse:collapse}
+th{padding:7px 12px;font-size:9px;color:#3a4060;font-weight:700;text-transform:uppercase;letter-spacing:.5px;background:#06090F;border-bottom:1px solid #1C2340;text-align:left;white-space:nowrap}
+td{padding:9px 12px;font-size:11px;border-bottom:1px solid #0C1128;vertical-align:middle}
+tr:last-child td{border:none}
+tr:hover td{background:rgba(255,255,255,.01)}
+.aiwrap{flex:1;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:10px}
+.aihdr{font-size:13px;font-weight:700;color:#fff}
+.aisub{font-size:11px;color:#3a4060}
+.qps{display:flex;gap:5px;flex-wrap:wrap}
+.qp{padding:4px 10px;border-radius:12px;font-size:10px;cursor:pointer;border:1px solid #1C2340;background:#111830;color:#7a8090;font-family:inherit;font-weight:500;transition:all .12s}
+.qp:hover{color:#3ECFA0;border-color:#3ECFA0;background:rgba(62,207,160,.05)}
+.airow{display:flex;gap:7px}
+.aiinp{flex:1;padding:9px 12px;border-radius:8px;border:1px solid #1C2340;background:#111830;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:border-color .2s}
+.aiinp:focus{border-color:#3ECFA0}
+.aigo{padding:9px 15px;border-radius:8px;border:none;background:linear-gradient(90deg,#3ECFA0,#3D8ECC);color:#06090F;font-size:11px;font-weight:800;font-family:inherit;cursor:pointer;white-space:nowrap}
+.aigo:disabled{opacity:.4;cursor:not-allowed}
+.aimsgs{display:flex;flex-direction:column;gap:9px}
+.aimsg{padding:12px;border-radius:10px;font-size:12px;line-height:1.65}
+.aimsg.user{background:#111830;border:1px solid #1C2340;color:#C8C6C2;align-self:flex-end;max-width:85%;border-radius:10px 10px 2px 10px}
+.aimsg.bot{background:#0C1128;border:1px solid #1C2340;color:#C8C6C2;max-width:95%}
+.aimhd{display:flex;align-items:center;gap:5px;margin-bottom:7px;font-size:9px;font-weight:700;color:#3ECFA0;text-transform:uppercase;letter-spacing:.5px}
+.dots span{display:inline-block;width:5px;height:5px;border-radius:50%;background:#3ECFA0;animation:bo .9s infinite;margin:0 2px}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes bo{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth">
+  <div class="auth-card">
+    <div class="auth-logo">G</div>
+    <h1>GESS Dashboard</h1>
+    <p>Raw Material Intelligence · Battery Commodities</p>
+    <div class="api-info">
+      <div class="api-label">📡 데이터 소스 (GitHub Actions 자동 수집)</div>
+      <div class="api-url">jmk0805.github.io/gess-data/data/prices.json</div>
+      <div class="api-stat">
+        <div class="adot" id="adot"></div>
+        <span id="atxt" style="color:#3a4060;font-size:10px">연결 확인 중...</span>
+      </div>
+    </div>
+    <hr class="sep">
+    <div class="auth-lbl">Access Code</div>
+    <input type="password" id="apw" placeholder="••••••••" autocomplete="off">
+    <button class="auth-btn" onclick="login()">Dashboard 접속</button>
+    <div class="auth-err" id="aerr">⚠ 접근 코드가 올바르지 않습니다</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <div class="topbar">
+    <div class="tl">G</div>
+    <div>
+      <div class="tt">GESS <span style="color:#3ECFA0;font-size:11px;font-weight:400">Raw Material Intelligence</span></div>
+      <div class="ts">Battery Commodity Monitor · GitHub Pages Live</div>
+    </div>
+    <div class="tdiv"></div>
+    <div class="tbadge"><span class="pdot"></span>&nbsp;<strong id="hli" style="color:#3ECFA0">—</strong>&nbsp;USD/kg Li</div>
+    <div class="tbadge"><strong id="hal" style="color:#E0A83D">—</strong>&nbsp;USD/mt Al</div>
+    <div class="tbadge"><strong id="hcu" style="color:#E76F51">—</strong>&nbsp;USD/mt Cu</div>
+    <div class="tdiv"></div>
+    <div class="tbadge">SMM&nbsp;<strong id="hsys" style="color:#5B9BD5">—</strong>/kWh</div>
+    <div class="tsp"></div>
+    <div class="tupd" id="tupd">—</div>
+    <button class="tref" id="refbtn" onclick="load(true)"><span class="ri">⟳</span>&nbsp;새로고침</button>
+    <div class="tabs">
+      <button class="tab on" onclick="sw('ov',this)">개요</button>
+      <button class="tab" onclick="sw('tr',this)">추이</button>
+      <button class="tab" onclick="sw('ai',this)">AI 분석</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- LEFT -->
+    <div class="left">
+      <div class="sh">원자재 현황 <span class="sbadge live" id="lbadge">● LIVE</span></div>
+      <div class="errbar" id="errbar">⚠ GitHub 연결 오류 — 재시도 해주세요</div>
+
+      <div class="cc sel" style="--c:#3ECFA0;--cb:rgba(62,207,160,.12)" onclick="selcc(this)">
+        <div class="cch"><div class="cci">⚡</div><div>
+          <div class="ccn">탄산리튬 Li₂CO₃</div>
+          <div class="ccu">USD / kg · 99.5% min</div>
+          <div class="ccs" id="li-src">—</div>
+        </div></div>
+        <div class="ccpr"><div class="ccp" id="li-p">—</div><div class="chg fl" id="li-c">—</div></div>
+        <div class="ccm" id="li-range">—</div>
+        <div class="ccup" id="li-u">—</div>
+        <div class="spark"><canvas id="sp-li"></canvas></div>
+      </div>
+
+      <div class="cc" style="--c:#E0A83D;--cb:rgba(224,168,61,.12)" onclick="selcc(this)">
+        <div class="cch"><div class="cci">🔩</div><div>
+          <div class="ccn">알루미늄 Al</div>
+          <div class="ccu">USD / mt · LME</div>
+          <div class="ccs" id="al-src">—</div>
+        </div></div>
+        <div class="ccpr"><div class="ccp" id="al-p">—</div><div class="chg fl" id="al-c">—</div></div>
+        <div class="ccm" id="al-range">—</div>
+        <div class="ccup" id="al-u">—</div>
+        <div class="spark"><canvas id="sp-al"></canvas></div>
+      </div>
+
+      <div class="cc" style="--c:#E76F51;--cb:rgba(231,111,81,.12)" onclick="selcc(this)">
+        <div class="cch"><div class="cci">🔋</div><div>
+          <div class="ccn">구리 Cu</div>
+          <div class="ccu">USD / mt · COMEX</div>
+          <div class="ccs" id="cu-src">—</div>
+        </div></div>
+        <div class="ccpr"><div class="ccp" id="cu-p">—</div><div class="chg fl" id="cu-c">—</div></div>
+        <div class="ccm" id="cu-range">—</div>
+        <div class="ccup" id="cu-u">—</div>
+        <div class="spark"><canvas id="sp-cu"></canvas></div>
+      </div>
+
+      <div class="sh" style="margin-top:4px">SMM Battery Index <span class="sbadge" style="background:rgba(61,142,204,.1);color:#5B9BD5;border:1px solid rgba(61,142,204,.3)">월간</span></div>
+      <div class="smmc">
+        <div class="smmttl">System / Cell Price <span class="smmb">per kWh</span></div>
+        <div class="smmr">
+          <div><div class="smml">🔋 System</div><div class="smms">BMS+모듈 포함</div></div>
+          <div style="text-align:right">
+            <div class="smmv">$<span id="ssys">—</span><span>/kWh</span></div>
+            <div class="barbg"><div class="barfill" style="width:65%;background:linear-gradient(90deg,#3ECFA0,#3D8ECC)"></div></div>
+          </div>
+        </div>
+        <div class="smmr">
+          <div><div class="smml">⚡ Cell</div><div class="smms">셀 단위 기준</div></div>
+          <div style="text-align:right">
+            <div class="smmv">$<span id="scell">—</span><span>/kWh</span></div>
+            <div class="barbg"><div class="barfill" style="width:35%;background:linear-gradient(90deg,#E0A83D,#E76F51)"></div></div>
+          </div>
+        </div>
+        <div class="smmnote" id="smmnote">—</div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+
+      <!-- OVERVIEW -->
+      <div class="tc on" id="tc-ov">
+        <div class="scr">
+          <div class="hist-info" id="hist-info">📊 데이터 로딩 중...</div>
+          <div class="kg">
+            <div class="kpi" style="--kc:#3ECFA0">
+              <div class="kpil">탄산리튬 <span class="kpisrc" id="kpi-li-src">—</span></div>
+              <div class="kpiv" id="kpi-li">—<span class="kpiu">USD/kg</span></div>
+              <div class="kpis"><span class="kt" id="kpi-li-t">—</span> 전일 대비</div>
+            </div>
+            <div class="kpi" style="--kc:#E0A83D">
+              <div class="kpil">알루미늄 <span class="kpisrc" id="kpi-al-src">—</span></div>
+              <div class="kpiv" id="kpi-al">—<span class="kpiu">USD/mt</span></div>
+              <div class="kpis"><span class="kt" id="kpi-al-t">—</span> 전일 대비</div>
+            </div>
+            <div class="kpi" style="--kc:#E76F51">
+              <div class="kpil">구리 <span class="kpisrc" id="kpi-cu-src">—</span></div>
+              <div class="kpiv" id="kpi-cu">—<span class="kpiu">USD/mt</span></div>
+              <div class="kpis"><span class="kt" id="kpi-cu-t">—</span> 전일 대비</div>
+            </div>
+          </div>
+
+          <div class="cbox">
+            <div class="chdr">
+              <div class="cttl">📈 원자재 가격 추이 <span style="font-size:9px;color:#3a4060;font-weight:400">(정규화 100 기준)</span></div>
+              <div class="cctrl">
+                <button class="cbtn on" onclick="setR('all',this)">전체</button>
+                <button class="cbtn" onclick="setR('30d',this)">30D</button>
+                <button class="cbtn" onclick="setR('7d',this)">7D</button>
+              </div>
+            </div>
+            <div class="cw"><canvas id="mc"></canvas></div>
+            <div class="cov" id="cov"><div class="spinn"></div></div>
+          </div>
+
+          <div class="tblw">
+            <div class="tblh">
+              <div class="tblttl">원자재 상세 현황</div>
+              <div class="tblsub" id="tbltime">—</div>
+            </div>
+            <table>
+              <thead><tr><th>원자재</th><th>현재 가격</th><th>전일 대비</th><th>기간 내 고점</th><th>기간 내 저점</th><th>데이터 출처</th><th>배터리 영향도</th></tr></thead>
+              <tbody id="mtbl"></tbody>
+            </table>
+          </div>
+
+          <div class="tblw">
+            <div class="tblh"><div class="tblttl">SMM Battery Index</div><div class="tblsub">배터리 시스템·셀 가격 지수 (kWh 기준)</div></div>
+            <table>
+              <thead><tr><th>구분</th><th>현재</th><th>기간 내 고점</th><th>기간 내 저점</th><th>추세</th><th>출처</th></tr></thead>
+              <tbody id="stbl"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRENDS -->
+      <div class="tc" id="tc-tr">
+        <div class="scr">
+          <div class="hist-info" id="hist-info2">📊 GitHub에 누적된 실제 수집 데이터로 차트를 그립니다. Refresh 버튼으로 최신화 가능.</div>
+          <div class="cbox"><div class="chdr"><div class="cttl">⚡ 탄산리튬 Li₂CO₃ (USD/kg)</div></div><div class="cw" style="height:155px"><canvas id="tr-li"></canvas></div></div>
+          <div class="cbox"><div class="chdr"><div class="cttl">🔩 알루미늄 Al (USD/mt)</div></div><div class="cw" style="height:155px"><canvas id="tr-al"></canvas></div></div>
+          <div class="cbox"><div class="chdr"><div class="cttl">🔋 구리 Cu (USD/mt)</div></div><div class="cw" style="height:155px"><canvas id="tr-cu"></canvas></div></div>
+          <div class="cbox"><div class="chdr"><div class="cttl">📊 SMM Battery Index (USD/kWh)</div></div><div class="cw" style="height:155px"><canvas id="tr-smm"></canvas></div></div>
+        </div>
+      </div>
+
+      <!-- AI -->
+      <div class="tc" id="tc-ai">
+        <div class="aiwrap">
+          <div><div class="aihdr">🤖 AI 원자재 시장 분석</div><div class="aisub">GitHub 실시간 수집 데이터 기반 · GESS 유럽 프로젝트 관점</div></div>
+          <div class="qps">
+            <button class="qp" onclick="sendQ('현재 탄산리튬 가격 동향과 배터리 원가 영향 분석')">리튬 원가 분석</button>
+            <button class="qp" onclick="sendQ('구리·알루미늄 가격이 ESS 프로젝트 수익성에 미치는 영향')">ESS 수익성</button>
+            <button class="qp" onclick="sendQ('SMM Battery Index 하락 원인과 향후 전망')">SMM 전망</button>
+            <button class="qp" onclick="sendQ('유럽 ESS 프로젝트 원자재 조달 리스크 및 헤징 전략')">헤징 전략</button>
+            <button class="qp" onclick="sendQ('2026년 하반기 배터리 원자재 가격 시나리오 분석')">하반기 시나리오</button>
+          </div>
+          <div class="airow">
+            <input class="aiinp" id="aiinp" placeholder="질문을 입력하세요..." onkeydown="if(event.key==='Enter')sendAI()">
+            <button class="aigo" id="aigo" onclick="sendAI()">분석 요청</button>
+          </div>
+          <div class="aimsgs" id="aimsgs">
+            <div class="aimsg bot">
+              <div class="aimhd">🤖 GESS AI 애널리스트</div>
+              안녕하세요! GitHub Actions가 1시간마다 자동 수집한 실시간 데이터를 바탕으로 분석합니다.<br>
+              Refresh 버튼으로 최신 데이터를 불러온 후 질문해 주세요.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+// ══════════════════════════════════════════════════════
+// 설정 — 이 URL만 바꾸면 다른 저장소로 전환 가능
+// ══════════════════════════════════════════════════════
+const API = 'https://jmk0805.github.io/gess-data/data/prices.json';
+const CODE = 'gess2026';
+
+let D = null;         // GitHub에서 받아온 전체 데이터
+let MC = null;        // 메인 차트 인스턴스
+let TR = {};          // 추이 차트 인스턴스들
+let range = 'all';    // 현재 선택된 기간 필터
+let aiHist = [];      // AI 대화 히스토리
+
+// ── AUTH: 로그인 전 API 연결 상태 미리 확인
+(async () => {
+  try {
+    const r = await fetch(API + '?t=' + Date.now(), { signal: AbortSignal.timeout(8000) });
+    const d = await r.json();
+    const dot = document.getElementById('adot');
+    const txt = document.getElementById('atxt');
+    if (d.status === 'ok') {
+      dot.style.background = '#3ECFA0';
+      txt.style.color = '#3ECFA0';
+      const t = d.updated ? new Date(d.updated).toLocaleString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—';
+      const cnt = (d.history || []).length;
+      txt.textContent = `✅ 연결 성공 · 수집 데이터 ${cnt}개 · 마지막: ${t}`;
+    }
+  } catch (e) {
+    document.getElementById('adot').style.background = '#E05D5D';
+    document.getElementById('atxt').style.color = '#E05D5D';
+    document.getElementById('atxt').textContent = '⚠ 연결 실패 — GitHub Actions 실행 여부 확인';
+  }
+})();
+
+function login() {
+  const v = document.getElementById('apw').value.trim().toLowerCase();
+  if (v === CODE || v === 'demo') {
+    document.getElementById('auth').style.display = 'none';
+    document.getElementById('app').classList.add('on');
+    load(false);
+  } else {
+    const e = document.getElementById('aerr'); e.style.display = 'block';
+    document.getElementById('apw').style.borderColor = '#E05D5D';
+    setTimeout(() => { e.style.display = 'none'; document.getElementById('apw').style.borderColor = '#1C2340'; }, 2500);
+  }
+}
+document.getElementById('apw').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+
+// ══════════════════════════════════════════════════════
+// 데이터 로드 — GitHub Pages JSON 직접 fetch
+// ══════════════════════════════════════════════════════
+async function load(manual) {
+  const btn = document.getElementById('refbtn');
+  if (manual) { btn.classList.add('spinning'); btn.disabled = true; }
+
+  try {
+    // 캐시 방지: 매 요청마다 타임스탬프 붙임
+    const r = await fetch(API + '?t=' + Date.now(), { signal: AbortSignal.timeout(10000) });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    D = await r.json();
+
+    document.getElementById('errbar').classList.remove('on');
+    document.getElementById('lbadge').className = 'sbadge live';
+    document.getElementById('lbadge').textContent = '● LIVE';
+    render();
+  } catch (e) {
+    document.getElementById('errbar').classList.add('on');
+    document.getElementById('lbadge').className = 'sbadge warn';
+    document.getElementById('lbadge').textContent = '⚠ 오류';
+    console.error('Load failed:', e);
+  }
+
+  if (manual) { btn.classList.remove('spinning'); btn.disabled = false; }
+}
+
+// ══════════════════════════════════════════════════════
+// 렌더링 — D (GitHub JSON) 기반으로 모든 UI 업데이트
+// ══════════════════════════════════════════════════════
+function render() {
+  const now = new Date();
+  const upd = D.updated ? new Date(D.updated).toLocaleString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—';
+  const cnt = (D.history || []).length;
+
+  document.getElementById('tupd').textContent = now.toLocaleTimeString('ko-KR');
+  document.getElementById('tbltime').textContent = `GitHub 수집: ${upd} · 누적 ${cnt}개`;
+  document.getElementById('hist-info').textContent = `📊 GitHub Actions 자동 수집 데이터 ${cnt}개 누적 중 · 마지막 수집: ${upd}`;
+  document.getElementById('hist-info2').textContent = `📊 GitHub Actions 자동 수집 데이터 ${cnt}개 기반 차트 · 1시간마다 자동 갱신`;
+
+  const li = D.data.lithium_carbonate;
+  const al = D.data.aluminum;
+  const cu = D.data.copper;
+  const smm = D.data.smm_index;
+  const hist = D.history || [];
+
+  // 헤더 배지
+  document.getElementById('hli').textContent = li.price;
+  document.getElementById('hal').textContent = (+al.price).toLocaleString();
+  document.getElementById('hcu').textContent = (+cu.price).toLocaleString();
+  document.getElementById('hsys').textContent = '$' + smm.system.price;
+
+  // 히스토리에서 고점/저점 계산
+  const stats = calcStats(hist);
+
+  // 좌측 카드
+  renderCard('li', li, stats.li);
+  renderCard('al', al, stats.al);
+  renderCard('cu', cu, stats.cu);
+
+  // SMM
+  document.getElementById('ssys').textContent = smm.system.price;
+  document.getElementById('scell').textContent = smm.cell.price;
+  document.getElementById('smmnote').textContent = '* 출처: ' + smm.system.source + ' · 수동 갱신';
+
+  // KPI
+  renderKPI('li', li, 'USD/kg');
+  renderKPI('al', al, 'USD/mt');
+  renderKPI('cu', cu, 'USD/mt');
+
+  // 테이블
+  buildMainTable(li, al, cu, stats);
+  buildSMMTable(smm, stats);
+
+  // 차트
+  buildMainChart();
+  buildSparks(hist, li, al, cu);
+}
+
+// 히스토리에서 고점/저점/YTD 계산
+function calcStats(hist) {
+  const mk = (arr, key) => {
+    const vals = arr.map(h => h[key]).filter(v => v != null && !isNaN(v));
+    if (!vals.length) return { h: null, l: null, first: null };
+    return { h: Math.max(...vals), l: Math.min(...vals), first: vals[0] };
+  };
+  return {
+    li:  mk(hist, 'li'),
+    al:  mk(hist, 'al'),
+    cu:  mk(hist, 'cu'),
+    sys: mk(hist, 'smm_system'),
+    cell:mk(hist, 'smm_cell')
+  };
+}
+
+function renderCard(k, data, stats) {
+  document.getElementById(k + '-p').textContent = (+data.price).toLocaleString();
+  const up = data.chg_pct > 0, zero = data.chg_pct === 0;
+  const el = document.getElementById(k + '-c');
+  el.textContent = zero ? '변동없음' : (up ? '▲ +' : '▼ ') + Math.abs(data.chg_pct) + '%';
+  el.className = 'chg ' + (zero ? 'fl' : up ? 'up' : 'dn');
+  document.getElementById(k + '-src').textContent = data.source || '—';
+
+  const rEl = document.getElementById(k + '-range');
+  if (stats && stats.h != null) {
+    rEl.innerHTML = `<span>H: <strong style="color:#5a6080">${(+stats.h).toLocaleString()}</strong></span><span>L: <strong style="color:#5a6080">${(+stats.l).toLocaleString()}</strong></span>`;
+  }
+
+  if (data.updated) {
+    const t = new Date(data.updated);
+    document.getElementById(k + '-u').textContent = '수집: ' + t.toLocaleString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+  }
+}
+
+function renderKPI(k, data, unit) {
+  document.getElementById('kpi-' + k).innerHTML = (+data.price).toLocaleString() + '<span class="kpiu">' + unit + '</span>';
+  const up = data.chg_pct > 0, zero = data.chg_pct === 0;
+  const el = document.getElementById('kpi-' + k + '-t');
+  el.textContent = zero ? '변동없음' : (up ? '▲ +' : '▼ ') + Math.abs(data.chg_pct) + '%';
+  el.className = 'kt ' + (zero ? '' : up ? 'up' : 'dn');
+  const se = document.getElementById('kpi-' + k + '-src'); if (se) se.textContent = data.source || '';
+}
+
+// ── 테이블
+function buildMainTable(li, al, cu, stats) {
+  const rows = [
+    { nm: '탄산리튬 Li₂CO₃', c: '#3ECFA0', d: li, unit: 'USD/kg', st: stats.li, imp: '매우 높음', ic: '#E05D5D' },
+    { nm: '알루미늄 Al',      c: '#E0A83D', d: al, unit: 'USD/mt', st: stats.al, imp: '중간',    ic: '#E0A83D' },
+    { nm: '구리 Cu',          c: '#E76F51', d: cu, unit: 'USD/mt', st: stats.cu, imp: '높음',   ic: '#E76F51' }
+  ];
+  document.getElementById('mtbl').innerHTML = rows.map(r => {
+    const up = r.d.chg_pct > 0, zero = r.d.chg_pct === 0;
+    const cs = zero ? 'color:#5a6080' : up ? 'color:#3ECFA0;background:rgba(62,207,160,.1)' : 'color:#E05D5D;background:rgba(224,93,93,.1)';
+    const h = r.st && r.st.h != null ? (+r.st.h).toLocaleString() : '—';
+    const l = r.st && r.st.l != null ? (+r.st.l).toLocaleString() : '—';
+    return `<tr>
+      <td><strong style="color:${r.c}">${r.nm}</strong></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${r.c}">${(+r.d.price).toLocaleString()} <span style="font-size:9px;color:#3a4060">${r.unit}</span></td>
+      <td><span style="padding:2px 7px;border-radius:6px;font-size:10px;font-weight:700;${cs}">${zero ? '변동없음' : (up ? '▲ +' : '▼ ') + Math.abs(r.d.chg_pct) + '%'}</span></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a6080">${h}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a6080">${l}</td>
+      <td style="font-size:9px;color:#3a4060;font-family:'JetBrains Mono',monospace">${r.d.source || '—'}</td>
+      <td><span style="color:${r.ic};font-weight:700;font-size:10px">${r.imp}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function buildSMMTable(smm, stats) {
+  const rows = [
+    { lbl: 'System Price', sub: 'BMS+모듈', c: '#3ECFA0', d: smm.system, st: stats.sys },
+    { lbl: 'Cell Price',   sub: '셀 단위',  c: '#E0A83D', d: smm.cell,   st: stats.cell }
+  ];
+  document.getElementById('stbl').innerHTML = rows.map(r => {
+    const up = r.d.chg_pct > 0;
+    const h = r.st && r.st.h != null ? '$' + r.st.h.toFixed(1) : '—';
+    const l = r.st && r.st.l != null ? '$' + r.st.l.toFixed(1) : '—';
+    return `<tr>
+      <td><strong style="color:${r.c}">${r.lbl}</strong><br><span style="font-size:9px;color:#3a4060">${r.sub}</span></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${r.c}">$${r.d.price}/kWh</td>
+      <td style="color:#5a6080;font-size:11px">${h}</td>
+      <td style="color:#5a6080;font-size:11px">${l}</td>
+      <td><span style="color:${up ? '#3ECFA0' : '#E05D5D'};font-weight:700;font-size:10px">${(up ? '▲ +' : '▼ ') + Math.abs(r.d.chg_pct) + '%'}</span></td>
+      <td style="font-size:9px;color:#3a4060">${r.d.source || '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── 차트
+function filterHist(days) {
+  const hist = D.history || [];
+  if (!days) return hist; // 전체
+  const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  return hist.filter(h => new Date(h.timestamp) >= cutoff);
+}
+
+function fmtLabel(ts) {
+  const d = new Date(ts);
+  return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + String(d.getHours()).padStart(2, '0') + 'h';
+}
+
+// 너무 많으면 간격 줄이기 (최대 60포인트 표시)
+function downsample(arr, maxPts) {
+  if (arr.length <= maxPts) return arr;
+  const step = Math.ceil(arr.length / maxPts);
+  return arr.filter((_, i) => i % step === 0 || i === arr.length - 1);
+}
+
+function buildMainChart() {
+  const days = range === 'all' ? null : range === '30d' ? 30 : 7;
+  const raw = filterHist(days);
+  const hist = downsample(raw, 60);
+  if (!hist.length) return;
+
+  const labels = hist.map(h => fmtLabel(h.timestamp));
+  const norm = (arr) => { const b = arr[0] || 1; return arr.map(v => +(v / b * 100).toFixed(1)); };
+  const li = hist.map(h => h.li);
+  const al = hist.map(h => h.al);
+  const cu = hist.map(h => h.cu);
+
+  const ctx = document.getElementById('mc').getContext('2d');
+  if (MC) MC.destroy();
+  MC = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: '탄산리튬', data: norm(li), borderColor: '#3ECFA0', backgroundColor: 'rgba(62,207,160,.07)', tension: .4, pointRadius: hist.length > 30 ? 0 : 2, borderWidth: 2, fill: true },
+      { label: '알루미늄', data: norm(al), borderColor: '#E0A83D', backgroundColor: 'rgba(224,168,61,.04)', tension: .4, pointRadius: hist.length > 30 ? 0 : 2, borderWidth: 2 },
+      { label: '구리',     data: norm(cu), borderColor: '#E76F51', backgroundColor: 'rgba(231,111,81,.04)', tension: .4, pointRadius: hist.length > 30 ? 0 : 2, borderWidth: 2 }
+    ]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#7a8090', font: { size: 10, family: "'Outfit',sans-serif" } } },
+        tooltip: { backgroundColor: '#0C1128', borderColor: '#1C2340', borderWidth: 1, titleColor: '#fff', bodyColor: '#7a8090', callbacks: { label: c => `${c.dataset.label}: ${c.raw}pt` } }
+      },
+      scales: {
+        x: { ticks: { color: '#3a4060', font: { size: 9 }, maxTicksLimit: 10 }, grid: { color: '#111830' } },
+        y: { ticks: { color: '#3a4060', font: { size: 9 }, callback: v => v + 'pt' }, grid: { color: '#111830' } }
+      }
+    }
+  });
+}
+
+function buildTrendCharts() {
+  if (!D) return;
+  const raw = D.history || [];
+  const hist = downsample(raw, 100);
+  if (!hist.length) return;
+  const labels = hist.map(h => fmtLabel(h.timestamp));
+  const pr = hist.length > 50 ? 0 : 2;
+
+  const OPT = (ycb) => ({
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0C1128', borderColor: '#1C2340', borderWidth: 1, titleColor: '#fff', bodyColor: '#7a8090' } },
+    scales: {
+      x: { ticks: { color: '#3a4060', font: { size: 9 }, maxTicksLimit: 10 }, grid: { color: '#111830' } },
+      y: { ticks: { color: '#3a4060', font: { size: 9 }, callback: ycb || undefined }, grid: { color: '#111830' } }
+    }
+  });
+
+  [['tr-li', '탄산리튬', hist.map(h => h.li), '#3ECFA0', v => v + '$/kg'],
+   ['tr-al', '알루미늄', hist.map(h => h.al), '#E0A83D', v => (+v).toLocaleString()],
+   ['tr-cu', '구리',     hist.map(h => h.cu), '#E76F51', v => (+v).toLocaleString()]
+  ].forEach(([id, lbl, pts, c, ycb]) => {
+    const cv = document.getElementById(id); if (!cv) return;
+    if (TR[id]) TR[id].destroy();
+    TR[id] = new Chart(cv.getContext('2d'), {
+      type: 'line',
+      data: { labels, datasets: [{ label: lbl, data: pts, borderColor: c, backgroundColor: c + '18', tension: .4, pointRadius: pr, borderWidth: 2, fill: true }] },
+      options: OPT(ycb)
+    });
+  });
+
+  const sc = document.getElementById('tr-smm'); if (!sc) return;
+  if (TR.smm) TR.smm.destroy();
+  TR.smm = new Chart(sc.getContext('2d'), {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: 'System', data: hist.map(h => h.smm_system), borderColor: '#5B9BD5', backgroundColor: 'rgba(91,155,213,.1)', tension: .4, pointRadius: pr, borderWidth: 2, fill: true },
+      { label: 'Cell',   data: hist.map(h => h.smm_cell),   borderColor: '#E0A83D', backgroundColor: 'rgba(224,168,61,.05)', tension: .4, pointRadius: pr, borderWidth: 2 }
+    ]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#7a8090', font: { size: 10 } } }, tooltip: { backgroundColor: '#0C1128', borderColor: '#1C2340', borderWidth: 1, titleColor: '#fff', bodyColor: '#7a8090', callbacks: { label: c => `${c.dataset.label}: $${c.raw}/kWh` } } },
+      scales: { x: { ticks: { color: '#3a4060', font: { size: 9 }, maxTicksLimit: 10 }, grid: { color: '#111830' } }, y: { ticks: { color: '#3a4060', font: { size: 9 }, callback: v => '$' + v }, grid: { color: '#111830' } } }
+    }
+  });
+}
+
+function buildSparks(hist, li, al, cu) {
+  [['sp-li', hist.map(h => h.li), li.price, '#3ECFA0'],
+   ['sp-al', hist.map(h => h.al), al.price, '#E0A83D'],
+   ['sp-cu', hist.map(h => h.cu), cu.price, '#E76F51']
+  ].forEach(([id, raw, cur, c]) => {
+    const pts = raw.length ? raw : [cur];
+    const cv = document.getElementById(id); if (!cv) return;
+    cv.width = cv.offsetWidth || 260; cv.height = 32;
+    const ctx = cv.getContext('2d');
+    const mn = Math.min(...pts), mx = Math.max(...pts), rng = mx - mn || 1;
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    const g = ctx.createLinearGradient(0, 0, 0, 32); g.addColorStop(0, c + '55'); g.addColorStop(1, c + '00');
+    ctx.beginPath();
+    pts.forEach((v, i) => { const x = i / (pts.length - 1) * cv.width, y = cv.height - (v - mn) / rng * cv.height * .85 - 1; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+    ctx.lineTo(cv.width, cv.height); ctx.lineTo(0, cv.height); ctx.closePath();
+    ctx.fillStyle = g; ctx.fill();
+    ctx.beginPath();
+    pts.forEach((v, i) => { const x = i / (pts.length - 1) * cv.width, y = cv.height - (v - mn) / rng * cv.height * .85 - 1; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+    ctx.strokeStyle = c; ctx.lineWidth = 1.5; ctx.stroke();
+  });
+}
+
+function setR(r, btn) {
+  range = r;
+  document.querySelectorAll('.cbtn').forEach(b => b.classList.remove('on')); btn.classList.add('on');
+  const ov = document.getElementById('cov'); ov.classList.add('on');
+  setTimeout(() => { buildMainChart(); ov.classList.remove('on'); }, 280);
+}
+
+function sw(id, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.tc').forEach(t => t.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tc-' + id).classList.add('on');
+  if (id === 'tr') setTimeout(() => buildTrendCharts(), 60);
+}
+
+function selcc(el) { document.querySelectorAll('.cc').forEach(c => c.classList.remove('sel')); el.classList.add('sel'); }
+
+// ── AI
+function sysPrompt() {
+  if (!D) return '당신은 GESS 배터리 원자재 전문 애널리스트입니다. 한국어로 답하세요.';
+  const d = D.data;
+  const cnt = (D.history || []).length;
+  return `당신은 GESS(Green Energy Storage System) 배터리 원자재 시장 전문 애널리스트입니다.
+현재 실시간 데이터 (GitHub Actions 자동 수집, 누적 ${cnt}개):
+- 탄산리튬(Li₂CO₃): $${d.lithium_carbonate.price}/kg (${d.lithium_carbonate.chg_pct > 0 ? '+' : ''}${d.lithium_carbonate.chg_pct}%) [${d.lithium_carbonate.source}]
+- 알루미늄(Al): $${(+d.aluminum.price).toLocaleString()}/mt (${d.aluminum.chg_pct > 0 ? '+' : ''}${d.aluminum.chg_pct}%) [${d.aluminum.source}]
+- 구리(Cu): $${(+d.copper.price).toLocaleString()}/mt (${d.copper.chg_pct > 0 ? '+' : ''}${d.copper.chg_pct}%) [${d.copper.source}]
+- SMM System: $${d.smm_index.system.price}/kWh | Cell: $${d.smm_index.cell.price}/kWh
+GESS는 유럽(아일랜드·이탈리아·스페인) BESS/PV+ESS 개발·운용 회사입니다.
+전문적이고 실무적으로 한국어로 답하세요. GESS 프로젝트 관점 시사점을 강조하세요.`;
+}
+
+function sendQ(t) { document.getElementById('aiinp').value = t; sendAI(); }
+
+async function sendAI() {
+  const inp = document.getElementById('aiinp');
+  const text = inp.value.trim(); if (!text) return;
+  inp.value = '';
+  const box = document.getElementById('aimsgs');
+  const ud = document.createElement('div'); ud.className = 'aimsg user'; ud.textContent = text; box.appendChild(ud);
+  const ld = document.createElement('div'); ld.className = 'aimsg bot';
+  ld.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
+  box.appendChild(ld); box.scrollTop = box.scrollHeight;
+  const btn = document.getElementById('aigo'); btn.disabled = true;
+  aiHist.push({ role: 'user', content: text });
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: sysPrompt(), messages: aiHist })
+    });
+    const data = await r.json();
+    const reply = data.content?.[0]?.text || '응답 오류';
+    aiHist.push({ role: 'assistant', content: reply });
+    ld.remove();
+    const ad = document.createElement('div'); ad.className = 'aimsg bot';
+    ad.innerHTML = `<div class="aimhd">🤖 GESS AI 애널리스트</div>${reply.replace(/\n/g, '<br>')}`;
+    box.appendChild(ad);
+  } catch (e) {
+    ld.remove();
+    const ed = document.createElement('div'); ed.className = 'aimsg bot';
+    ed.innerHTML = `<div class="aimhd" style="color:#E05D5D">⚠ 오류</div>${e.message}`;
+    box.appendChild(ed); aiHist.pop();
+  }
+  btn.disabled = false; box.scrollTop = box.scrollHeight;
+}
+</script>
+</body>
+</html>
