@@ -410,6 +410,36 @@ tr:hover td{background:rgba(255,255,255,.01)}
 .sdm-lock-notice .lock-icon{font-size:28px;margin-bottom:8px}
 .sdm-applied-badge{position:fixed;bottom:16px;right:16px;background:linear-gradient(90deg,#3ECFA0,#3D8ECC);color:#06090F;padding:8px 14px;border-radius:20px;font-size:11px;font-weight:800;z-index:9000;display:none;box-shadow:0 4px 16px rgba(62,207,160,.3)}
 
+
+/* ── R2 DOCUMENT MANAGER ── */
+.r2-section{margin-bottom:14px}
+.r2-upload-zone{border:2px dashed #1C2340;border-radius:12px;padding:22px;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:#06090F}
+.r2-upload-zone:hover,.r2-upload-zone.drag{border-color:#3ECFA0;background:rgba(62,207,160,.03)}
+.r2-upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.r2-upload-icon{font-size:28px;margin-bottom:6px}
+.r2-upload-title{font-size:12px;font-weight:700;color:#fff;margin-bottom:3px}
+.r2-upload-sub{font-size:10px;color:#3a4060}
+.r2-cat-sel{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.r2-cat{padding:4px 10px;border-radius:7px;font-size:10px;cursor:pointer;border:1px solid #1C2340;background:#111830;color:#7a8090;font-family:inherit;font-weight:600;transition:all .12s}
+.r2-cat.on{border-color:#3ECFA0;color:#3ECFA0;background:rgba(62,207,160,.08)}
+.r2-file-list{display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto}
+.r2-file-item{background:#0C1128;border:1px solid #1C2340;border-radius:9px;padding:10px 12px;display:flex;align-items:center;gap:8px;transition:border-color .15s}
+.r2-file-item:hover{border-color:#3ECFA0}
+.r2-file-icon{font-size:20px;flex-shrink:0}
+.r2-file-info{flex:1;min-width:0}
+.r2-file-name{font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r2-file-meta{font-size:9px;color:#3a4060;margin-top:2px}
+.r2-file-actions{display:flex;gap:4px;flex-shrink:0}
+.r2-btn{padding:4px 8px;border-radius:5px;font-size:9px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid;transition:all .12s}
+.r2-btn.analyze{color:#5B9BD5;border-color:#5B9BD5;background:rgba(91,155,213,.08)}
+.r2-btn.analyze:hover{background:rgba(91,155,213,.15)}
+.r2-btn.delete{color:#E05D5D;border-color:#E05D5D;background:rgba(224,93,93,.08)}
+.r2-btn.delete:hover{background:rgba(224,93,93,.15)}
+.r2-empty{text-align:center;padding:20px;color:#3a4060;font-size:11px}
+.r2-progress{background:#111830;border-radius:4px;height:4px;margin-top:8px;overflow:hidden;display:none}
+.r2-progress-bar{height:100%;background:linear-gradient(90deg,#3ECFA0,#3D8ECC);border-radius:4px;transition:width .3s}
+.r2-status{font-size:10px;margin-top:6px;text-align:center;display:none}
+
 /* ── SHARED ── */
 .tab-section-ttl{font-size:10px;font-weight:700;color:#3a4060;text-transform:uppercase;letter-spacing:.7px;margin:12px 0 8px;padding-bottom:5px;border-bottom:1px solid #111830;display:flex;align-items:center;gap:5px}
 .edit-badge{font-size:8px;padding:2px 5px;border-radius:3px;background:#111830;color:#5a6080;border:1px solid #1C2340;cursor:pointer;font-weight:600}
@@ -858,21 +888,72 @@ document.addEventListener('DOMContentLoaded', () => {
   right.insertAdjacentHTML('beforeend', `
   <div class="tc" id="tc-leg">
     <div class="scr">
-      <div class="tab-section-ttl">⚖️ 계약 AI 자동 분석 모듈</div>
+      <div class="tab-section-ttl">🔐 보안 문서 저장소 (Cloudflare R2 · AES-256 암호화)</div>
 
-      <div id="legal-upload-area">
-        <div class="legal-upload" id="upload-drop" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
-          <input type="file" accept=".pdf,.txt,.docx" onchange="handleFileUpload(event)" id="file-input">
-          <div class="upload-icon">📄</div>
-          <div class="upload-title">계약서 PDF 업로드</div>
-          <div class="upload-sub">클릭하거나 파일을 드래그하여 업로드 · PDF · DOCX · TXT 지원</div>
+      <div class="r2-section">
+        <!-- 상위 카테고리 탭 -->
+        <div class="r2-cat-sel" id="r2-top-cats">
+          <button class="r2-cat on" onclick="r2SetTop('all',this)">📁 전체</button>
+          <button class="r2-cat" onclick="r2SetTop('rvb',this)">⚡ RVB</button>
+          <button class="r2-cat" onclick="r2SetTop('pm',this)">🔬 PM</button>
+          <button class="r2-cat" onclick="r2SetTop('bm',this)">📊 BM</button>
         </div>
-        <div class="tab-section-ttl" style="margin-top:4px">⚡ 데모 계약 시나리오 (클릭하여 즉시 분석)</div>
+        <!-- 하위 카테고리 (상위 선택 시 표시) -->
+        <div id="r2-sub-cats" style="display:none;margin-top:6px">
+          <div id="r2-sub-rvb" style="display:none">
+            <div style="font-size:9px;color:#3a4060;margin-bottom:4px;font-weight:700">RVB 하위 분류</div>
+            <div class="r2-cat-sel">
+              <button class="r2-cat on" onclick="r2SetCat('rvb',this,'rvb')">📁 RVB 전체</button>
+              <button class="r2-cat" onclick="r2SetCat('rvb-ssa',this,'rvb')">📄 SSA</button>
+              <button class="r2-cat" onclick="r2SetCat('rvb-ltsa',this,'rvb')">📋 LTSA</button>
+              <button class="r2-cat" onclick="r2SetCat('rvb-annex',this,'rvb')">📎 부속서류</button>
+            </div>
+          </div>
+          <div id="r2-sub-pm" style="display:none">
+            <div style="font-size:9px;color:#3a4060;margin-bottom:4px;font-weight:700">PM 하위 분류</div>
+            <div class="r2-cat-sel">
+              <button class="r2-cat on" onclick="r2SetCat('pm',this,'pm')">📁 PM 전체</button>
+              <button class="r2-cat" onclick="r2SetCat('pm-domestic',this,'pm')">🇰🇷 국내 출원</button>
+              <button class="r2-cat" onclick="r2SetCat('pm-au',this,'pm')">🇦🇺 해외 출원 (호주)</button>
+              <button class="r2-cat" onclick="r2SetCat('pm-pct',this,'pm')">🌐 PCT 출원</button>
+            </div>
+          </div>
+          <div id="r2-sub-bm" style="display:none">
+            <div style="font-size:9px;color:#3a4060;margin-bottom:4px;font-weight:700">BM 하위 분류</div>
+            <div class="r2-cat-sel">
+              <button class="r2-cat on" onclick="r2SetCat('bm',this,'bm')">📁 BM 전체</button>
+              <button class="r2-cat" onclick="r2SetCat('bm-dev',this,'bm')">🏗️ 사업기획/개발</button>
+              <button class="r2-cat" onclick="r2SetCat('bm-sales',this,'bm')">🤝 영업/수주</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="r2-upload-zone" id="r2-drop"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="r2HandleDrop(event)">
+          <input type="file" accept=".pdf,.docx,.txt" onchange="r2HandleFile(event)" id="r2-file-input">
+          <div class="r2-upload-icon">🔐</div>
+          <div class="r2-upload-title">계약서 업로드 (암호화 저장)</div>
+          <div class="r2-upload-sub">PDF · DOCX · TXT · 최대 10MB · AES-256 암호화 후 R2 저장</div>
+          <div class="r2-progress" id="r2-progress"><div class="r2-progress-bar" id="r2-progress-bar" style="width:0%"></div></div>
+          <div class="r2-status" id="r2-status"></div>
+        </div>
+      </div>
+
+      <div class="tab-section-ttl">📂 저장된 계약서 목록 <span class="edit-badge" onclick="r2LoadFiles()">새로고침</span></div>
+      <div class="r2-file-list" id="r2-file-list">
+        <div class="r2-empty" id="r2-empty">🔐 로그인 후 파일 목록을 불러옵니다...</div>
+      </div>
+
+      <div class="tab-section-ttl" style="margin-top:14px">⚖️ AI 계약 리스크 분석</div>
+      <div id="legal-upload-area">
+        <div class="tab-section-ttl" style="margin-top:4px;font-size:9px">⚡ 데모 시나리오 (Worker 미연결 시)</div>
         <div class="demo-contracts">
-          <button class="demo-btn" onclick="demoAnalyze('epc')">🏗️ EPC 계약 (NSW)</button>
-          <button class="demo-btn" onclick="demoAnalyze('ppa')">⚡ PPA 계약 (QLD)</button>
-          <button class="demo-btn" onclick="demoAnalyze('supply')">📦 배터리 공급계약 (CATL)</button>
-          <button class="demo-btn" onclick="demoAnalyze('grid')">🔌 계통연계 계약 (AusGrid)</button>
+          <button class="demo-btn" onclick="demoAnalyze('epc')">🏗️ EPC (NSW)</button>
+          <button class="demo-btn" onclick="demoAnalyze('ppa')">⚡ PPA (QLD)</button>
+          <button class="demo-btn" onclick="demoAnalyze('supply')">📦 CATL 공급</button>
+          <button class="demo-btn" onclick="demoAnalyze('grid')">🔌 AusGrid</button>
         </div>
       </div>
 
@@ -1004,7 +1085,7 @@ const CODE = 'gess2026'; // 로컬 fallback — Worker 연동 전까지 유지
 
 // ── Cloudflare Worker 엔드포인트 (배포 후 아래 URL 교체)
 // 예: 'https://gess-worker.yourname.workers.dev'
-const WORKER_URL = 'https://gess-worker.jmk0805.workers.dev'; // ← Worker 배포 후 여기 입력
+const WORKER_URL = ''; // ← Worker 배포 후 여기 입력
 
 let JWT_TOKEN = sessionStorage.getItem('gess_jwt') || null;
 
@@ -1505,6 +1586,7 @@ function sw(id, btn) {
   if (id === 'tr') setTimeout(() => buildTrendCharts(), 60);
   if (id === 'fin') initFinance();
   if (id === 'str') updateSignals();
+  if (id === 'leg') r2LoadFiles();
 }
 
 function selcc(el) { document.querySelectorAll('.cc').forEach(c => c.classList.remove('sel')); el.classList.add('sel'); }
@@ -1565,6 +1647,179 @@ async function sendAI() {
 // ═══════════════════════════════════════════════════════
 // TAB INIT
 // ═══════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════════════
+// R2 문서 관리
+// ══════════════════════════════════════════════════════════════
+let r2CurrentCat = 'all';
+
+// 상위 카테고리 탭 전환
+function r2SetTop(top, btn) {
+  document.querySelectorAll('#r2-top-cats .r2-cat').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const subArea = document.getElementById('r2-sub-cats');
+  ['rvb','pm','bm'].forEach(k => {
+    const el = document.getElementById('r2-sub-' + k);
+    if (el) el.style.display = 'none';
+  });
+  if (top === 'all') {
+    subArea.style.display = 'none';
+    r2CurrentCat = 'all';
+  } else {
+    subArea.style.display = 'block';
+    const subEl = document.getElementById('r2-sub-' + top);
+    if (subEl) {
+      subEl.style.display = 'block';
+      // 첫 번째 하위 버튼 활성화
+      const firstBtn = subEl.querySelector('.r2-cat');
+      if (firstBtn) { firstBtn.classList.add('on'); }
+    }
+    r2CurrentCat = top;
+  }
+  r2LoadFiles();
+}
+
+// 하위 카테고리 선택
+function r2SetCat(cat, btn, parent) {
+  r2CurrentCat = cat;
+  const subEl = document.getElementById('r2-sub-' + parent);
+  if (subEl) subEl.querySelectorAll('.r2-cat').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  r2LoadFiles();
+}
+
+async function r2LoadFiles() {
+  if (!WORKER_URL || !JWT_TOKEN) {
+    const el = document.getElementById('r2-file-list');
+    if (el) el.innerHTML = '<div class="r2-empty">⚠ Worker 미연결 — 로그인 후 이용 가능</div>';
+    return;
+  }
+  try {
+    const r = await fetch(WORKER_URL + '/r2/list', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + JWT_TOKEN },
+      body: JSON.stringify({ category: r2CurrentCat === 'all' ? null : r2CurrentCat })
+    });
+    const data = await r.json();
+    r2RenderFiles(data.files || []);
+  } catch(e) {
+    const el = document.getElementById('r2-file-list');
+    if (el) el.innerHTML = '<div class="r2-empty">⚠ 파일 목록 로드 실패: ' + e.message + '</div>';
+  }
+}
+
+function r2RenderFiles(files) {
+  const list = document.getElementById('r2-file-list');
+  if (!list) return;
+  if (!files.length) { list.innerHTML = '<div class="r2-empty">📁 저장된 문서가 없습니다. 위에서 업로드하세요.</div>'; return; }
+  const icons = { 'rvb-ssa':'📄','rvb-ltsa':'📋','rvb-annex':'📎','rvb':'⚡','pm-domestic':'🇰🇷','pm-au':'🇦🇺','pm-pct':'🌐','pm':'🔬','bm-dev':'🏗️','bm-sales':'🤝','bm':'📊','all':'📁' };
+  const catNames = { 'rvb-ssa':'SSA','rvb-ltsa':'LTSA','rvb-annex':'부속서류','rvb':'RVB','pm-domestic':'국내출원','pm-au':'호주출원','pm-pct':'PCT출원','pm':'PM','bm-dev':'사업기획/개발','bm-sales':'영업/수주','bm':'BM' };
+  list.innerHTML = files.map(f => `
+    <div class="r2-file-item">
+      <div class="r2-file-icon">${icons[f.category] || '📄'}</div>
+      <div class="r2-file-info">
+        <div class="r2-file-name">${f.name}</div>
+        <div class="r2-file-meta">${catNames[f.category]||f.category} · ${(+f.size/1024).toFixed(0)}KB · ${f.uploadedBy} · ${new Date(f.uploadedAt).toLocaleDateString('ko-KR')}</div>
+      </div>
+      <div class="r2-file-actions">
+        <button class="r2-btn analyze" onclick="r2Analyze('${f.key}','${f.name}')">🤖 AI 분석</button>
+        <button class="r2-btn delete" onclick="r2Delete('${f.key}','${f.name}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function r2HandleDrop(e) {
+  e.preventDefault();
+  document.getElementById('r2-drop').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) r2Upload(file);
+}
+
+function r2HandleFile(e) {
+  const file = e.target.files[0];
+  if (file) r2Upload(file);
+}
+
+async function r2Upload(file) {
+  if (!WORKER_URL || !JWT_TOKEN) { alert('로그인이 필요합니다.'); return; }
+  const progress = document.getElementById('r2-progress');
+  const progressBar = document.getElementById('r2-progress-bar');
+  const status = document.getElementById('r2-status');
+  progress.style.display = 'block'; status.style.display = 'block';
+  status.style.color = '#E0A83D'; status.textContent = '암호화 중...';
+  progressBar.style.width = '30%';
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('category', r2CurrentCat === 'all' ? 'bm' : r2CurrentCat);
+  try {
+    progressBar.style.width = '60%'; status.textContent = 'R2에 업로드 중...';
+    const r = await fetch(WORKER_URL + '/r2/upload', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + JWT_TOKEN },
+      body: formData
+    });
+    const data = await r.json();
+    if (r.ok) {
+      progressBar.style.width = '100%'; status.style.color = '#3ECFA0';
+      status.textContent = '✅ 암호화 업로드 완료: ' + data.name;
+      setTimeout(() => { progress.style.display='none'; status.style.display='none'; progressBar.style.width='0%'; }, 3000);
+      r2LoadFiles();
+    } else { status.style.color='#E05D5D'; status.textContent='⚠ '+(data.error||'업로드 실패'); progress.style.display='none'; }
+  } catch(e) { status.style.color='#E05D5D'; status.textContent='⚠ 오류: '+e.message; progress.style.display='none'; }
+  document.getElementById('r2-file-input').value = '';
+}
+
+async function r2Delete(key, name) {
+  if (!confirm('"' + name + '" 파일을 삭제하시겠습니까?')) return;
+  try {
+    const r = await fetch(WORKER_URL + '/r2/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + JWT_TOKEN },
+      body: JSON.stringify({ key })
+    });
+    if (r.ok) r2LoadFiles(); else alert('삭제 실패');
+  } catch(e) { alert('오류: ' + e.message); }
+}
+
+async function r2Analyze(key, name) {
+  if (!WORKER_URL || !JWT_TOKEN) { demoAnalyze('epc'); return; }
+  document.getElementById('legal-upload-area').style.display = 'none';
+  document.getElementById('legal-loading').classList.add('on');
+  document.getElementById('risk-panel').classList.remove('on');
+  document.getElementById('legal-loading-txt').textContent = 'R2에서 파일 복호화 중...';
+  try {
+    const r = await fetch(WORKER_URL + '/r2/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + JWT_TOKEN },
+      body: JSON.stringify({ key })
+    });
+    const data = await r.json();
+    document.getElementById('legal-loading').classList.remove('on');
+    if (!r.ok) throw new Error(data.error);
+    document.getElementById('cfi-nm').textContent = name;
+    document.getElementById('cfi-meta').textContent = 'R2 암호화 저장 · Llama 3.3 AI 분석 완료';
+    document.getElementById('risk-cnt-high').textContent = (data.risks?.high||[]).length;
+    document.getElementById('risk-cnt-mid').textContent  = (data.risks?.mid||[]).length;
+    document.getElementById('risk-cnt-low').textContent  = (data.risks?.low||[]).length;
+    const allRisks = [
+      ...(data.risks?.high||[]).map(r=>({...r,level:'high',lbl:'⚠ 고위험'})),
+      ...(data.risks?.mid||[]).map(r =>({...r,level:'mid', lbl:'⚡ 중위험'})),
+      ...(data.risks?.low||[]).map(r =>({...r,level:'low', lbl:'✅ 저위험'}))
+    ];
+    document.getElementById('risk-items').innerHTML = allRisks.map(r => `
+      <div class="risk-item ${r.level}">
+        <div class="risk-item-hdr"><span class="risk-badge">${r.lbl}</span><span class="risk-item-title">${r.title}</span></div>
+        <div class="risk-item-desc">${r.desc}</div>
+        <div class="risk-scenario"><div class="risk-scenario-ttl">💡 대응 시나리오</div><div class="risk-scenario-txt">${r.scenario}</div></div>
+      </div>`).join('');
+    document.getElementById('risk-panel').classList.add('on');
+  } catch(e) {
+    document.getElementById('legal-loading').classList.remove('on');
+    document.getElementById('legal-upload-area').style.display = 'block';
+    alert('분석 오류: ' + e.message);
+  }
+}
+
 function initTabs() {
   // CSS handles show/hide via .on class; nothing extra needed
 }
