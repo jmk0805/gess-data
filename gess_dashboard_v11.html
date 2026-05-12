@@ -975,11 +975,6 @@ tr:hover td{background:rgba(255,255,255,.01)}
       </div>
     </div>
   </div>
-  `);
-
-  // ─── ACCOUNTING ───
-  right.insertAdjacentHTML('beforeend',
-
 <div class="tc" id="tc-acc">
     <div class="scr">
       <!-- ══ PDF 파싱 & 마일스톤 매출인식 ══ -->
@@ -1148,12 +1143,12 @@ tr:hover td{background:rgba(255,255,255,.01)}
             <div class="ms2-row">
               <div class="ms2-left">
                 <div class="ms2-nm">MS1 · Early Supplier Stage 1-1</div>
-                <div class="ms2-sub">초기 공급자 참여 1단계 · 기본설계 착수 · 2025.01</div>
+                <div class="ms2-sub">초기 공급자 참여 1단계 · 기본설계 착수 · 2025.01 완료</div>
                 <div class="ms2-bar"><div class="ms2-bar-fill" style="width:100%"></div></div>
               </div>
               <div class="ms2-right">
                 <div class="ms2-pct">1.0%</div>
-                <div style="font-size:8px;color:#3ECFA0;margin-top:2px">완료</div>
+                <div style="font-size:8px;color:#3ECFA0;margin-top:2px">✅ 완료</div>
               </div>
             </div>
           </div>
@@ -1162,50 +1157,54 @@ tr:hover td{background:rgba(255,255,255,.01)}
             <div class="ms2-row">
               <div class="ms2-left">
                 <div class="ms2-nm">MS2 · Early Supplier Stage 1-2</div>
-                <div class="ms2-sub">상세설계 진행 · PoC 진행률 기준 인식 · 2025.03~</div>
+                <div class="ms2-sub">상세설계 진행 중 · PoC 진행률 기준 인식 · 2025.03~</div>
                 <div class="ms2-bar"><div class="ms2-bar-fill" style="width:60%"></div></div>
               </div>
               <div class="ms2-right">
                 <div class="ms2-pct">0.5%</div>
-                <div style="font-size:8px;color:#E0A83D;margin-top:2px">진행중</div>
+                <div style="font-size:8px;color:#E0A83D;margin-top:2px">⏳ 진행중 60%</div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 구매 부문 상단 -->
+        <!-- 구매 부문 -->
         <div class="ms2-wrap">
           <div class="ms2-section-hdr" style="color:#E0A83D">
             📦 구매 부문 <span style="font-size:9px;padding:2px 7px;border-radius:10px;background:rgba(224,168,61,.12);border:1px solid rgba(224,168,61,.25);color:#E0A83D">인식률 합계 98.5%</span>
           </div>
           <div class="ms2-formula">
-            <span style="color:#3ECFA0">구매부문 매출</span> = 구매할당매출 × 발주 진행률 기준 인식 (Milestone 달성 시)
+            <span style="color:#3ECFA0">구매부문 매출</span> = 구매할당매출(계약금액×98.5%) × 마일스톤 달성 비율 (달성 시 즉시 인식)
           </div>
+
+          <!-- MS3 LNTP: 진행중 (계획 2월 → 실적 6월 지연) -->
           <div class="ms2-item progress" style="--mc:#E0A83D">
             <div class="ms2-dot"></div>
             <div class="ms2-row">
               <div class="ms2-left">
                 <div class="ms2-nm">MS3 · Early Supplier Stage 2 (LNTP)</div>
-                <div class="ms2-sub">Limited Notice To Proceed · <span style="color:#E05D5D">계획 2월 → 실적 6월 (지연)</span></div>
-                <div class="ms2-bar"><div class="ms2-bar-fill" style="width:40%"></div></div>
+                <div class="ms2-sub">Limited NTP · <span style="color:#E05D5D;font-weight:700">계획 2월 → 실적 6월 (지연 △4M)</span></div>
+                <div class="ms2-bar"><div class="ms2-bar-fill" style="width:35%"></div></div>
               </div>
               <div class="ms2-right">
                 <div class="ms2-pct">8.0%</div>
-                <div style="font-size:8px;color:#E0A83D;margin-top:2px">진행중</div>
+                <div style="font-size:8px;color:#E0A83D;margin-top:2px">⏳ 진행중</div>
               </div>
             </div>
           </div>
+
+          <!-- MS4~MS9: 전부 future (진척도 0%) -->
           <div class="ms2-item future" style="--mc:#2a3060">
             <div class="ms2-dot"></div>
             <div class="ms2-row">
               <div class="ms2-left">
                 <div class="ms2-nm">MS4 · Issue NTP</div>
-                <div class="ms2-sub">Full Notice To Proceed · 본계약 발효 · 예정</div>
+                <div class="ms2-sub">Full Notice To Proceed · 본계약 발효 · MS3 이후</div>
                 <div class="ms2-bar"><div class="ms2-bar-fill" style="width:0%"></div></div>
               </div>
               <div class="ms2-right">
                 <div class="ms2-pct">2.5%</div>
-                <div style="font-size:8px;color:#3a4060;margin-top:2px">예정</div>
+                <div style="font-size:8px;color:#3a4060;margin-top:2px">○ 미착수</div>
               </div>
             </div>
           </div>
@@ -1213,13 +1212,13 @@ tr:hover td{background:rgba(255,255,255,.01)}
             <div class="ms2-dot"></div>
             <div class="ms2-row">
               <div class="ms2-left">
-                <div class="ms2-nm">MS5 · FAT (공장 검수) Satisfaction</div>
-                <div class="ms2-sub">Factory Acceptance Test · <span style="color:#E05D5D">계획 10월 → 실적 12월 (지연)</span></div>
+                <div class="ms2-nm">MS5 · FAT Satisfaction</div>
+                <div class="ms2-sub">공장검수 완료 · <span style="color:#E05D5D">계획 10월 → 실적 12월 (지연 △2M)</span></div>
                 <div class="ms2-bar"><div class="ms2-bar-fill" style="width:0%"></div></div>
               </div>
               <div class="ms2-right">
                 <div class="ms2-pct">30.0%</div>
-                <div style="font-size:8px;color:#3a4060;margin-top:2px">예정</div>
+                <div style="font-size:8px;color:#3a4060;margin-top:2px">○ 미착수</div>
               </div>
             </div>
           </div>
@@ -1227,13 +1226,13 @@ tr:hover td{background:rgba(255,255,255,.01)}
             <div class="ms2-dot"></div>
             <div class="ms2-row">
               <div class="ms2-left">
-                <div class="ms2-nm">MS6 · Shipment Delivered to Port</div>
+                <div class="ms2-nm">MS6 · Shipment to Port</div>
                 <div class="ms2-sub">호주 항구 도착 · CIF 인도 완료</div>
                 <div class="ms2-bar"><div class="ms2-bar-fill" style="width:0%"></div></div>
               </div>
               <div class="ms2-right">
                 <div class="ms2-pct">23.0%</div>
-                <div style="font-size:8px;color:#3a4060;margin-top:2px">예정</div>
+                <div style="font-size:8px;color:#3a4060;margin-top:2px">○ 미착수</div>
               </div>
             </div>
           </div>
@@ -1241,13 +1240,13 @@ tr:hover td{background:rgba(255,255,255,.01)}
             <div class="ms2-dot"></div>
             <div class="ms2-row">
               <div class="ms2-left">
-                <div class="ms2-nm">MS7 · Shipment Delivered to Site</div>
-                <div class="ms2-sub">현장 인도 완료 · HEAU 수령 확인</div>
+                <div class="ms2-nm">MS7 · Shipment to Site</div>
+                <div class="ms2-sub">현장 인도 · HEAU 수령 확인</div>
                 <div class="ms2-bar"><div class="ms2-bar-fill" style="width:0%"></div></div>
               </div>
               <div class="ms2-right">
                 <div class="ms2-pct">20.0%</div>
-                <div style="font-size:8px;color:#3a4060;margin-top:2px">예정</div>
+                <div style="font-size:8px;color:#3a4060;margin-top:2px">○ 미착수</div>
               </div>
             </div>
           </div>
@@ -1261,7 +1260,7 @@ tr:hover td{background:rgba(255,255,255,.01)}
               </div>
               <div class="ms2-right">
                 <div class="ms2-pct">12.0%</div>
-                <div style="font-size:8px;color:#3a4060;margin-top:2px">예정</div>
+                <div style="font-size:8px;color:#3a4060;margin-top:2px">○ 미착수</div>
               </div>
             </div>
           </div>
@@ -1275,7 +1274,7 @@ tr:hover td{background:rgba(255,255,255,.01)}
               </div>
               <div class="ms2-right">
                 <div class="ms2-pct">3.0%</div>
-                <div style="font-size:8px;color:#3a4060;margin-top:2px">예정</div>
+                <div style="font-size:8px;color:#3a4060;margin-top:2px">○ 미착수</div>
               </div>
             </div>
           </div>
@@ -1319,100 +1318,160 @@ tr:hover td{background:rgba(255,255,255,.01)}
       </div>
     </div>
   </div>
-  `);
-
-  // ─── LEGAL ───
-  right.insertAdjacentHTML('beforeend',
-
 <div class="tc" id="tc-leg">
     <div class="scr">
-      <div class="tab-section-ttl">🔐 보안 문서 저장소 (Cloudflare R2 · AES-256 암호화)</div>
 
-      <div class="r2-section">
-        <!-- 상위 카테고리 탭 -->
-        <div class="r2-cat-sel" id="r2-top-cats">
-          <button class="r2-cat on" onclick="r2SetTop('all',this)">📁 전체</button>
-          <button class="r2-cat" onclick="r2SetTop('rvb',this)">⚡ RVB</button>
-          <button class="r2-cat" onclick="r2SetTop('pm',this)">🔬 PM</button>
-          <button class="r2-cat" onclick="r2SetTop('bm',this)">📊 BM</button>
+      <!-- ── 상단 카테고리 네비게이션 ── -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div>
+          <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:2px">⚖️ 계약 문서 관리</div>
+          <div style="font-size:10px;color:#3a4060">Cloudflare R2 · AES-256 암호화 저장소 · 로그인 필요</div>
         </div>
-        <!-- 하위 카테고리 -->
-        <div id="r2-sub-cats" style="display:none;margin-top:6px">
-          <div id="r2-sub-rvb" style="display:none">
-            <div style="font-size:9px;color:#3a4060;margin-bottom:4px;font-weight:700">RVB 하위 분류</div>
-            <div class="r2-cat-sel">
-              <button class="r2-cat on" onclick="r2SetCat('rvb',this,'rvb')">📁 RVB 전체</button>
-              <button class="r2-cat" onclick="r2SetCat('rvb-ssa',this,'rvb')">📄 SSA</button>
-              <button class="r2-cat" onclick="r2SetCat('rvb-ltsa',this,'rvb')">📋 LTSA</button>
-              <button class="r2-cat" onclick="r2SetCat('rvb-annex',this,'rvb')">📎 부속서류</button>
-            </div>
-          </div>
-          <div id="r2-sub-pm" style="display:none">
-            <div style="font-size:9px;color:#3a4060;margin-bottom:4px;font-weight:700">PM 하위 분류</div>
-            <div class="r2-cat-sel">
-              <button class="r2-cat on" onclick="r2SetCat('pm',this,'pm')">📁 PM 전체</button>
-              <button class="r2-cat" onclick="r2SetCat('pm-domestic',this,'pm')">🇰🇷 국내 출원</button>
-              <button class="r2-cat" onclick="r2SetCat('pm-au',this,'pm')">🇦🇺 해외 출원 (호주)</button>
-              <button class="r2-cat" onclick="r2SetCat('pm-pct',this,'pm')">🌐 PCT 출원</button>
-            </div>
-          </div>
-          <div id="r2-sub-bm" style="display:none">
-            <div style="font-size:9px;color:#3a4060;margin-bottom:4px;font-weight:700">BM 하위 분류</div>
-            <div class="r2-cat-sel">
-              <button class="r2-cat on" onclick="r2SetCat('bm',this,'bm')">📁 BM 전체</button>
-              <button class="r2-cat" onclick="r2SetCat('bm-dev',this,'bm')">🏗️ 사업기획/개발</button>
-              <button class="r2-cat" onclick="r2SetCat('bm-sales',this,'bm')">🤝 영업/수주</button>
-            </div>
+        <button onclick="r2LoadFiles()" style="padding:6px 14px;border-radius:8px;border:1px solid #3ECFA0;background:rgba(62,207,160,.08);color:#3ECFA0;font-size:10px;font-weight:700;font-family:inherit;cursor:pointer">⟳ 새로고침</button>
+      </div>
+
+      <!-- ── 카테고리 탭 바 ── -->
+      <div style="display:flex;gap:6px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #1C2340">
+        <div style="display:flex;flex-direction:column;gap:3px;flex:1">
+          <div style="font-size:8px;color:#3a4060;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">문서 분류</div>
+          <div id="r2-top-cats" style="display:flex;gap:4px;flex-wrap:wrap">
+            <button class="r2-cat on" onclick="r2SetTop('all',this)" style="font-size:11px;padding:6px 14px">📁 전체</button>
+            <button class="r2-cat" onclick="r2SetTop('rvb',this)" style="font-size:11px;padding:6px 14px">⚡ RVB</button>
+            <button class="r2-cat" onclick="r2SetTop('pm',this)" style="font-size:11px;padding:6px 14px">🔬 PM</button>
+            <button class="r2-cat" onclick="r2SetTop('bm',this)" style="font-size:11px;padding:6px 14px">📊 BM</button>
           </div>
         </div>
+      </div>
 
+      <!-- ── 하위 카테고리 ── -->
+      <div id="r2-sub-cats" style="display:none;margin-bottom:12px">
+        <div id="r2-sub-rvb" style="display:none">
+          <div style="font-size:9px;color:#3a4060;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:5px">
+            ⚡ RVB 하위 분류
+            <span style="font-size:8px;color:#5a6080;font-weight:400">Supply &amp; Services Agreement · LTSA · 부속서류</span>
+          </div>
+          <div class="r2-cat-sel">
+            <button class="r2-cat on" onclick="r2SetCat('rvb',this,'rvb')">📁 전체</button>
+            <button class="r2-cat" onclick="r2SetCat('rvb-ssa',this,'rvb')">📄 SSA</button>
+            <button class="r2-cat" onclick="r2SetCat('rvb-ltsa',this,'rvb')">📋 LTSA</button>
+            <button class="r2-cat" onclick="r2SetCat('rvb-annex',this,'rvb')">📎 부속서류</button>
+          </div>
+        </div>
+        <div id="r2-sub-pm" style="display:none">
+          <div style="font-size:9px;color:#3a4060;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:5px">
+            🔬 PM 하위 분류
+            <span style="font-size:8px;color:#5a6080;font-weight:400">특허 출원 관련 문서</span>
+          </div>
+          <div class="r2-cat-sel">
+            <button class="r2-cat on" onclick="r2SetCat('pm',this,'pm')">📁 전체</button>
+            <button class="r2-cat" onclick="r2SetCat('pm-domestic',this,'pm')">🇰🇷 국내 출원</button>
+            <button class="r2-cat" onclick="r2SetCat('pm-au',this,'pm')">🇦🇺 호주 출원</button>
+            <button class="r2-cat" onclick="r2SetCat('pm-pct',this,'pm')">🌐 PCT 출원</button>
+          </div>
+        </div>
+        <div id="r2-sub-bm" style="display:none">
+          <div style="font-size:9px;color:#3a4060;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:5px">
+            📊 BM 하위 분류
+            <span style="font-size:8px;color:#5a6080;font-weight:400">사업기획 · 영업수주 문서</span>
+          </div>
+          <div class="r2-cat-sel">
+            <button class="r2-cat on" onclick="r2SetCat('bm',this,'bm')">📁 전체</button>
+            <button class="r2-cat" onclick="r2SetCat('bm-dev',this,'bm')">🏗️ 사업기획/개발</button>
+            <button class="r2-cat" onclick="r2SetCat('bm-sales',this,'bm')">🤝 영업/수주</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 업로드 존 ── -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
         <div class="r2-upload-zone" id="r2-drop"
           ondragover="event.preventDefault();this.classList.add('drag')"
           ondragleave="this.classList.remove('drag')"
-          ondrop="r2HandleDrop(event)">
+          ondrop="r2HandleDrop(event)"
+          style="padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
           <input type="file" accept=".pdf,.docx,.txt" onchange="r2HandleFile(event)" id="r2-file-input">
-          <div class="r2-upload-icon">🔐</div>
-          <div class="r2-upload-title">계약서 업로드 (암호화 저장)</div>
-          <div class="r2-upload-sub">PDF · DOCX · TXT · 최대 10MB · AES-256 암호화 후 R2 저장</div>
+          <div style="font-size:28px">🔐</div>
+          <div style="font-size:12px;font-weight:700;color:#fff">계약서 드래그 업로드</div>
+          <div style="font-size:9px;color:#3a4060;text-align:center">PDF · DOCX · TXT · 최대 10MB<br>AES-256 암호화 → Cloudflare R2 저장</div>
           <div class="r2-progress" id="r2-progress"><div class="r2-progress-bar" id="r2-progress-bar" style="width:0%"></div></div>
           <div class="r2-status" id="r2-status"></div>
         </div>
-      </div>
 
-      <div class="tab-section-ttl">📂 저장된 계약서 목록 <span class="edit-badge" onclick="r2LoadFiles()">새로고침</span></div>
-      <div class="r2-file-list" id="r2-file-list">
-        <div class="r2-empty" id="r2-empty">🔐 로그인 후 파일 목록을 불러옵니다...</div>
-      </div>
-
-      <div class="tab-section-ttl" style="margin-top:14px">⚖️ AI 계약 리스크 분석</div>
-      <div id="legal-upload-area"></div>
-
-      <div class="legal-loading" id="legal-loading">
-        <div class="legal-spinner"></div>
-        <div class="legal-loading-txt" id="legal-loading-txt">AI가 계약서를 분석 중입니다...</div>
-        <div class="legal-loading-sub">비판적 사고 기반 리스크 탐지 · 시나리오 생성 중</div>
-      </div>
-
-      <div class="risk-panel" id="risk-panel">
-        <div class="contract-file-info" id="contract-file-info">
-          <div class="cfi-icon">📄</div>
-          <div><div class="cfi-nm" id="cfi-nm">계약서명</div><div class="cfi-meta" id="cfi-meta">분석 완료</div></div>
-          <div class="cfi-status" style="background:rgba(62,207,160,.1);color:#3ECFA0;border:1px solid rgba(62,207,160,.2)" id="cfi-status">✅ 분석 완료</div>
-          <button class="btn-secondary" style="margin-left:8px;font-size:9px;padding:4px 8px" onclick="resetLegal()">새 계약서</button>
+        <!-- ── 보안 정보 패널 ── -->
+        <div style="background:#06090F;border:1px solid #1C2340;border-radius:11px;padding:14px;display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:10px;font-weight:700;color:#E0A83D;margin-bottom:4px;display:flex;align-items:center;gap:5px">🔐 보안 저장소 정보</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid #111830">
+            <span style="font-size:9px;color:#7a8090">암호화 방식</span>
+            <span style="font-size:9px;font-weight:700;color:#3ECFA0;font-family:'JetBrains Mono',monospace">AES-256-GCM</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid #111830">
+            <span style="font-size:9px;color:#7a8090">저장 위치</span>
+            <span style="font-size:9px;font-weight:700;color:#5B9BD5;font-family:'JetBrains Mono',monospace">Cloudflare R2</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid #111830">
+            <span style="font-size:9px;color:#7a8090">접근 제어</span>
+            <span style="font-size:9px;font-weight:700;color:#E0A83D">JWT + 팀 인증</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid #111830">
+            <span style="font-size:9px;color:#7a8090">지원 형식</span>
+            <span style="font-size:9px;color:#5a6080;font-family:'JetBrains Mono',monospace">PDF · DOCX · TXT</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0">
+            <span style="font-size:9px;color:#7a8090">최대 용량</span>
+            <span style="font-size:9px;color:#5a6080;font-family:'JetBrains Mono',monospace">10MB / 파일</span>
+          </div>
+          <div style="margin-top:4px;padding:8px;background:#0C1128;border-radius:6px;border:1px solid #1C2340">
+            <div style="font-size:8px;color:#3a4060;line-height:1.6">
+              ⚠ 원본 파일은 소스코드에 노출되지 않습니다.<br>
+              Worker 서버에서만 복호화 가능합니다.
+            </div>
+          </div>
         </div>
-        <div class="risk-summary" id="risk-summary">
-          <div class="risk-card high"><div class="risk-cnt" id="risk-cnt-high">0</div><div class="risk-label">⚠ 고위험</div></div>
-          <div class="risk-card mid"><div class="risk-cnt" id="risk-cnt-mid">0</div><div class="risk-label">⚡ 중위험</div></div>
-          <div class="risk-card low"><div class="risk-cnt" id="risk-cnt-low">0</div><div class="risk-label">✅ 저위험</div></div>
-        </div>
-        <div class="risk-items-list" id="risk-items"></div>
       </div>
+
+      <!-- ── 파일 목록 ── -->
+      <div style="background:#0C1128;border:1px solid #1C2340;border-radius:11px;overflow:hidden;margin-bottom:14px">
+        <div style="padding:10px 14px;border-bottom:1px solid #1C2340;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:11px;font-weight:700;color:#fff">📂 저장된 계약서 목록</div>
+          <div id="r2-file-count" style="font-size:9px;color:#3a4060"></div>
+        </div>
+        <div class="r2-file-list" id="r2-file-list" style="padding:8px">
+          <div style="text-align:center;padding:20px;color:#3a4060;font-size:11px">🔐 로그인 후 파일 목록을 불러옵니다</div>
+        </div>
+      </div>
+
+      <!-- ── AI 리스크 분석 ── -->
+      <div style="background:#0C1128;border:1px solid #1C2340;border-radius:11px;overflow:hidden">
+        <div style="padding:10px 14px;border-bottom:1px solid #1C2340">
+          <div style="font-size:11px;font-weight:700;color:#fff">🤖 AI 계약 리스크 분석</div>
+          <div style="font-size:9px;color:#3a4060;margin-top:2px">파일 목록에서 'AI 분석' 버튼 클릭 → 자동 리스크 탐지</div>
+        </div>
+        <div style="padding:12px">
+          <div id="legal-upload-area"></div>
+          <div class="legal-loading" id="legal-loading">
+            <div class="legal-spinner"></div>
+            <div class="legal-loading-txt" id="legal-loading-txt">AI가 계약서를 분석 중입니다...</div>
+            <div class="legal-loading-sub">비판적 사고 기반 리스크 탐지 · 시나리오 생성 중</div>
+          </div>
+          <div class="risk-panel" id="risk-panel">
+            <div class="contract-file-info" id="contract-file-info">
+              <div class="cfi-icon">📄</div>
+              <div><div class="cfi-nm" id="cfi-nm">계약서명</div><div class="cfi-meta" id="cfi-meta">분석 완료</div></div>
+              <div class="cfi-status" style="background:rgba(62,207,160,.1);color:#3ECFA0;border:1px solid rgba(62,207,160,.2)" id="cfi-status">✅ 분석 완료</div>
+              <button class="btn-secondary" style="margin-left:8px;font-size:9px;padding:4px 8px" onclick="resetLegal()">새 계약서</button>
+            </div>
+            <div class="risk-summary" id="risk-summary">
+              <div class="risk-card high"><div class="risk-cnt" id="risk-cnt-high">0</div><div class="risk-label">⚠ 고위험</div></div>
+              <div class="risk-card mid"><div class="risk-cnt" id="risk-cnt-mid">0</div><div class="risk-label">⚡ 중위험</div></div>
+              <div class="risk-card low"><div class="risk-cnt" id="risk-cnt-low">0</div><div class="risk-label">✅ 저위험</div></div>
+            </div>
+            <div class="risk-items-list" id="risk-items"></div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
-  \`);
-
-  // ─── STRATEGY ───
-  right.insertAdjacentHTML('beforeend',
 
 <div class="tc" id="tc-str">
     <div class="scr">
@@ -2841,21 +2900,22 @@ Specialize in business strategy, competitive analysis, new order strategy, and b
 
       <!-- ── 마일스톤 ── -->
       <div class="sdm-section" id="sdm-ms">
-        <div class="sdm-info">💡 각 마일스톤의 실제 계약금액과 달성 상태를 입력하세요. 대시보드 회계 탭에 즉시 반영됩니다.</div>
+        <div class="sdm-info">💡 RVB 프로젝트 마일스톤별 실제 달성일·금액을 입력하세요. 회계 탭 매출인식에 즉시 반영됩니다.</div>
+
+        <!-- 설계 부문 -->
         <div class="sdm-group">
-          <div class="sdm-glbl">🇦🇺 NSW BESS 마일스톤</div>
-          <div id="sdm-ms-nsw-list"></div>
-          <button class="sdm-add-ms" onclick="addMsItem('nsw')">+ 마일스톤 추가</button>
+          <div class="sdm-glbl" style="color:#5B9BD5">📐 설계 부문 <span class="sdm-glbl-badge" style="color:#5B9BD5;border-color:rgba(91,155,213,.3);background:rgba(91,155,213,.1)">인식률 합계 1.5%</span></div>
+          <div style="font-size:9px;color:#5a6080;margin-bottom:10px;font-family:'JetBrains Mono',monospace;line-height:1.6">
+            설계부문 월별매출 = 설계할당매출(계약금액×1.5%) × 당월진행률(당월사용원가/설계총예정원가)
+          </div>
+          <div id="sdm-ms-design-list"></div>
         </div>
+
+        <!-- 구매 부문 -->
         <div class="sdm-group">
-          <div class="sdm-glbl">🇦🇺 QLD PV+ESS 마일스톤</div>
-          <div id="sdm-ms-qld-list"></div>
-          <button class="sdm-add-ms" onclick="addMsItem('qld')">+ 마일스톤 추가</button>
-        </div>
-        <div class="sdm-group">
-          <div class="sdm-glbl">🇦🇺 VIC BESS 마일스톤</div>
-          <div id="sdm-ms-vic-list"></div>
-          <button class="sdm-add-ms" onclick="addMsItem('vic')">+ 마일스톤 추가</button>
+          <div class="sdm-glbl" style="color:#E0A83D">📦 구매 부문 <span class="sdm-glbl-badge" style="color:#E0A83D;border-color:rgba(224,168,61,.3);background:rgba(224,168,61,.1)">인식률 합계 98.5%</span></div>
+          <div style="font-size:9px;color:#5a6080;margin-bottom:10px;line-height:1.6">마일스톤 달성 시 해당 비율의 매출 즉시 인식 (진행률 기반)</div>
+          <div id="sdm-ms-proc-list"></div>
         </div>
       </div>
 
@@ -3001,7 +3061,7 @@ Specialize in business strategy, competitive analysis, new order strategy, and b
 // 세션 내 임시 저장소 (Worker 미연결 시 fallback)
 let secureSession = {};
 let sdmCurrentTab = 'fin';
-let msMounts = { nsw: [], qld: [], vic: [] };
+let msMounts = { design: [], proc: [] };
 
 function openSDM() {
   document.getElementById('sdm-overlay').classList.add('on');
@@ -3144,7 +3204,7 @@ async function sdmLoadFromKV() {
     if (fin) { Object.assign(secureSession, { total:fin.total, senior:fin.senior, mezz:fin.mezz, equity:fin.equity, dr:fin.dr, irr:fin.irr }); }
     if (wacc) { Object.assign(secureSession, { rf:wacc.rf, erp:wacc.erp, beta:wacc.beta, kd:wacc.kd, tax:wacc.tax, dlev:wacc.dlev }); }
     if (cf) { Object.assign(secureSession, { 'cf-rev':cf.rev, 'cf-in':cf.in, 'cf-out':cf.out, 'cf-rem':cf.rem, q1in:cf.q1in, q1out:cf.q1out, q2in:cf.q2in, q2out:cf.q2out, q3in:cf.q3in, q3out:cf.q3out, q4in:cf.q4in, q4out:cf.q4out }); }
-    if (ms) { msMounts = ms; renderMilestones(); }
+    if (ms) { msMounts = ms.design ? ms : { design: ms.nsw||[], proc: ms.qld||[] }; renderMilestones(); }
     if (contracts) {
       const e = contracts.epc || {}; const p = contracts.ppa || {}; const ca = contracts.catl || {};
       Object.assign(secureSession, { 'epc-party':e.party, 'epc-amt':e.amt, 'epc-ld':e.ld, 'epc-due':e.due, 'epc-risk':e.risk, 'ppa-party':p.party, 'ppa-rev':p.rev, 'ppa-term':p.term, 'ppa-price':p.price, 'catl-mwh':ca.mwh, 'catl-amt':ca.amt, 'catl-dep':ca.dep, 'catl-ship':ca.ship, 'catl-final':ca.final });
@@ -3157,32 +3217,80 @@ async function sdmLoadFromKV() {
 // ── 마일스톤 동적 추가
 const MS_STATUS_OPTS = ['완료', '진행중', '예정'];
 function renderMilestones() {
-  ['nsw','qld','vic'].forEach(proj => {
-    const container = document.getElementById('sdm-ms-' + proj + '-list');
+  // 설계 부문 (MS1, MS2)
+  const designDefs = [
+    { id:'ms1', nm:'MS1 · Early Supplier Stage 1-1', pct:'1.0%', type:'poc', statusOpts:['완료','진행중','예정'], defaultStatus:'완료' },
+    { id:'ms2', nm:'MS2 · Early Supplier Stage 1-2', pct:'0.5%', type:'poc', statusOpts:['완료','진행중','예정'], defaultStatus:'진행중' },
+  ];
+  // 구매 부문 (MS3~MS9)
+  const procDefs = [
+    { id:'ms3', nm:'MS3 · LNTP (Limited NTP)',        pct:'8.0%',  type:'ms', statusOpts:['달성','진행중','미달성'], defaultStatus:'진행중' },
+    { id:'ms4', nm:'MS4 · Issue NTP',                 pct:'2.5%',  type:'ms', statusOpts:['달성','진행중','미달성'], defaultStatus:'미달성' },
+    { id:'ms5', nm:'MS5 · FAT Satisfaction',          pct:'30.0%', type:'ms', statusOpts:['달성','진행중','미달성'], defaultStatus:'미달성' },
+    { id:'ms6', nm:'MS6 · Shipment to Port',          pct:'23.0%', type:'ms', statusOpts:['달성','진행중','미달성'], defaultStatus:'미달성' },
+    { id:'ms7', nm:'MS7 · Shipment to Site',          pct:'20.0%', type:'ms', statusOpts:['달성','진행중','미달성'], defaultStatus:'미달성' },
+    { id:'ms8', nm:'MS8 · Commissioning Complete',    pct:'12.0%', type:'ms', statusOpts:['달성','진행중','미달성'], defaultStatus:'미달성' },
+    { id:'ms9', nm:'MS9 · Facility Practical Compl.', pct:'3.0%',  type:'ms', statusOpts:['달성','진행중','미달성'], defaultStatus:'미달성' },
+  ];
+
+  const renderList = (container, defs, savedData) => {
     if (!container) return;
-    const items = msMounts[proj] || [];
-    container.innerHTML = items.map((m, i) => `
-      <div class="sdm-ms-item">
+    container.innerHTML = defs.map((def, i) => {
+      const saved = (savedData || []).find(m => m.id === def.id) || {};
+      const status = saved.status || def.defaultStatus;
+      const amt    = saved.amt || '';
+      const date   = saved.date || '';
+      const note   = saved.note || '';
+      const statusColor = status === '완료' || status === '달성' ? '#3ECFA0'
+                        : status === '진행중' ? '#E0A83D' : '#3a4060';
+      return \`<div class="sdm-ms-item">
         <div class="sdm-ms-hdr">
-          <span class="sdm-ms-idx">#${i+1}</span>
-          <span style="font-size:10px;color:#7a8090;font-weight:600">마일스톤 ${i+1}</span>
-          <button class="sdm-ms-del" onclick="delMsItem('${proj}',${i})">✕</button>
+          <span class="sdm-ms-idx" style="color:\${statusColor};font-weight:800">\${def.pct}</span>
+          <span style="font-size:10px;color:#fff;font-weight:600">\${def.nm}</span>
         </div>
-        <div class="sdm-row2">
-          <div class="sdm-field"><div class="sdm-lbl">명칭</div><input class="sdm-inp" value="${m.name||''}" oninput="msMounts['${proj}'][${i}].name=this.value" placeholder="예: Battery Procurement"></div>
-          <div class="sdm-field"><div class="sdm-lbl">상태</div>
-            <select class="sdm-inp" onchange="msMounts['${proj}'][${i}].status=this.value">
-              ${MS_STATUS_OPTS.map(s=>`<option value="${s}" ${m.status===s?'selected':''}>${s}</option>`).join('')}
+        <div class="sdm-row3">
+          <div class="sdm-field">
+            <div class="sdm-lbl">상태</div>
+            <select class="sdm-inp" onchange="sdmMsUpdate('\${def.id}','\${container.id}','status',this.value)" style="border-color:\${statusColor}">
+              \${def.statusOpts.map(s => \`<option value="\${s}" \${status===s?'selected':''}>\${s}</option>\`).join('')}
             </select>
           </div>
+          <div class="sdm-field">
+            <div class="sdm-lbl">금액 (A$M)</div>
+            <input class="sdm-inp sensitive" value="\${amt}" placeholder="예: +8.0" onchange="sdmMsUpdate('\${def.id}','\${container.id}','amt',this.value)">
+          </div>
+          <div class="sdm-field">
+            <div class="sdm-lbl">달성일/예정일</div>
+            <input class="sdm-inp" value="\${date}" placeholder="예: 2025.06" onchange="sdmMsUpdate('\${def.id}','\${container.id}','date',this.value)">
+          </div>
         </div>
-        <div class="sdm-row2">
-          <div class="sdm-field"><div class="sdm-lbl">금액 <span class="sdm-lbl-note">(A$M, +수입/-지출)</span></div><input class="sdm-inp sensitive" value="${m.amt||''}" oninput="msMounts['${proj}'][${i}].amt=this.value" placeholder="예: +34.9 또는 -28.8"></div>
-          <div class="sdm-field"><div class="sdm-lbl">예정 시점</div><input class="sdm-inp" value="${m.date||''}" oninput="msMounts['${proj}'][${i}].date=this.value" placeholder="예: 2025.Q4"></div>
+        <div class="sdm-field">
+          <div class="sdm-lbl">비고</div>
+          <input class="sdm-inp" value="\${note}" placeholder="지연사유, 조건 등" onchange="sdmMsUpdate('\${def.id}','\${container.id}','note',this.value)">
         </div>
-        <div class="sdm-field"><div class="sdm-lbl">설명</div><input class="sdm-inp" value="${m.desc||''}" oninput="msMounts['${proj}'][${i}].desc=this.value" placeholder="간단한 설명"></div>
-      </div>`).join('') || '<div style="font-size:10px;color:#3a4060;text-align:center;padding:12px">마일스톤 없음 — 추가 버튼을 눌러 입력하세요</div>';
-  });
+      </div>\`;
+    }).join('');
+  };
+
+  renderList(
+    document.getElementById('sdm-ms-design-list'),
+    designDefs,
+    msMounts.design
+  );
+  renderList(
+    document.getElementById('sdm-ms-proc-list'),
+    procDefs,
+    msMounts.proc
+  );
+}
+
+function sdmMsUpdate(id, containerId, field, value) {
+  const isDesign = containerId === 'sdm-ms-design-list';
+  const key = isDesign ? 'design' : 'proc';
+  if (!msMounts[key]) msMounts[key] = [];
+  let item = msMounts[key].find(m => m.id === id);
+  if (!item) { item = { id }; msMounts[key].push(item); }
+  item[field] = value;
 }
 
 function addMsItem(proj) {
