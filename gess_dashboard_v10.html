@@ -1,0 +1,2814 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GESS · Management Intelligence Platform v7</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:'Outfit',system-ui,sans-serif;background:#06090F;color:#C8C6C2;overflow:hidden}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:#06090F}
+::-webkit-scrollbar-thumb{background:#1C2340;border-radius:4px}
+#auth{position:fixed;inset:0;background:radial-gradient(ellipse at 30% 40%,#0D1535,#060A18 60%,#080D1E);display:flex;align-items:center;justify-content:center;z-index:9999}
+.auth-card{background:rgba(13,18,48,.92);border:1px solid #1C2340;border-radius:20px;padding:44px 40px;width:420px;text-align:center;backdrop-filter:blur(20px)}
+.auth-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#3ECFA0,#3D8ECC);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#06090F;margin:0 auto 14px}
+.auth-card h1{font-size:20px;font-weight:800;color:#fff;margin-bottom:3px}
+.auth-card p{font-size:11px;color:#3a4060;font-family:'JetBrains Mono',monospace;margin-bottom:18px}
+.api-info{background:#0C1128;border:1px solid #1C2340;border-radius:10px;padding:12px 14px;margin-bottom:14px;text-align:left}
+.api-label{font-size:9px;color:#3a4060;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.api-url{font-size:10px;color:#3ECFA0;font-family:'JetBrains Mono',monospace;line-height:1.5}
+.api-stat{display:flex;align-items:center;gap:6px;margin-top:7px;font-size:10px}
+.adot{width:6px;height:6px;border-radius:50%;flex-shrink:0;background:#3a4060;transition:background .3s}
+hr.sep{border:none;border-top:1px solid #1C2340;margin:14px 0}
+.auth-lbl{font-size:10px;color:#3a4060;text-align:left;margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.auth-card input{width:100%;padding:11px;border-radius:9px;border:1px solid #1C2340;background:#0C1128;color:#fff;font-size:13px;text-align:center;outline:none;margin-bottom:10px;font-family:inherit;letter-spacing:3px;transition:border-color .2s}
+.auth-card input:focus{border-color:#3ECFA0}
+.auth-btn{width:100%;padding:12px;border-radius:9px;border:none;background:linear-gradient(90deg,#3ECFA0,#3D8ECC);color:#06090F;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer}
+.auth-btn:hover{opacity:.88}
+.auth-err{color:#E05D5D;font-size:11px;margin-top:8px;display:none;font-weight:600}
+
+.app{display:none;flex-direction:column;height:100vh}
+.app.on{display:flex}
+.topbar{background:#0C1128;border-bottom:1px solid #1C2340;padding:0 14px;display:flex;align-items:center;gap:10px;height:50px;flex-shrink:0}
+.tl{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#3ECFA0,#3D8ECC);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#06090F;flex-shrink:0}
+.tt{font-size:14px;font-weight:800;color:#fff}
+.ts{font-size:9px;color:#3a4060}
+.tdiv{width:1px;height:18px;background:#1C2340;flex-shrink:0}
+.tbadge{display:flex;align-items:center;gap:4px;font-size:11px;color:#5a6080;padding:3px 9px;background:#0C1128;border-radius:16px;border:1px solid #1C2340;white-space:nowrap;flex-shrink:0}
+.tbadge strong{font-weight:700}
+.tsp{flex:1}
+.tupd{font-size:9px;color:#3a4060;font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.tref{padding:4px 11px;border-radius:16px;border:1px solid #1C2340;background:transparent;color:#3ECFA0;font-size:11px;font-family:inherit;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;transition:all .15s}
+.tref:hover{background:rgba(62,207,160,.08);border-color:#3ECFA0}
+.tref:disabled{opacity:.4;cursor:not-allowed}
+.ri{display:inline-block}
+.spinning .ri{animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tabs{display:flex;gap:3px;flex-shrink:0}
+.tab{padding:4px 12px;border-radius:16px;font-size:11px;cursor:pointer;border:1px solid #1C2340;background:transparent;color:#5a6080;font-family:inherit;font-weight:500;transition:all .15s}
+.tab.on{background:linear-gradient(90deg,rgba(62,207,160,.15),rgba(61,142,204,.15));color:#3ECFA0;border-color:#3ECFA0;font-weight:700}
+.pdot{width:5px;height:5px;border-radius:50%;background:#3ECFA0;display:inline-block;animation:pd 2s ease-in-out infinite}
+@keyframes pd{0%,100%{opacity:1}50%{opacity:.2}}
+
+.main{display:flex;flex:1;overflow:hidden}
+.left{width:292px;background:#080C1C;border-right:1px solid #111830;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
+.right{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.tc{display:none;flex-direction:column;flex:1;overflow:hidden}
+.tc.on{display:flex}
+.scr{flex:1;overflow-y:auto;padding:13px}
+.sh{padding:8px 12px 5px;font-size:9px;color:#3a4060;font-weight:700;text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid #111830;display:flex;align-items:center;justify-content:space-between}
+.sbadge{font-size:8px;padding:2px 6px;border-radius:5px;font-weight:600;text-transform:none;letter-spacing:0}
+.live{background:rgba(62,207,160,.1);color:#3ECFA0;border:1px solid rgba(62,207,160,.3)}
+.warn{background:rgba(224,168,61,.1);color:#E0A83D;border:1px solid rgba(224,168,61,.3)}
+.cc{margin:8px 10px;background:#0C1128;border:1px solid #1C2340;border-radius:11px;padding:12px;cursor:pointer;position:relative;overflow:hidden;transition:all .15s}
+.cc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c)}
+.cc:hover{border-color:#2a3060;background:#111830}
+.cc.sel{border-color:var(--c)}
+.cch{display:flex;align-items:center;gap:7px;margin-bottom:9px}
+.cci{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;background:var(--cb);flex-shrink:0}
+.ccn{font-size:12px;font-weight:700;color:#fff;line-height:1.2}
+.ccu{font-size:9px;color:#3a4060;font-family:'JetBrains Mono',monospace;margin-top:1px}
+.ccs{font-size:8px;padding:1px 5px;border-radius:3px;background:#111830;color:#3a4060;border:1px solid #1C2340;display:inline-block;margin-top:2px}
+.ccp{font-size:22px;font-weight:900;color:var(--c);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1}
+.ccpr{display:flex;align-items:flex-end;gap:7px;margin-bottom:7px}
+.chg{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px}
+.up{color:#3ECFA0;background:rgba(62,207,160,.12)}
+.dn{color:#E05D5D;background:rgba(224,93,93,.12)}
+.fl{color:#5a6080;background:#111830}
+.ccm{font-size:9px;color:#3a4060;display:flex;gap:8px;flex-wrap:wrap}
+.ccup{font-size:8px;color:#252A40;margin-top:4px;font-family:'JetBrains Mono',monospace}
+.spark{margin-top:7px;height:32px}
+.spark canvas{width:100%;height:100%}
+.smmc{margin:8px 10px;background:#0C1128;border:1px solid #1C2340;border-radius:11px;padding:12px}
+.smmttl{font-size:10px;font-weight:700;color:#fff;margin-bottom:9px;display:flex;align-items:center;gap:5px}
+.smmb{font-size:8px;padding:2px 6px;border-radius:4px;background:rgba(61,142,204,.15);color:#5B9BD5;border:1px solid rgba(61,142,204,.3)}
+.smmr{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #111830}
+.smmr:last-child{border:none;padding-bottom:0}
+.smml{font-size:10px;color:#7a8090;font-weight:500}
+.smms{font-size:8px;color:#3a4060;margin-top:1px}
+.smmv{font-size:15px;font-weight:800;color:#fff;font-family:'JetBrains Mono',monospace}
+.smmv span{font-size:9px;color:#3a4060;font-weight:400}
+.barbg{height:3px;background:#111830;border-radius:2px;margin-top:4px;width:100px;overflow:hidden}
+.barfill{height:100%;border-radius:2px;transition:width 1s}
+.smmnote{font-size:8px;color:#252A40;margin-top:7px;padding-top:7px;border-top:1px solid #111830}
+.errbar{background:rgba(224,93,93,.07);border:1px solid rgba(224,93,93,.2);border-radius:7px;padding:7px 11px;font-size:10px;color:#E05D5D;display:none;align-items:center;gap:6px;margin:7px 10px}
+.errbar.on{display:flex}
+
+.kg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.kpi{background:#0C1128;border:1px solid #1C2340;border-radius:11px;padding:14px;position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;top:-18px;right:-18px;width:64px;height:64px;border-radius:50%;background:var(--kc);opacity:.07}
+.kpil{font-size:9px;color:#3a4060;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.kpisrc{font-size:8px;color:#252A40;padding:1px 4px;background:#111830;border-radius:3px;font-weight:400;text-transform:none;letter-spacing:0}
+.kpiv{font-size:22px;font-weight:900;color:var(--kc,#fff);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1}
+.kpiu{font-size:9px;font-weight:400;color:#3a4060;margin-left:2px}
+.kpis{font-size:10px;color:#3a4060;margin-top:5px;display:flex;align-items:center;gap:4px}
+.kt{font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px}
+.kt.up{color:#3ECFA0;background:rgba(62,207,160,.1)}
+.kt.dn{color:#E05D5D;background:rgba(224,93,93,.1)}
+.hist-info{background:#0C1128;border:1px solid #1C2340;border-radius:8px;padding:8px 12px;font-size:10px;color:#3a6050;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.cbox{background:#0C1128;border:1px solid #1C2340;border-radius:11px;padding:13px;margin-bottom:12px;position:relative}
+.chdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.cttl{font-size:12px;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px}
+.cctrl{display:flex;gap:3px}
+.cbtn{padding:3px 8px;border-radius:12px;font-size:10px;cursor:pointer;border:1px solid #1C2340;background:transparent;color:#4a5070;font-family:inherit;font-weight:600;transition:all .12s}
+.cbtn.on{border-color:#3ECFA0;color:#3ECFA0;background:rgba(62,207,160,.08)}
+.cw{height:185px;position:relative}
+.cw canvas{width:100%!important;height:100%!important}
+.cov{position:absolute;inset:0;background:rgba(6,9,15,.8);display:none;align-items:center;justify-content:center;border-radius:8px;backdrop-filter:blur(4px)}
+.cov.on{display:flex}
+.spinn{width:24px;height:24px;border:2px solid #1C2340;border-top-color:#3ECFA0;border-radius:50%;animation:spin .7s linear infinite}
+.tblw{background:#0C1128;border:1px solid #1C2340;border-radius:11px;overflow:hidden;margin-bottom:12px}
+.tblh{padding:10px 13px;border-bottom:1px solid #1C2340}
+.tblttl{font-size:12px;font-weight:700;color:#fff}
+.tblsub{font-size:9px;color:#3a4060;margin-top:1px}
+table{width:100%;border-collapse:collapse}
+th{padding:7px 12px;font-size:9px;color:#3a4060;font-weight:700;text-transform:uppercase;letter-spacing:.5px;background:#06090F;border-bottom:1px solid #1C2340;text-align:left;white-space:nowrap}
+td{padding:9px 12px;font-size:11px;border-bottom:1px solid #0C1128;vertical-align:middle}
+tr:last-child td{border:none}
+tr:hover td{background:rgba(255,255,255,.01)}
+.aiwrap{flex:1;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:10px}
+.aihdr{font-size:13px;font-weight:700;color:#fff}
+.aisub{font-size:11px;color:#3a4060}
+.qps{display:flex;gap:5px;flex-wrap:wrap}
+.qp{padding:4px 10px;border-radius:12px;font-size:10px;cursor:pointer;border:1px solid #1C2340;background:#111830;color:#7a8090;font-family:inherit;font-weight:500;transition:all .12s}
+.qp:hover{color:#3ECFA0;border-color:#3ECFA0;background:rgba(62,207,160,.05)}
+.airow{display:flex;gap:7px}
+.aiinp{flex:1;padding:9px 12px;border-radius:8px;border:1px solid #1C2340;background:#111830;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:border-color .2s}
+.aiinp:focus{border-color:#3ECFA0}
+.aigo{padding:9px 15px;border-radius:8px;border:none;background:linear-gradient(90deg,#3ECFA0,#3D8ECC);color:#06090F;font-size:11px;font-weight:800;font-family:inherit;cursor:pointer;white-space:nowrap}
+.aigo:disabled{opacity:.4;cursor:not-allowed}
+.aimsgs{display:flex;flex-direction:column;gap:9px}
+.aimsg{padding:12px;border-radius:10px;font-size:12px;line-height:1.65}
+.aimsg.user{background:#111830;border:1px solid #1C2340;color:#C8C6C2;align-self:flex-end;max-width:85%;border-radius:10px 10px 2px 10px}
+.aimsg.bot{background:#0C1128;border:1px solid #1C2340;color:#C8C6C2;max-width:95%}
+.aimhd{display:flex;align-items:center;gap:5px;margin-bottom:7px;font-size:9px;font-weight:700;color:#3ECFA0;text-transform:uppercase;letter-spacing:.5px}
+.dots span{display:inline-block;width:5px;height:5px;border-radius:50%;background:#3ECFA0;animation:bo .9s infinite;margin:0 2px}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes bo{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+
+/* ── FINANCE TAB ── */
+.fin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.fin-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.fbox{background:#0C1128;border:1px solid #1C2340;border-radius:11px;padding:14px}
+.fbox-full{grid-column:1/-1}
+.ftl{font-size:11px;font-weight:700;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.ftl .fbadge{font-size:8px;padding:2px 6px;border-radius:4px;font-weight:600;background:rgba(62,207,160,.12);color:#3ECFA0;border:1px solid rgba(62,207,160,.25)}
+.rate-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #111830}
+.rate-row:last-child{border:none}
+.rate-lbl{font-size:11px;color:#7a8090}
+.rate-sub{font-size:8px;color:#3a4060;margin-top:1px}
+.rate-val{font-size:14px;font-weight:800;font-family:'JetBrains Mono',monospace}
+.rate-chg{font-size:9px;padding:2px 5px;border-radius:4px;margin-top:2px;text-align:right}
+.wacc-big{text-align:center;padding:14px 0}
+.wacc-num{font-size:40px;font-weight:900;font-family:'JetBrains Mono',monospace;color:#3ECFA0;letter-spacing:-2px;line-height:1}
+.wacc-lbl{font-size:9px;color:#3a4060;margin-top:3px;text-transform:uppercase;letter-spacing:.8px}
+.wacc-sub{font-size:10px;color:#5a6080;margin-top:6px}
+.pecking-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #111830;cursor:pointer}
+.pecking-item:last-child{border:none}
+.pecking-rank{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#06090F;flex-shrink:0}
+.pecking-info{flex:1}
+.pecking-nm{font-size:11px;color:#fff;font-weight:600}
+.pecking-desc{font-size:9px;color:#3a4060;margin-top:1px}
+.pecking-cost{font-size:13px;font-weight:800;font-family:'JetBrains Mono',monospace}
+.debt-bar{height:16px;background:#111830;border-radius:4px;overflow:hidden;position:relative;margin:6px 0 2px}
+.debt-fill{height:100%;border-radius:4px;transition:width .8s ease;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#06090F}
+.debt-labels{display:flex;justify-content:space-between;font-size:9px;color:#3a4060}
+.cap-item{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid #0a0f22}
+.cap-item:last-child{border:none}
+.cap-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.cap-nm{font-size:10px;color:#7a8090;flex:1}
+.cap-val{font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;color:#fff}
+.cap-pct{font-size:9px;color:#3a4060;width:36px;text-align:right}
+.fin-note{font-size:9px;color:#252A40;padding:7px 10px;background:#06090F;border-radius:6px;margin-top:8px;border:1px solid #111830}
+.scenario-tabs{display:flex;gap:3px;margin-bottom:10px}
+.stab{padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;border:1px solid #1C2340;background:transparent;color:#4a5070;font-family:inherit;font-weight:600;transition:all .12s}
+.stab.on{border-color:#3ECFA0;color:#3ECFA0;background:rgba(62,207,160,.08)}
+.irr-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid #0a0f22}
+.irr-row:last-child{border:none}
+.irr-case{font-size:10px;color:#7a8090;width:80px}
+.irr-bar-wrap{flex:1;margin:0 8px}
+.irr-bar{height:8px;border-radius:4px;transition:width .8s}
+.irr-val{font-size:11px;font-weight:800;font-family:'JetBrains Mono',monospace;width:48px;text-align:right}
+
+/* ── ACCOUNTING TAB ── */
+.acc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.milestone-track{position:relative;padding:0 0 0 22px}
+.milestone-track::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(#3ECFA0,#1C2340)}
+.ms-item{position:relative;margin-bottom:14px;cursor:pointer}
+.ms-item:last-child{margin-bottom:0}
+.ms-dot{position:absolute;left:-18px;top:3px;width:12px;height:12px;border-radius:50%;border:2px solid;flex-shrink:0}
+.ms-done .ms-dot{background:#3ECFA0;border-color:#3ECFA0}
+.ms-progress .ms-dot{background:#E0A83D;border-color:#E0A83D;animation:pdot 1.5s ease-in-out infinite}
+@keyframes pdot{0%,100%{box-shadow:0 0 0 0 rgba(224,168,61,.4)}50%{box-shadow:0 0 0 5px rgba(224,168,61,0)}}
+.ms-future .ms-dot{background:#1C2340;border-color:#2a3060}
+.ms-hdr{display:flex;align-items:center;gap:5px;margin-bottom:2px}
+.ms-nm{font-size:11px;font-weight:700;color:#fff}
+.ms-tag{font-size:8px;padding:1px 5px;border-radius:3px;font-weight:600}
+.ms-done .ms-tag{background:rgba(62,207,160,.12);color:#3ECFA0;border:1px solid rgba(62,207,160,.25)}
+.ms-progress .ms-tag{background:rgba(224,168,61,.12);color:#E0A83D;border:1px solid rgba(224,168,61,.25)}
+.ms-future .ms-tag{background:#111830;color:#3a4060;border:1px solid #1C2340}
+.ms-desc{font-size:10px;color:#5a6080;line-height:1.5}
+.ms-amt{font-size:13px;font-weight:800;font-family:'JetBrains Mono',monospace;margin-top:3px}
+.ms-done .ms-amt{color:#3ECFA0}
+.ms-progress .ms-amt{color:#E0A83D}
+.ms-future .ms-amt{color:#3a4060}
+.cashflow-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.cf-card{background:#0C1128;border:1px solid #1C2340;border-radius:9px;padding:11px;position:relative;overflow:hidden}
+.cf-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--cc)}
+.cf-lbl{font-size:8px;color:#3a4060;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.cf-val{font-size:19px;font-weight:900;font-family:'JetBrains Mono',monospace;color:var(--cc);letter-spacing:-1px;line-height:1}
+.cf-sub{font-size:9px;color:#3a4060;margin-top:3px}
+.recog-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #111830}
+.recog-row:last-child{border:none}
+.recog-icon{font-size:14px;width:22px;text-align:center;flex-shrink:0}
+.recog-info{flex:1}
+.recog-nm{font-size:11px;font-weight:700;color:#fff}
+.recog-desc{font-size:9px;color:#3a4060;margin-top:1px}
+.recog-pct{font-size:13px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#3ECFA0}
+.recog-bar{width:60px;background:#111830;height:4px;border-radius:2px;margin-top:3px}
+.recog-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#3ECFA0,#3D8ECC);transition:width .8s}
+.proj-sel{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
+.psbtn{padding:3px 9px;border-radius:8px;font-size:10px;cursor:pointer;border:1px solid #1C2340;background:transparent;color:#4a5070;font-family:inherit;font-weight:600;transition:all .12s}
+.psbtn.on{border-color:#5B9BD5;color:#5B9BD5;background:rgba(91,155,213,.08)}
+.quarter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.qtr-card{background:#111830;border-radius:8px;padding:9px;border:1px solid #1C2340}
+.qtr-nm{font-size:9px;color:#3a4060;font-weight:700;text-transform:uppercase;margin-bottom:6px}
+.qtr-in{font-size:13px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#3ECFA0}
+.qtr-out{font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;color:#E05D5D;margin-top:2px}
+.qtr-net{font-size:9px;font-weight:700;margin-top:4px;padding:2px 5px;border-radius:3px;display:inline-block}
+
+/* ── LEGAL TAB ── */
+.legal-upload{border:2px dashed #1C2340;border-radius:12px;padding:28px;text-align:center;cursor:pointer;transition:all .2s;position:relative;margin-bottom:12px}
+.legal-upload:hover,.legal-upload.drag{border-color:#3ECFA0;background:rgba(62,207,160,.03)}
+.legal-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:32px;margin-bottom:8px}
+.upload-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px}
+.upload-sub{font-size:10px;color:#3a4060}
+.risk-panel{display:none}
+.risk-panel.on{display:block}
+.risk-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.risk-card{border-radius:9px;padding:11px;border:1px solid}
+.risk-card.high{background:rgba(224,93,93,.07);border-color:rgba(224,93,93,.25)}
+.risk-card.mid{background:rgba(224,168,61,.07);border-color:rgba(224,168,61,.25)}
+.risk-card.low{background:rgba(62,207,160,.07);border-color:rgba(62,207,160,.25)}
+.risk-cnt{font-size:32px;font-weight:900;font-family:'JetBrains Mono',monospace;line-height:1}
+.risk-card.high .risk-cnt{color:#E05D5D}
+.risk-card.mid .risk-cnt{color:#E0A83D}
+.risk-card.low .risk-cnt{color:#3ECFA0}
+.risk-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+.risk-card.high .risk-label{color:#E05D5D}
+.risk-card.mid .risk-label{color:#E0A83D}
+.risk-card.low .risk-label{color:#3ECFA0}
+.risk-items-list{margin-bottom:12px}
+.risk-item{background:#0C1128;border:1px solid #1C2340;border-radius:10px;padding:12px;margin-bottom:8px;border-left:3px solid var(--rc)}
+.risk-item.high{--rc:#E05D5D}
+.risk-item.mid{--rc:#E0A83D}
+.risk-item.low{--rc:#3ECFA0}
+.risk-item-hdr{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.risk-badge{font-size:8px;padding:2px 6px;border-radius:3px;font-weight:700;flex-shrink:0}
+.risk-item.high .risk-badge{background:rgba(224,93,93,.15);color:#E05D5D;border:1px solid rgba(224,93,93,.3)}
+.risk-item.mid .risk-badge{background:rgba(224,168,61,.15);color:#E0A83D;border:1px solid rgba(224,168,61,.3)}
+.risk-item.low .risk-badge{background:rgba(62,207,160,.15);color:#3ECFA0;border:1px solid rgba(62,207,160,.3)}
+.risk-item-title{font-size:11px;font-weight:700;color:#fff}
+.risk-item-desc{font-size:10px;color:#7a8090;line-height:1.55;margin-bottom:7px}
+.risk-scenario{background:#06090F;border-radius:7px;padding:9px;border:1px solid #111830}
+.risk-scenario-ttl{font-size:9px;font-weight:700;color:#5B9BD5;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.risk-scenario-txt{font-size:10px;color:#5a6080;line-height:1.55}
+.contract-file-info{background:#0C1128;border:1px solid #1C2340;border-radius:9px;padding:10px 12px;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.cfi-icon{font-size:20px}
+.cfi-nm{font-size:11px;font-weight:700;color:#fff}
+.cfi-meta{font-size:9px;color:#3a4060;margin-top:1px}
+.cfi-status{margin-left:auto;font-size:9px;padding:3px 8px;border-radius:12px;font-weight:700}
+.legal-loading{text-align:center;padding:28px;display:none}
+.legal-loading.on{display:block}
+.legal-spinner{width:32px;height:32px;border:2px solid #1C2340;border-top-color:#3ECFA0;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
+.legal-loading-txt{font-size:12px;color:#5a6080}
+.legal-loading-sub{font-size:10px;color:#3a4060;margin-top:4px}
+.demo-contracts{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.demo-btn{padding:4px 10px;border-radius:8px;font-size:10px;cursor:pointer;border:1px solid #1C2340;background:#111830;color:#7a8090;font-family:inherit;font-weight:600;transition:all .12s}
+.demo-btn:hover{color:#E0A83D;border-color:#E0A83D;background:rgba(224,168,61,.05)}
+
+/* ── STRATEGY TAB ── */
+.strat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.strat-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.sbox{background:#0C1128;border:1px solid #1C2340;border-radius:11px;padding:14px}
+.sbox-full{grid-column:1/-1}
+.stl{font-size:11px;font-weight:700;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.competitor-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #111830}
+.competitor-row:last-child{border:none}
+.comp-rank{width:20px;font-size:10px;font-weight:800;color:#3a4060;text-align:center;flex-shrink:0}
+.comp-info{flex:1}
+.comp-nm{font-size:11px;font-weight:700;color:#fff}
+.comp-desc{font-size:9px;color:#3a4060;margin-top:1px}
+.comp-tags{display:flex;gap:3px;margin-top:3px;flex-wrap:wrap}
+.comp-tag{font-size:7px;padding:1px 4px;border-radius:3px;background:#111830;color:#5a6080;border:1px solid #1C2340}
+.comp-score{text-align:right}
+.comp-score-val{font-size:16px;font-weight:900;font-family:'JetBrains Mono',monospace;color:#5B9BD5}
+.comp-score-lbl{font-size:8px;color:#3a4060;margin-top:1px}
+.biz-model-card{background:linear-gradient(135deg,rgba(62,207,160,.06),rgba(61,142,204,.06));border:1px solid rgba(62,207,160,.2);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .15s}
+.biz-model-card:hover{border-color:#3ECFA0;background:rgba(62,207,160,.07)}
+.biz-model-hdr{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.biz-icon{font-size:20px}
+.biz-nm{font-size:12px;font-weight:700;color:#fff}
+.biz-type{font-size:8px;padding:2px 6px;border-radius:3px;background:rgba(91,155,213,.15);color:#5B9BD5;border:1px solid rgba(91,155,213,.25);font-weight:600}
+.biz-desc{font-size:10px;color:#7a8090;line-height:1.55;margin-bottom:7px}
+.biz-metrics{display:flex;gap:8px;flex-wrap:wrap}
+.biz-metric{font-size:9px;color:#3a4060;background:#111830;padding:3px 7px;border-radius:4px;border:1px solid #1C2340}
+.biz-metric strong{color:#5a6080}
+.strat-chatbox{display:flex;flex-direction:column;gap:8px}
+.strat-msgs{max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.strat-msg{padding:10px 12px;border-radius:9px;font-size:11px;line-height:1.6}
+.strat-msg.user{background:#111830;border:1px solid #1C2340;color:#C8C6C2;align-self:flex-end;max-width:85%;border-radius:9px 9px 2px 9px}
+.strat-msg.bot{background:#0C1128;border:1px solid #1C2340;color:#C8C6C2;max-width:95%}
+.strat-mhd{font-size:9px;font-weight:700;color:#5B9BD5;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.strat-row{display:flex;gap:6px;margin-top:8px}
+.strat-inp{flex:1;padding:8px 11px;border-radius:7px;border:1px solid #1C2340;background:#111830;color:#fff;font-size:11px;outline:none;font-family:inherit;transition:border-color .2s}
+.strat-inp:focus{border-color:#5B9BD5}
+.strat-go{padding:8px 14px;border-radius:7px;border:none;background:linear-gradient(90deg,#5B9BD5,#3ECFA0);color:#06090F;font-size:10px;font-weight:800;font-family:inherit;cursor:pointer}
+.strat-go:disabled{opacity:.4;cursor:not-allowed}
+.strat-qps{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.strat-qp{padding:3px 8px;border-radius:7px;font-size:9px;cursor:pointer;border:1px solid #1C2340;background:#111830;color:#7a8090;font-family:inherit;transition:all .12s}
+.strat-qp:hover{color:#5B9BD5;border-color:#5B9BD5}
+.price-signal{display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:1px solid #111830}
+.price-signal:last-child{border:none}
+.ps-icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.ps-info{flex:1}
+.ps-nm{font-size:10px;font-weight:700;color:#fff}
+.ps-signal{font-size:9px;margin-top:1px}
+.ps-val{font-size:13px;font-weight:800;font-family:'JetBrains Mono',monospace}
+
+
+
+/* ── TEAM PASSWORD GATE ── */
+#team-gate{position:fixed;inset:0;background:radial-gradient(ellipse at 30% 40%,#0D1535,#060A18 60%,#080D1E);display:flex;align-items:center;justify-content:center;z-index:9999}
+.tg-card{background:rgba(13,18,48,.92);border:1px solid #1C2340;border-radius:20px;padding:44px 40px;width:420px;text-align:center;backdrop-filter:blur(20px)}
+.tg-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#3ECFA0,#3D8ECC);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#06090F;margin:0 auto 14px}
+.tg-title{font-size:20px;font-weight:800;color:#fff;margin-bottom:4px}
+.tg-sub{font-size:11px;color:#3a4060;font-family:'JetBrains Mono',monospace;margin-bottom:20px}
+.tg-lbl{font-size:10px;color:#3a4060;text-align:left;margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.tg-inp{width:100%;padding:11px;border-radius:9px;border:1px solid #1C2340;background:#0C1128;color:#fff;font-size:14px;text-align:center;outline:none;margin-bottom:10px;font-family:inherit;letter-spacing:3px;transition:border-color .2s}
+.tg-inp:focus{border-color:#3ECFA0}
+.tg-btn{width:100%;padding:12px;border-radius:9px;border:none;background:linear-gradient(90deg,#3ECFA0,#3D8ECC);color:#06090F;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer}
+.tg-btn:hover{opacity:.88}
+.tg-btn:disabled{opacity:.4;cursor:not-allowed}
+.tg-err{color:#E05D5D;font-size:11px;margin-top:8px;display:none;font-weight:600}
+
+/* ── SECURE DATA MANAGER ── */
+.sdm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:8000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.sdm-overlay.on{display:flex}
+.sdm-modal{background:#0C1128;border:1px solid #1C2340;border-radius:16px;width:680px;max-width:95vw;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.sdm-header{padding:16px 20px;border-bottom:1px solid #1C2340;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sdm-lock{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#E0A83D,#E76F51);display:flex;align-items:center;justify-content:center;font-size:15px}
+.sdm-title{font-size:14px;font-weight:800;color:#fff}
+.sdm-sub{font-size:10px;color:#3a4060;margin-top:1px}
+.sdm-close{margin-left:auto;width:28px;height:28px;border-radius:6px;border:1px solid #1C2340;background:transparent;color:#5a6080;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.sdm-close:hover{color:#E05D5D;border-color:#E05D5D}
+.sdm-nav{display:flex;gap:2px;padding:10px 14px;border-bottom:1px solid #1C2340;flex-shrink:0;flex-wrap:wrap}
+.sdm-ntab{padding:4px 10px;border-radius:7px;font-size:10px;cursor:pointer;border:1px solid transparent;background:transparent;color:#5a6080;font-family:inherit;font-weight:600;transition:all .12s}
+.sdm-ntab.on{background:rgba(224,168,61,.12);color:#E0A83D;border-color:rgba(224,168,61,.3)}
+.sdm-body{flex:1;overflow-y:auto;padding:16px}
+.sdm-section{display:none}
+.sdm-section.on{display:block}
+.sdm-warn{background:rgba(224,93,93,.07);border:1px solid rgba(224,93,93,.2);border-radius:8px;padding:10px 14px;font-size:10px;color:#E05D5D;display:flex;align-items:flex-start;gap:8px;margin-bottom:14px;line-height:1.6}
+.sdm-info{background:rgba(224,168,61,.07);border:1px solid rgba(224,168,61,.2);border-radius:8px;padding:10px 14px;font-size:10px;color:#E0A83D;display:flex;align-items:flex-start;gap:8px;margin-bottom:14px;line-height:1.6}
+.sdm-group{background:#06090F;border:1px solid #1C2340;border-radius:10px;padding:13px;margin-bottom:10px}
+.sdm-glbl{font-size:10px;font-weight:700;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.sdm-glbl-badge{font-size:8px;padding:2px 5px;border-radius:3px;background:rgba(62,207,160,.1);color:#3ECFA0;border:1px solid rgba(62,207,160,.2)}
+.sdm-field{margin-bottom:10px}
+.sdm-field:last-child{margin-bottom:0}
+.sdm-lbl{font-size:9px;color:#3a4060;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.sdm-lbl-note{font-size:8px;color:#252A40;font-weight:400;text-transform:none;letter-spacing:0}
+.sdm-inp{width:100%;padding:8px 10px;border-radius:7px;border:1px solid #1C2340;background:#111830;color:#fff;font-size:11px;outline:none;font-family:'JetBrains Mono',monospace;transition:border-color .2s}
+.sdm-inp:focus{border-color:#E0A83D}
+.sdm-inp.sensitive{letter-spacing:.5px}
+.sdm-textarea{width:100%;padding:8px 10px;border-radius:7px;border:1px solid #1C2340;background:#111830;color:#fff;font-size:10px;outline:none;font-family:'JetBrains Mono',monospace;transition:border-color .2s;resize:vertical;min-height:80px;line-height:1.5}
+.sdm-textarea:focus{border-color:#E0A83D}
+.sdm-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sdm-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.sdm-row4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sdm-footer{padding:12px 16px;border-top:1px solid #1C2340;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.sdm-save{padding:8px 18px;border-radius:7px;border:none;background:linear-gradient(90deg,#E0A83D,#E76F51);color:#06090F;font-size:11px;font-weight:800;font-family:inherit;cursor:pointer;transition:opacity .15s}
+.sdm-save:hover{opacity:.88}
+.sdm-save:disabled{opacity:.4;cursor:not-allowed}
+.sdm-cancel{padding:8px 14px;border-radius:7px;border:1px solid #1C2340;background:transparent;color:#5a6080;font-size:10px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s}
+.sdm-cancel:hover{color:#3ECFA0;border-color:#3ECFA0}
+.sdm-status{font-size:10px;margin-left:auto}
+.sdm-status.ok{color:#3ECFA0}
+.sdm-status.err{color:#E05D5D}
+.sdm-status.loading{color:#E0A83D}
+.sdm-ms-item{background:#111830;border-radius:8px;padding:10px;margin-bottom:8px;border:1px solid #1C2340}
+.sdm-ms-hdr{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.sdm-ms-idx{font-size:9px;color:#3a4060;font-weight:700;width:20px}
+.sdm-ms-del{margin-left:auto;width:20px;height:20px;border-radius:4px;border:1px solid #E05D5D33;background:transparent;color:#E05D5D66;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.sdm-ms-del:hover{background:rgba(224,93,93,.1);color:#E05D5D}
+.sdm-add-ms{width:100%;padding:7px;border-radius:7px;border:1px dashed #1C2340;background:transparent;color:#3a4060;font-size:10px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s;margin-top:4px}
+.sdm-add-ms:hover{border-color:#3ECFA0;color:#3ECFA0}
+.sdm-lock-notice{text-align:center;padding:24px;color:#3a4060;font-size:11px}
+.sdm-lock-notice .lock-icon{font-size:28px;margin-bottom:8px}
+.sdm-applied-badge{position:fixed;bottom:16px;right:16px;background:linear-gradient(90deg,#3ECFA0,#3D8ECC);color:#06090F;padding:8px 14px;border-radius:20px;font-size:11px;font-weight:800;z-index:9000;display:none;box-shadow:0 4px 16px rgba(62,207,160,.3)}
+
+
+/* ── CONTRACT STRUCTURE ── */
+.cs-wrap{background:#06090F;border:1px solid #1C2340;border-radius:12px;padding:16px;margin-bottom:12px}
+.cs-entity{background:#0C1128;border:1px solid #1C2340;border-radius:10px;padding:11px 13px;transition:border-color .2s}
+.cs-entity:hover{border-color:#3ECFA0}
+.cs-entity-title{font-size:10px;font-weight:800;color:#fff;margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.cs-entity-sub{font-size:9px;color:#3a4060;margin-bottom:5px}
+.cs-entity-roles{display:flex;flex-wrap:wrap;gap:3px}
+.cs-role{font-size:8px;padding:2px 5px;border-radius:3px;background:#111830;border:1px solid #1C2340;color:#5a6080}
+.cs-arrow-down{display:flex;flex-direction:column;align-items:center;padding:3px 0}
+.cs-arrow-line{width:2px;height:14px;background:linear-gradient(#3ECFA0,#5B9BD5)}
+.cs-arrow-head{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid #5B9BD5}
+.cs-contract-label{font-size:8px;font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap}
+.cs-note-box{background:rgba(62,207,160,.05);border:1px solid rgba(62,207,160,.15);border-radius:8px;padding:10px 12px;margin-top:10px;font-size:10px;color:#5a6080;line-height:1.65}
+
+/* ── MILESTONE V2 ── */
+.ms2-wrap{background:#0C1128;border:1px solid #1C2340;border-radius:11px;padding:14px;margin-bottom:10px}
+.ms2-section-hdr{font-size:10px;font-weight:700;letter-spacing:.5px;padding:5px 0 8px;border-bottom:1px solid #1C2340;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ms2-formula{background:#06090F;border:1px solid #1C2340;border-radius:7px;padding:8px 10px;margin-bottom:10px;font-size:9px;color:#5a6080;line-height:1.7;font-family:'JetBrains Mono',monospace}
+.ms2-item{position:relative;padding:9px 12px 9px 26px;margin-bottom:7px;background:#06090F;border:1px solid #1C2340;border-radius:8px;cursor:pointer;transition:border-color .2s}
+.ms2-item:hover{border-color:#3ECFA0}
+.ms2-item:last-child{margin-bottom:0}
+.ms2-item::before{content:'';position:absolute;left:11px;top:0;bottom:0;width:2px;background:var(--mc,#1C2340)}
+.ms2-dot{position:absolute;left:6px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--mc,#2a3060);border:2px solid var(--mc,#2a3060)}
+.ms2-item.done{--mc:#3ECFA0}
+.ms2-item.progress{--mc:#E0A83D}
+.ms2-item.delayed{--mc:#E05D5D}
+.ms2-item.future{--mc:#2a3060}
+.ms2-item.progress .ms2-dot{animation:pdot 1.5s ease-in-out infinite}
+.ms2-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ms2-left{flex:1}
+.ms2-nm{font-size:11px;font-weight:700;color:#fff;margin-bottom:1px}
+.ms2-sub{font-size:9px;color:#3a4060;line-height:1.4}
+.ms2-right{text-align:right;flex-shrink:0}
+.ms2-pct{font-size:11px;font-weight:800;font-family:'JetBrains Mono',monospace;padding:2px 7px;border-radius:5px}
+.ms2-item.done .ms2-pct{background:rgba(62,207,160,.12);color:#3ECFA0;border:1px solid rgba(62,207,160,.25)}
+.ms2-item.progress .ms2-pct{background:rgba(224,168,61,.12);color:#E0A83D;border:1px solid rgba(224,168,61,.25)}
+.ms2-item.delayed .ms2-pct{background:rgba(224,93,93,.12);color:#E05D5D;border:1px solid rgba(224,93,93,.25)}
+.ms2-item.future .ms2-pct{background:#111830;color:#3a4060;border:1px solid #1C2340}
+.ms2-bar{height:3px;background:#111830;border-radius:2px;margin-top:5px;overflow:hidden}
+.ms2-bar-fill{height:100%;border-radius:2px;background:var(--mc,#2a3060);transition:width 1s}
+
+/* ── PLAN vs ACTUAL TABLE ── */
+.pva-wrap{margin-bottom:12px}
+.pva-toggle{display:flex;gap:3px;margin-bottom:10px}
+.pva-tab{padding:4px 10px;border-radius:7px;font-size:10px;cursor:pointer;border:1px solid #1C2340;background:transparent;color:#5a6080;font-family:inherit;font-weight:600;transition:all .12s}
+.pva-tab.on{border-color:#5B9BD5;color:#5B9BD5;background:rgba(91,155,213,.08)}
+.pva-scroll{overflow-x:auto;border-radius:9px;border:1px solid #1C2340;background:#06090F}
+.pvt{border-collapse:collapse;min-width:820px;width:100%;font-size:10px}
+.pvt th{padding:6px 8px;background:#080C1C;color:#3a4060;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid #1C2340;white-space:nowrap;text-align:center}
+.pvt th.row-hdr{text-align:left;min-width:110px;position:sticky;left:0;background:#080C1C;z-index:2;border-right:1px solid #1C2340}
+.pvt td{padding:6px 8px;border-bottom:1px solid #111830;vertical-align:middle;text-align:center}
+.pvt td.row-lbl{font-size:10px;font-weight:700;color:#fff;position:sticky;left:0;background:#06090F;z-index:1;white-space:nowrap;text-align:left;border-right:1px solid #111830}
+.pvt td.row-lbl.sub{font-size:9px;font-weight:400;color:#5a6080;padding-left:14px}
+.pvt td.val{font-family:'JetBrains Mono',monospace;font-size:9px;color:#5a6080}
+.pvt td.val.pos{color:#3ECFA0;font-weight:700}
+.pvt td.val.neg{color:#E05D5D;font-weight:700}
+.pvt td.val.warn{color:#E0A83D;font-weight:700}
+.pvt td.cur-month{background:rgba(224,168,61,.07)!important;border-left:1px solid rgba(224,168,61,.3);border-right:1px solid rgba(224,168,61,.3)}
+.ms-chip{display:inline-block;font-size:8px;padding:2px 5px;border-radius:3px;font-weight:700;white-space:nowrap;line-height:1.3}
+.ms-chip.plan{background:rgba(91,155,213,.12);color:#5B9BD5;border:1px solid rgba(91,155,213,.25)}
+.ms-chip.actual{background:rgba(62,207,160,.12);color:#3ECFA0;border:1px solid rgba(62,207,160,.25)}
+.ms-chip.delayed{background:rgba(224,93,93,.12);color:#E05D5D;border:1px solid rgba(224,93,93,.25)}
+.ms-chip.cur{background:rgba(224,168,61,.2);color:#E0A83D;border:1px solid rgba(224,168,61,.4);animation:blink 1.2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.pva-legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;font-size:9px;color:#5a6080;align-items:center}
+
+/* ── SHARED ── */
+.tab-section-ttl{font-size:10px;font-weight:700;color:#3a4060;text-transform:uppercase;letter-spacing:.7px;margin:12px 0 8px;padding-bottom:5px;border-bottom:1px solid #111830;display:flex;align-items:center;gap:5px}
+.edit-badge{font-size:8px;padding:2px 5px;border-radius:3px;background:#111830;color:#5a6080;border:1px solid #1C2340;cursor:pointer;font-weight:600}
+.edit-badge:hover{color:#3ECFA0;border-color:#3ECFA0}
+.input-field{width:100%;padding:7px 10px;border-radius:7px;border:1px solid #1C2340;background:#111830;color:#fff;font-size:11px;outline:none;font-family:'JetBrains Mono',monospace;transition:border-color .2s}
+.input-field:focus{border-color:#3ECFA0}
+.input-lbl{font-size:9px;color:#3a4060;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.input-row{margin-bottom:8px}
+.btn-primary{padding:7px 14px;border-radius:7px;border:none;background:linear-gradient(90deg,#3ECFA0,#3D8ECC);color:#06090F;font-size:10px;font-weight:800;font-family:inherit;cursor:pointer;transition:opacity .15s}
+.btn-primary:hover{opacity:.88}
+.btn-secondary{padding:7px 14px;border-radius:7px;border:1px solid #1C2340;background:transparent;color:#5a6080;font-size:10px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s}
+.btn-secondary:hover{color:#3ECFA0;border-color:#3ECFA0}
+</style>
+</head>
+<body>
+
+<!-- TEAM PASSWORD GATE -->
+<div id="team-gate">
+  <div class="tg-card">
+    <div class="tg-logo">G</div>
+    <div class="tg-title">GESS Dashboard</div>
+    <div class="tg-sub">접근하려면 팀 공통 코드를 입력하세요</div>
+    <div class="tg-lbl">Team Access Code</div>
+    <input type="password" id="tg-pw" class="tg-inp" placeholder="••••••••" autocomplete="off">
+    <button class="tg-btn" id="tg-btn" onclick="checkTeamPw()">확인</button>
+    <div class="tg-err" id="tg-err">⚠ 팀 접근 코드가 올바르지 않습니다</div>
+  </div>
+</div>
+
+<!-- AUTH -->
+<div id="auth">
+  <div class="auth-card" style="width:440px">
+    <div class="auth-logo">G</div>
+    <h1>GESS Dashboard</h1>
+    <p>Management Intelligence · Australia BESS/PV+ESS</p>
+    <div class="api-info">
+      <div class="api-label">📡 데이터 소스 (GitHub Actions 자동 수집)</div>
+      <div class="api-url">jmk0805.github.io/gess-data/data/prices.json</div>
+      <div class="api-stat">
+        <div class="adot" id="adot"></div>
+        <span id="atxt" style="color:#3a4060;font-size:10px">연결 확인 중...</span>
+      </div>
+    </div>
+    <hr class="sep">
+
+    <!-- 탭: 로그인 / 회원가입 -->
+    <div style="display:flex;gap:0;margin-bottom:14px;border:1px solid #1C2340;border-radius:8px;overflow:hidden">
+      <button id="tab-login" onclick="authTab('login')" style="flex:1;padding:8px;border:none;background:linear-gradient(90deg,rgba(62,207,160,.15),rgba(61,142,204,.15));color:#3ECFA0;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer">로그인</button>
+      <button id="tab-register" onclick="authTab('register')" style="flex:1;padding:8px;border:none;background:transparent;color:#5a6080;font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;border-left:1px solid #1C2340">회원가입</button>
+    </div>
+
+    <!-- 로그인 폼 -->
+    <div id="form-login">
+      <div class="auth-lbl">이메일</div>
+      <input type="email" id="login-email" placeholder="name@hanwha.com" autocomplete="email" style="margin-bottom:8px;letter-spacing:0">
+      <div class="auth-lbl">비밀번호</div>
+      <input type="password" id="login-pw" placeholder="••••••••" autocomplete="current-password">
+      <button class="auth-btn" onclick="login()" style="margin-top:4px">로그인</button>
+    </div>
+
+    <!-- 회원가입 폼 -->
+    <div id="form-register" style="display:none">
+      <div class="auth-lbl">이름</div>
+      <input type="text" id="reg-name" placeholder="홍길동" autocomplete="name" style="margin-bottom:8px;letter-spacing:0">
+      <div class="auth-lbl">이메일 <span style="color:#3a4060;font-weight:400;text-transform:none">(@hanwha.com만 허용)</span></div>
+      <input type="email" id="reg-email" placeholder="name@hanwha.com" autocomplete="email" style="margin-bottom:8px;letter-spacing:0">
+      <div class="auth-lbl">비밀번호 <span style="color:#3a4060;font-weight:400;text-transform:none">(8자 이상)</span></div>
+      <input type="password" id="reg-pw" placeholder="••••••••" autocomplete="new-password">
+      <button class="auth-btn" onclick="register()" style="margin-top:4px;background:linear-gradient(90deg,#5B9BD5,#3ECFA0)">계정 등록</button>
+    </div>
+
+    <div class="auth-err" id="aerr"></div>
+    <div id="auth-ok" style="color:#3ECFA0;font-size:11px;margin-top:8px;display:none;font-weight:600"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <div class="topbar">
+    <div class="tl">G</div>
+    <div>
+      <div class="tt">GESS <span style="color:#3ECFA0;font-size:11px;font-weight:400">Management Intelligence v7</span></div>
+      <div class="ts">Finance · Accounting · Legal · Strategy</div>
+    </div>
+    <div class="tdiv"></div>
+    <div class="tbadge"><span class="pdot"></span>&nbsp;<strong id="hli" style="color:#3ECFA0">—</strong>&nbsp;USD/kg Li</div>
+    <div class="tbadge"><strong id="hal" style="color:#E0A83D">—</strong>&nbsp;USD/mt Al</div>
+    <div class="tbadge"><strong id="hcu" style="color:#E76F51">—</strong>&nbsp;USD/mt Cu</div>
+    <div class="tdiv"></div>
+    <div class="tbadge">SMM&nbsp;<strong id="hsys" style="color:#5B9BD5">—</strong>/kWh</div>
+    <div class="tsp"></div>
+    <div class="tupd" id="tupd">—</div>
+    <button class="tref" id="refbtn" onclick="load(true)"><span class="ri">⟳</span>&nbsp;새로고침</button>
+    <button class="tref" onclick="openSDM()" style="border-color:#E0A83D;color:#E0A83D;background:rgba(224,168,61,.06)" title="민감 데이터 관리 (로그인 필요)">🔐 보안 데이터</button>
+    <div class="tabs">
+      <button class="tab on" onclick="sw('ov',this)">📊 개요</button>
+      <button class="tab" onclick="sw('tr',this)">📈 추이</button>
+      <button class="tab" onclick="sw('ai',this)">🤖 AI 분석</button>
+      <button class="tab" onclick="sw('fin',this)">💰 재무</button>
+      <button class="tab" onclick="sw('acc',this)">📒 회계</button>
+      <button class="tab" onclick="sw('leg',this)">⚖️ 법률</button>
+      <button class="tab" onclick="sw('str',this)">🧭 전략</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- LEFT -->
+    <div class="left">
+      <div class="sh">원자재 현황 <span class="sbadge live" id="lbadge">● LIVE</span></div>
+      <div class="errbar" id="errbar">⚠ GitHub 연결 오류 — 재시도 해주세요</div>
+
+      <div class="cc sel" style="--c:#3ECFA0;--cb:rgba(62,207,160,.12)" onclick="selcc(this)">
+        <div class="cch"><div class="cci">⚡</div><div>
+          <div class="ccn">탄산리튬 Li₂CO₃</div>
+          <div class="ccu">USD / kg · 99.5% min</div>
+          <div class="ccs" id="li-src">—</div>
+        </div></div>
+        <div class="ccpr"><div class="ccp" id="li-p">—</div><div class="chg fl" id="li-c">—</div></div>
+        <div class="ccm" id="li-range">—</div>
+        <div class="ccup" id="li-u">—</div>
+        <div class="spark"><canvas id="sp-li"></canvas></div>
+      </div>
+
+      <div class="cc" style="--c:#E0A83D;--cb:rgba(224,168,61,.12)" onclick="selcc(this)">
+        <div class="cch"><div class="cci">🔩</div><div>
+          <div class="ccn">알루미늄 Al</div>
+          <div class="ccu">USD / mt · LME</div>
+          <div class="ccs" id="al-src">—</div>
+        </div></div>
+        <div class="ccpr"><div class="ccp" id="al-p">—</div><div class="chg fl" id="al-c">—</div></div>
+        <div class="ccm" id="al-range">—</div>
+        <div class="ccup" id="al-u">—</div>
+        <div class="spark"><canvas id="sp-al"></canvas></div>
+      </div>
+
+      <div class="cc" style="--c:#E76F51;--cb:rgba(231,111,81,.12)" onclick="selcc(this)">
+        <div class="cch"><div class="cci">🔋</div><div>
+          <div class="ccn">구리 Cu</div>
+          <div class="ccu">USD / mt · COMEX</div>
+          <div class="ccs" id="cu-src">—</div>
+        </div></div>
+        <div class="ccpr"><div class="ccp" id="cu-p">—</div><div class="chg fl" id="cu-c">—</div></div>
+        <div class="ccm" id="cu-range">—</div>
+        <div class="ccup" id="cu-u">—</div>
+        <div class="spark"><canvas id="sp-cu"></canvas></div>
+      </div>
+
+      <div class="sh" style="margin-top:4px">SMM Battery Index <span class="sbadge" style="background:rgba(61,142,204,.1);color:#5B9BD5;border:1px solid rgba(61,142,204,.3)">월간</span></div>
+      <div class="smmc">
+        <div class="smmttl">System / Cell Price <span class="smmb">per kWh</span></div>
+        <div class="smmr">
+          <div><div class="smml">🔋 System</div><div class="smms">BMS+모듈 포함</div></div>
+          <div style="text-align:right">
+            <div class="smmv">$<span id="ssys">—</span><span>/kWh</span></div>
+            <div class="barbg"><div class="barfill" style="width:65%;background:linear-gradient(90deg,#3ECFA0,#3D8ECC)"></div></div>
+          </div>
+        </div>
+        <div class="smmr">
+          <div><div class="smml">⚡ Cell</div><div class="smms">셀 단위 기준</div></div>
+          <div style="text-align:right">
+            <div class="smmv">$<span id="scell">—</span><span>/kWh</span></div>
+            <div class="barbg"><div class="barfill" style="width:35%;background:linear-gradient(90deg,#E0A83D,#E76F51)"></div></div>
+          </div>
+        </div>
+        <div class="smmnote" id="smmnote">* BNEF '25 ESS Pack: ~$70/kWh · SMM 유료구독 필요</div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+
+      <!-- OVERVIEW -->
+      <div class="tc on" id="tc-ov">
+        <div class="scr">
+          <div class="hist-info" id="hist-info">📊 데이터 로딩 중...</div>
+          <div class="kg">
+            <div class="kpi" style="--kc:#3ECFA0">
+              <div class="kpil">탄산리튬 <span class="kpisrc" id="kpi-li-src">—</span></div>
+              <div class="kpiv" id="kpi-li">—<span class="kpiu">USD/kg</span></div>
+              <div class="kpis"><span class="kt" id="kpi-li-t">—</span> 전일 대비</div>
+            </div>
+            <div class="kpi" style="--kc:#E0A83D">
+              <div class="kpil">알루미늄 <span class="kpisrc" id="kpi-al-src">—</span></div>
+              <div class="kpiv" id="kpi-al">—<span class="kpiu">USD/mt</span></div>
+              <div class="kpis"><span class="kt" id="kpi-al-t">—</span> 전일 대비</div>
+            </div>
+            <div class="kpi" style="--kc:#E76F51">
+              <div class="kpil">구리 <span class="kpisrc" id="kpi-cu-src">—</span></div>
+              <div class="kpiv" id="kpi-cu">—<span class="kpiu">USD/mt</span></div>
+              <div class="kpis"><span class="kt" id="kpi-cu-t">—</span> 전일 대비</div>
+            </div>
+          </div>
+
+          <div class="cbox">
+            <div class="chdr">
+              <div class="cttl">📈 원자재 가격 추이 <span style="font-size:9px;color:#3a4060;font-weight:400">(정규화 100 기준)</span></div>
+              <div class="cctrl">
+                <button class="cbtn on" onclick="setR('all',this)">전체</button>
+                <button class="cbtn" onclick="setR('30d',this)">30D</button>
+                <button class="cbtn" onclick="setR('7d',this)">7D</button>
+              </div>
+            </div>
+            <div class="cw"><canvas id="mc"></canvas></div>
+            <div class="cov" id="cov"><div class="spinn"></div></div>
+          </div>
+
+          <div class="tblw">
+            <div class="tblh">
+              <div class="tblttl">원자재 상세 현황</div>
+              <div class="tblsub" id="tbltime">—</div>
+            </div>
+            <table>
+              <thead><tr><th>원자재</th><th>현재 가격</th><th>전일 대비</th><th>기간 내 고점</th><th>기간 내 저점</th><th>데이터 출처</th><th>배터리 영향도</th></tr></thead>
+              <tbody id="mtbl"></tbody>
+            </table>
+          </div>
+
+          <div class="tblw">
+            <div class="tblh"><div class="tblttl">SMM Battery Index</div><div class="tblsub">배터리 시스템·셀 가격 지수 (kWh 기준)</div></div>
+            <table>
+              <thead><tr><th>구분</th><th>현재</th><th>기간 내 고점</th><th>기간 내 저점</th><th>추세</th><th>출처</th></tr></thead>
+              <tbody id="stbl"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRENDS -->
+      <div class="tc" id="tc-tr">
+        <div class="scr">
+          <div class="hist-info" id="hist-info2">📊 GitHub에 누적된 실제 수집 데이터로 차트를 그립니다. Refresh 버튼으로 최신화 가능.</div>
+          <div class="cbox"><div class="chdr"><div class="cttl">⚡ 탄산리튬 Li₂CO₃ (USD/kg)</div></div><div class="cw" style="height:155px"><canvas id="tr-li"></canvas></div></div>
+          <div class="cbox"><div class="chdr"><div class="cttl">🔩 알루미늄 Al (USD/mt)</div></div><div class="cw" style="height:155px"><canvas id="tr-al"></canvas></div></div>
+          <div class="cbox"><div class="chdr"><div class="cttl">🔋 구리 Cu (USD/mt)</div></div><div class="cw" style="height:155px"><canvas id="tr-cu"></canvas></div></div>
+          <div class="cbox"><div class="chdr"><div class="cttl">📊 SMM Battery Index (USD/kWh)</div></div><div class="cw" style="height:155px"><canvas id="tr-smm"></canvas></div></div>
+        </div>
+      </div>
+
+      <!-- AI -->
+      <div class="tc" id="tc-ai">
+        <div class="aiwrap">
+          <div><div class="aihdr">🤖 AI 원자재 시장 분석</div><div class="aisub">GitHub 실시간 수집 데이터 기반 · GESS 호주 프로젝트 관점</div></div>
+          <div class="qps">
+            <button class="qp" onclick="sendQ('현재 탄산리튬 가격 동향과 배터리 원가 영향 분석')">리튬 원가 분석</button>
+            <button class="qp" onclick="sendQ('구리·알루미늄 가격이 ESS 프로젝트 수익성에 미치는 영향')">ESS 수익성</button>
+            <button class="qp" onclick="sendQ('SMM Battery Index 하락 원인과 향후 전망')">SMM 전망</button>
+            <button class="qp" onclick="sendQ('호주 ESS 프로젝트 원자재 조달 리스크 및 헤징 전략')">헤징 전략</button>
+            <button class="qp" onclick="sendQ('2026년 하반기 배터리 원자재 가격 시나리오 분석')">하반기 시나리오</button>
+          </div>
+          <div class="airow">
+            <input class="aiinp" id="aiinp" placeholder="질문을 입력하세요..." onkeydown="if(event.key==='Enter')sendAI()">
+            <button class="aigo" id="aigo" onclick="sendAI()">분석 요청</button>
+          </div>
+          <div class="aimsgs" id="aimsgs">
+            <div class="aimsg bot">
+              <div class="aimhd">🤖 GESS AI 애널리스트 <span style="font-size:8px;opacity:.6">Llama 3.3</span></div>
+              안녕하세요! Cloudflare AI(Llama 3.3 70B)로 구동되며 무료로 운영됩니다.<br>GitHub Actions 실시간 데이터를 바탕으로 분석합니다. Refresh 후 질문해 주세요.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /right -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══════════════════════ FINANCE TAB ══════════════════════ -->
+<script>
+// Inject finance/accounting/legal/strategy tabs into .right after AI tab
+document.addEventListener('DOMContentLoaded', () => {
+  const right = document.querySelector('.right');
+
+  // ─── FINANCE ───
+  right.insertAdjacentHTML('beforeend', `
+  <div class="tc" id="tc-fin">
+    <div class="scr">
+      <div class="tab-section-ttl">💰 자본 조달 구조 (Capital Structure) <span class="edit-badge" onclick="openCapEdit()">편집</span></div>
+      <div class="fin-grid3" id="cap-kpis">
+        <div class="fbox" style="text-align:center">
+          <div class="ftl" style="justify-content:center">Debt Ratio</div>
+          <div class="wacc-num" style="font-size:32px;color:#5B9BD5" id="fin-dr">65%</div>
+          <div class="wacc-lbl">타인자본 비중</div>
+          <div class="wacc-sub" id="fin-dr-sub">A$267M Debt</div>
+        </div>
+        <div class="fbox" style="text-align:center">
+          <div class="ftl" style="justify-content:center">WACC</div>
+          <div class="wacc-num" id="fin-wacc">7.2%</div>
+          <div class="wacc-lbl">Weighted Avg Cost of Capital</div>
+          <div class="wacc-sub" id="fin-wacc-sub">Project Finance 기준</div>
+        </div>
+        <div class="fbox" style="text-align:center">
+          <div class="ftl" style="justify-content:center">Equity IRR</div>
+          <div class="wacc-num" style="font-size:32px;color:#E0A83D" id="fin-irr">11.4%</div>
+          <div class="wacc-lbl">Base Case 기준</div>
+          <div class="wacc-sub" id="fin-irr-sub">Hurdle Rate: 10%</div>
+        </div>
+      </div>
+
+      <div class="fin-grid">
+        <div class="fbox">
+          <div class="ftl">📊 자본 구조 (D/E Mix) <span class="fbadge">편집가능</span></div>
+          <div class="debt-bar"><div class="debt-fill" id="debt-bar-fill" style="width:65%;background:linear-gradient(90deg,#5B9BD5,#3D8ECC)">부채 65%</div></div>
+          <div class="debt-labels"><span>Debt</span><span id="debt-lbl">65% / A$267M</span><span>Equity</span></div>
+          <div style="margin-top:12px">
+            <div class="cap-item"><div class="cap-dot" style="background:#5B9BD5"></div><div class="cap-nm">선순위 대출 (Senior Loan)</div><div class="cap-val" id="cap-senior">A$189M</div><div class="cap-pct">46%</div></div>
+            <div class="cap-item"><div class="cap-dot" style="background:#3D8ECC"></div><div class="cap-nm">메자닌 (Mezzanine)</div><div class="cap-val" id="cap-mezz">A$78M</div><div class="cap-pct">19%</div></div>
+            <div class="cap-item"><div class="cap-dot" style="background:#3ECFA0"></div><div class="cap-nm">자기자본 (Equity)</div><div class="cap-val" id="cap-eq">A$143M</div><div class="cap-pct">35%</div></div>
+            <div class="cap-item"><div class="cap-dot" style="background:#E0A83D"></div><div class="cap-nm">총 프로젝트 규모</div><div class="cap-val" id="cap-total">A$410M</div><div class="cap-pct">100%</div></div>
+          </div>
+          <div class="fin-note">* 뉴사우스웨일스(NSW) · 퀸즐랜드(QLD) · 빅토리아(VIC) 3개주 포트폴리오 기준</div>
+        </div>
+        <div class="fbox">
+          <div class="ftl">🪜 Pecking Order — 조달 우선순위</div>
+          <div id="pecking-list">
+            <div class="pecking-item"><div class="pecking-rank" style="background:#3ECFA0">1</div><div class="pecking-info"><div class="pecking-nm">프로젝트 파이낸싱 (PF)</div><div class="pecking-desc">자산 담보 · 역내 은행 신디케이션</div></div><div class="pecking-cost" style="color:#3ECFA0">4.8%</div></div>
+            <div class="pecking-item"><div class="pecking-rank" style="background:#5B9BD5">2</div><div class="pecking-info"><div class="pecking-nm">그린본드 (Green Bond)</div><div class="pecking-desc">EU 택소노미 적격 · ESG 프리미엄</div></div><div class="pecking-cost" style="color:#5B9BD5">5.6%</div></div>
+            <div class="pecking-item"><div class="pecking-rank" style="background:#E0A83D">3</div><div class="pecking-info"><div class="pecking-nm">메자닌 / 준자본</div><div class="pecking-desc">PIK 옵션 포함 · 후순위</div></div><div class="pecking-cost" style="color:#E0A83D">8.2%</div></div>
+            <div class="pecking-item"><div class="pecking-rank" style="background:#E76F51">4</div><div class="pecking-info"><div class="pecking-nm">자기자본 (Equity)</div><div class="pecking-desc">GP/LP 구조 · Hurdle 10%</div></div><div class="pecking-cost" style="color:#E76F51">12.5%</div></div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="tab-section-ttl">🏗️ RVB 프로젝트 계약 구조 (Contract Structure)</div>
+      <div class="cs-wrap">
+        <div style="font-size:11px;font-weight:700;color:#fff;margin-bottom:14px;display:flex;align-items:center;gap:6px">
+          🔗 ARK · HEAU · HEC · CATL/SMA — 다층 계약 구조도
+          <span style="font-size:9px;color:#3a4060;font-weight:400">BESS SI Package · 275MW / 2.2GWh</span>
+        </div>
+
+        <!-- ARK -->
+        <div style="display:flex;justify-content:center">
+          <div class="cs-entity" style="max-width:340px;width:100%;border-color:#5B9BD5;background:rgba(91,155,213,.04)">
+            <div class="cs-entity-title">🏢 ARK Energy <span style="font-size:8px;padding:2px 5px;border-radius:3px;background:rgba(91,155,213,.15);color:#5B9BD5;border:1px solid rgba(91,155,213,.3)">Project Owner</span></div>
+            <div class="cs-entity-sub">Solar PV 500MW · BOP+Construction · O&M</div>
+            <div class="cs-entity-roles">
+              <span class="cs-role">발주처 (Principal)</span><span class="cs-role">프로젝트 소유자</span><span class="cs-role">호주 현지</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Arrow SSA -->
+        <div class="cs-arrow-down">
+          <div class="cs-arrow-line" style="background:linear-gradient(#5B9BD5,#3ECFA0)"></div>
+          <div style="display:flex;align-items:center;gap:5px;margin:1px 0">
+            <span class="cs-contract-label" style="background:rgba(62,207,160,.12);color:#3ECFA0;border:1px solid rgba(62,207,160,.3)">📄 SSA (Supply &amp; Services Agreement)</span>
+          </div>
+          <div style="font-size:8px;color:#3a4060;margin:1px 0">BESS SI Package 공급 · ARK ↔ HEAU</div>
+          <div class="cs-arrow-line" style="background:linear-gradient(#3ECFA0,#E0A83D)"></div>
+          <div class="cs-arrow-head" style="border-top-color:#E0A83D"></div>
+        </div>
+
+        <!-- HEAU -->
+        <div style="display:flex;justify-content:center">
+          <div class="cs-entity" style="max-width:340px;width:100%;border-color:#E0A83D;background:rgba(224,168,61,.04)">
+            <div class="cs-entity-title">🇦🇺 HEAU <span style="font-size:8px;padding:2px 5px;border-radius:3px;background:rgba(224,168,61,.15);color:#E0A83D;border:1px solid rgba(224,168,61,.3)">호주 현지법인</span></div>
+            <div class="cs-entity-sub">Hanwha Energy Australia · Local Entity 역할 · 판관비 처리</div>
+            <div class="cs-entity-roles">
+              <span class="cs-role" style="color:#E0A83D;border-color:rgba(224,168,61,.3)">Grid 지원 용역</span>
+              <span class="cs-role" style="color:#E0A83D;border-color:rgba(224,168,61,.3)">보험</span>
+              <span class="cs-role" style="color:#E0A83D;border-color:rgba(224,168,61,.3)">운송</span>
+              <span class="cs-role" style="color:#E0A83D;border-color:rgba(224,168,61,.3)">시운전 지원</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Arrow Subcontract -->
+        <div class="cs-arrow-down">
+          <div class="cs-arrow-line" style="background:linear-gradient(#E0A83D,#3ECFA0)"></div>
+          <div style="display:flex;align-items:center;gap:5px;margin:1px 0">
+            <span class="cs-contract-label" style="background:rgba(224,168,61,.12);color:#E0A83D;border:1px solid rgba(224,168,61,.3)">📋 Subcontract Agreement (내부 하도급)</span>
+          </div>
+          <div style="font-size:8px;color:#3a4060;margin:1px 0">HEAU ↔ HEC 본사 · 호주법인 원가 = 본사 매출</div>
+          <div class="cs-arrow-line" style="background:linear-gradient(#3ECFA0,#3ECFA0)"></div>
+          <div class="cs-arrow-head" style="border-top-color:#3ECFA0"></div>
+        </div>
+
+        <!-- HEC -->
+        <div style="display:flex;justify-content:center">
+          <div class="cs-entity" style="max-width:380px;width:100%;border-color:#3ECFA0;background:rgba(62,207,160,.04)">
+            <div class="cs-entity-title">🏭 HEC 본사 <span style="font-size:8px;padding:2px 5px;border-radius:3px;background:rgba(62,207,160,.15);color:#3ECFA0;border:1px solid rgba(62,207,160,.3)">GESS Team · SI</span></div>
+            <div class="cs-entity-sub">Hanwha Energy Corporation · Battery+PCS+Control 원가 처리</div>
+            <div class="cs-entity-roles">
+              <span class="cs-role" style="color:#3ECFA0;border-color:rgba(62,207,160,.3)">System Engineering</span>
+              <span class="cs-role" style="color:#3ECFA0;border-color:rgba(62,207,160,.3)">Procurement</span>
+              <span class="cs-role" style="color:#3ECFA0;border-color:rgba(62,207,160,.3)">PCG 제공</span>
+              <span class="cs-role" style="color:#3ECFA0;border-color:rgba(62,207,160,.3)">Warranty</span>
+              <span class="cs-role">SI 부가가치 창출</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Split Arrow to CATL / SMA -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:0 50px">
+          <div class="cs-arrow-down">
+            <div class="cs-arrow-line" style="background:linear-gradient(#3ECFA0,#5B9BD5)"></div>
+            <span class="cs-contract-label" style="background:rgba(91,155,213,.1);color:#5B9BD5;border:1px solid rgba(91,155,213,.25);font-size:8px">📋 LTSA · 장기 배터리 공급</span>
+            <div class="cs-arrow-line" style="background:#5B9BD5"></div>
+            <div class="cs-arrow-head" style="border-top-color:#5B9BD5"></div>
+          </div>
+          <div class="cs-arrow-down">
+            <div class="cs-arrow-line" style="background:linear-gradient(#3ECFA0,#E76F51)"></div>
+            <span class="cs-contract-label" style="background:rgba(231,111,81,.1);color:#E76F51;border:1px solid rgba(231,111,81,.25);font-size:8px">📋 PCS Supply</span>
+            <div class="cs-arrow-line" style="background:#E76F51"></div>
+            <div class="cs-arrow-head" style="border-top-color:#E76F51"></div>
+          </div>
+        </div>
+
+        <!-- Suppliers -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="cs-entity" style="border-color:#5B9BD5;background:rgba(91,155,213,.04)">
+            <div class="cs-entity-title">🔋 CATL <span style="font-size:8px;padding:2px 5px;border-radius:3px;background:rgba(91,155,213,.15);color:#5B9BD5;border:1px solid rgba(91,155,213,.3)">Battery Supplier</span></div>
+            <div class="cs-entity-sub">LFP 314Ah · 2.2GWh · Grade A</div>
+            <div class="cs-entity-roles"><span class="cs-role">배터리 셀</span><span class="cs-role">LTSA 공급자</span><span class="cs-role">SCG 제공</span></div>
+          </div>
+          <div class="cs-entity" style="border-color:#E76F51;background:rgba(231,111,81,.04)">
+            <div class="cs-entity-title">⚡ SMA <span style="font-size:8px;padding:2px 5px;border-radius:3px;background:rgba(231,111,81,.15);color:#E76F51;border:1px solid rgba(231,111,81,.3)">PCS Supplier</span></div>
+            <div class="cs-entity-sub">Power Conversion System · 275MW</div>
+            <div class="cs-entity-roles"><span class="cs-role">PCS 제조</span><span class="cs-role">공급 계약자</span></div>
+          </div>
+        </div>
+
+        <div class="cs-note-box">
+          <strong style="color:#3ECFA0">💡 핵심 구조:</strong>
+          HEC 본사 GESS Team이 ARK社 발주 BESS SI Package(275MW/2.2GWh)를 CATL(배터리)·SMA(PCS)로부터 조달 → SI 부가가치를 얹어 공급.
+          HEAU는 호주 Local Entity 역할(Grid용역·운송·시운전). <br>
+          <strong style="color:#E0A83D">⚠ 법적 리스크:</strong>
+          ARK-HEAU SSA ↔ HEAU-HEC Subcontract의 <strong>Back-to-Back 조항 일치 여부</strong>,
+          PCG(본사)·SCG(CATL) 보증 범위, Force Majeure 연쇄 적용, LTSA Take-or-Pay 의무 vs SSA 납기 연동 리스크.
+        </div>
+      </div>
+
+      <div class="tab-section-ttl">🌍 글로벌 금리 현황 (실시간)</div>
+      <div class="fin-grid">
+        <div class="fbox">
+          <div class="ftl">호주 / RBA 기준금리</div>
+          <div class="rate-row"><div><div class="rate-lbl">RBA 기준금리</div><div class="rate-sub">기준금리 (2025.05 이후)</div></div><div style="text-align:right"><div class="rate-val" style="color:#3ECFA0" id="r-rba">4.10%</div><div class="rate-chg dn" style="color:#3ECFA0;background:rgba(62,207,160,.1)">▼ 인하 사이클</div></div></div>
+          <div class="rate-row"><div><div class="rate-lbl">BBSW 3M (은행간 금리)</div><div class="rate-sub">호주 변동금리 기준</div></div><div style="text-align:right"><div class="rate-val" style="color:#5B9BD5" id="r-bbsw">4.22%</div><div class="rate-chg" style="color:#5a6080;background:#111830">참조금리</div></div></div>
+          <div class="rate-row"><div><div class="rate-lbl">호주 10Y 국채 (AGS)</div><div class="rate-sub">Risk-free rate 기준</div></div><div style="text-align:right"><div class="rate-val" style="color:#E0A83D" id="r-bund">4.45%</div><div class="rate-chg up" style="color:#E0A83D;background:rgba(224,168,61,.1)">▲ 상승세</div></div></div>
+          <div class="rate-row"><div><div class="rate-lbl">QLD 인프라채권</div><div class="rate-sub">GESS 주요 시장</div></div><div style="text-align:right"><div class="rate-val" style="color:#E76F51" id="r-es">4.92%</div><div class="rate-chg" style="color:#5a6080;background:#111830">스프레드 +47bp</div></div></div>
+        </div>
+        <div class="fbox">
+          <div class="ftl">시나리오별 IRR 분석</div>
+          <div class="scenario-tabs"><button class="stab on" onclick="setScenario('nsw',this)">🇦🇺 NSW</button><button class="stab" onclick="setScenario('qld',this)">🇦🇺 QLD</button><button class="stab" onclick="setScenario('vic',this)">🇦🇺 VIC</button></div>
+          <div id="irr-rows">
+            <div class="irr-row"><div class="irr-case">🐻 Bear</div><div class="irr-bar-wrap"><div class="irr-bar" style="width:52%;background:linear-gradient(90deg,#E05D5D,#E76F51)"></div></div><div class="irr-val" style="color:#E05D5D">7.8%</div></div>
+            <div class="irr-row"><div class="irr-case">📊 Base</div><div class="irr-bar-wrap"><div class="irr-bar" style="width:76%;background:linear-gradient(90deg,#E0A83D,#3ECFA0)"></div></div><div class="irr-val" style="color:#3ECFA0">11.4%</div></div>
+            <div class="irr-row"><div class="irr-case">🐂 Bull</div><div class="irr-bar-wrap"><div class="irr-bar" style="width:95%;background:linear-gradient(90deg,#3ECFA0,#5B9BD5)"></div></div><div class="irr-val" style="color:#5B9BD5">14.2%</div></div>
+            <div class="irr-row"><div class="irr-case">⚠ Stress</div><div class="irr-bar-wrap"><div class="irr-bar" style="width:28%;background:linear-gradient(90deg,#E05D5D,#E05D5D)"></div></div><div class="irr-val" style="color:#E05D5D">4.2%</div></div>
+          </div>
+          <div class="fin-note" id="irr-note">* NSW BESS 100MWh · EPC A$58M · FCAS 보조서비스 수익 기준</div>
+        </div>
+      </div>
+
+      <div class="tab-section-ttl">⚙️ WACC 수동 입력 모듈 <span class="edit-badge" onclick="toggleWaccEditor()">편집기 열기</span></div>
+      <div id="wacc-editor" style="display:none" class="fbox">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+          <div class="input-row"><div class="input-lbl">Risk-free Rate (Rf)</div><input class="input-field" id="w-rf" value="2.65" oninput="recalcWacc()"> </div>
+          <div class="input-row"><div class="input-lbl">Equity Risk Premium</div><input class="input-field" id="w-erp" value="5.5" oninput="recalcWacc()"></div>
+          <div class="input-row"><div class="input-lbl">Beta (β)</div><input class="input-field" id="w-beta" value="0.85" oninput="recalcWacc()"></div>
+          <div class="input-row"><div class="input-lbl">Cost of Debt (Kd)</div><input class="input-field" id="w-kd" value="4.8" oninput="recalcWacc()"></div>
+          <div class="input-row"><div class="input-lbl">Tax Rate</div><input class="input-field" id="w-tax" value="12.5" oninput="recalcWacc()"></div>
+          <div class="input-row"><div class="input-lbl">D/(D+E) %</div><input class="input-field" id="w-dlev" value="65" oninput="recalcWacc()"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:10px;padding-top:10px;border-top:1px solid #111830">
+          <div><div style="font-size:9px;color:#3a4060;text-transform:uppercase;letter-spacing:.5px">산출 WACC</div><div style="font-size:28px;font-weight:900;font-family:'JetBrains Mono',monospace;color:#3ECFA0" id="wacc-calc">7.2%</div></div>
+          <div style="font-size:10px;color:#5a6080;line-height:1.6" id="wacc-formula">Ke = Rf + β×ERP = 2.65 + 0.85×5.5 = 7.33%<br>Kd(after tax) = 4.8 × (1-0.125) = 4.2%<br>WACC = Ke×35% + Kd×65% = <strong style="color:#3ECFA0">7.2%</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  `);
+
+  // ─── ACCOUNTING ───
+  right.insertAdjacentHTML('beforeend', `
+  <div class="tc" id="tc-acc">
+    <div class="scr">
+      <div class="tab-section-ttl">💵 현금흐름 요약 (Project Level)</div>
+      <div class="cashflow-grid">
+        <div class="cf-card" style="--cc:#3ECFA0"><div class="cf-lbl">총 계약 수익</div><div class="cf-val" id="cf-rev">A$410M</div><div class="cf-sub">BESS+PV 포트폴리오</div></div>
+        <div class="cf-card" style="--cc:#5B9BD5"><div class="cf-lbl">인식 완료 (Cash In)</div><div class="cf-val" id="cf-in">A$74M</div><div class="cf-sub">누적 milestone 달성</div></div>
+        <div class="cf-card" style="--cc:#E05D5D"><div class="cf-lbl">집행 비용 (Cash Out)</div><div class="cf-val" id="cf-out">A$60M</div><div class="cf-sub">EPC·조달·인건비</div></div>
+        <div class="cf-card" style="--cc:#E0A83D"><div class="cf-lbl">잔여 계약 수익</div><div class="cf-val" id="cf-rem">A$336M</div><div class="cf-sub">미래 milestone</div></div>
+      </div>
+
+      <div class="acc-grid">
+        <div class="fbox">
+          <div class="ftl">📋 매출 인식 구조 (IFRS 15 — PoC)</div>
+          <div id="recog-rows">
+            <div class="recog-row"><div class="recog-icon">🏗️</div><div class="recog-info"><div class="recog-nm">설계 완료 (Design)</div><div class="recog-desc">기본설계·인허가 완료 시</div><div class="recog-bar"><div class="recog-fill" style="width:100%"></div></div></div><div><div class="recog-pct">100%</div><div style="font-size:8px;color:#3ECFA0">완료</div></div></div>
+            <div class="recog-row"><div class="recog-icon">📦</div><div class="recog-info"><div class="recog-nm">기자재 납품 (Delivery)</div><div class="recog-desc">배터리·변환장치 현장 도착</div><div class="recog-bar"><div class="recog-fill" style="width:60%"></div></div></div><div><div class="recog-pct" style="color:#E0A83D">60%</div><div style="font-size:8px;color:#E0A83D">진행</div></div></div>
+            <div class="recog-row"><div class="recog-icon">🔧</div><div class="recog-info"><div class="recog-nm">시공 (Construction)</div><div class="recog-desc">진척률 기반 PoC 인식</div><div class="recog-bar"><div class="recog-fill" style="width:35%"></div></div></div><div><div class="recog-pct" style="color:#E0A83D">35%</div><div style="font-size:8px;color:#E0A83D">진행</div></div></div>
+            <div class="recog-row"><div class="recog-icon">⚡</div><div class="recog-info"><div class="recog-nm">시운전 (Commissioning)</div><div class="recog-desc">계통 연계·성능 테스트</div><div class="recog-bar"><div class="recog-fill" style="width:0%"></div></div></div><div><div class="recog-pct" style="color:#3a4060">0%</div><div style="font-size:8px;color:#3a4060">예정</div></div></div>
+            <div class="recog-row"><div class="recog-icon">🏁</div><div class="recog-info"><div class="recog-nm">최종 인수 (PAC)</div><div class="recog-desc">발주처 최종 승인 확인서</div><div class="recog-bar"><div class="recog-fill" style="width:0%"></div></div></div><div><div class="recog-pct" style="color:#3a4060">0%</div><div style="font-size:8px;color:#3a4060">예정</div></div></div>
+          </div>
+        </div>
+        <div class="fbox">
+          <div class="ftl">📅 분기별 현금흐름 계획 <span class="fbadge">편집가능</span></div>
+          <div class="proj-sel" id="proj-sel">
+            <button class="psbtn on" onclick="setProjCF('NSW',this)">🇦🇺 NSW BESS</button>
+            <button class="psbtn" onclick="setProjCF('QLD',this)">🇦🇺 QLD PV+ESS</button>
+            <button class="psbtn" onclick="setProjCF('VIC',this)">🇦🇺 VIC BESS</button>
+          </div>
+          <div class="quarter-grid" id="qtr-grid">
+            <div class="qtr-card"><div class="qtr-nm">Q1 2025</div><div class="qtr-in">+A$13M</div><div class="qtr-out">-A$8M</div><div class="qtr-net up">+A$5M</div></div>
+            <div class="qtr-card"><div class="qtr-nm">Q2 2025</div><div class="qtr-in">+A$19.6M</div><div class="qtr-out">-A$15.5M</div><div class="qtr-net up">+A$4.1M</div></div>
+            <div class="qtr-card"><div class="qtr-nm">Q3 2025</div><div class="qtr-in">+A$10.3M</div><div class="qtr-out">-A$22.5M</div><div class="qtr-net dn" style="color:#E05D5D;background:rgba(224,93,93,.1)">-A$12.2M</div></div>
+            <div class="qtr-card"><div class="qtr-nm">Q4 2025</div><div class="qtr-in">+A$29.9M</div><div class="qtr-out">-A$13.3M</div><div class="qtr-net up">+A$16.6M</div></div>
+          </div>
+          <div class="fin-note" style="margin-top:8px">⚠ Cash Out 급증 구간(Q3) — 배터리 조달 결제 집중. 브릿지론 또는 신용한도 활용 필요.</div>
+        </div>
+      </div>
+
+      <div class="tab-section-ttl">🏁 RVB Project — Milestone 트래커 (IFRS 15 · PoC 매출인식)</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <!-- 설계 부문 -->
+        <div class="ms2-wrap">
+          <div class="ms2-section-hdr" style="color:#5B9BD5">
+            📐 설계 부문 <span style="font-size:9px;padding:2px 7px;border-radius:10px;background:rgba(91,155,213,.12);border:1px solid rgba(91,155,213,.25);color:#5B9BD5">인식률 합계 1.5%</span>
+          </div>
+          <div class="ms2-formula">
+            <span style="color:#3ECFA0">설계부문 월별매출</span> = 설계할당매출(<span style="color:#E0A83D">RVB계약금액 × 1.5%</span>) × 당월진행률(<span style="color:#5B9BD5">당월사용원가 / 설계총예정원가</span>)
+          </div>
+          <div class="ms2-item done" style="--mc:#3ECFA0">
+            <div class="ms2-dot"></div>
+            <div class="ms2-row">
+              <div class="ms2-left">
+                <div class="ms2-nm">MS1 · Early Supplier Stage 1-1</div>
+                <div class="ms2-sub">초기 공급자 참여 1단계 · 기본설계 착수 · 2025.01</div>
+                <div class="ms2-bar"><div class="ms2-bar-fill" style="width:100%"></div></div>
+              </div>
+              <div class="ms2-right">
+                <div class="ms2-pct">1.0%</div>
+                <div style="font-size:8px;color:#3ECFA0;margin-top:2px">완료</div>
+              </div>
+            </div>
+          </div>
+          <div class="ms2-item progress" style="--mc:#E0A83D">
+            <div class="ms2-dot"></div>
+            <div class="ms2-row">
+              <div class="ms2-left">
+                <div class="ms2-nm">MS2 · Early Supplier Stage 1-2</div>
+                <div class="ms2-sub">상세설계 진행 · PoC 진행률 기준 인식 · 2025.03~</div>
+                <div class="ms2-bar"><div class="ms2-bar-fill" style="width:60%"></div></div>
+              </div>
+              <div class="ms2-right">
+                <div class="ms2-pct">0.5%</div>
+                <div style="font-size:8px;color:#E0A83D;margin-top:2px">진행중</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 구매 부문 상단 -->
+        <div class="ms2-wrap">
+          <div class="ms2-section-hdr" style="color:#E0A83D">
+            📦 구매 부문 <span style="font-size:9px;padding:2px 7px;border-radius:10px;background:rgba(224,168,61,.12);border:1px solid rgba(224,168,61,.25);color:#E0A83D">인식률 합계 98.5%</span>
+          </div>
+          <div class="ms2-formula">
+            <span style="color:#3ECFA0">구매부문 매출</span> = 구매할당매출 × 발주 진행률 기준 인식 (Milestone 달성 시)
+          </div>
+          <div class="ms2-item progress" style="--mc:#E0A83D">
+            <div class="ms2-dot"></div>
+            <div class="ms2-row">
+              <div class="ms2-left">
+                <div class="ms2-nm">MS3 · Early Supplier Stage 2 (LNTP)</div>
+                <div class="ms2-sub">Limited Notice To Proceed · <span style="color:#E05D5D">계획 2월 → 실적 6월 (지연)</span></div>
+                <div class="ms2-bar"><div class="ms2-bar-fill" style="width:40%"></div></div>
+              </div>
+              <div class="ms2-right">
+                <div class="ms2-pct">8.0%</div>
+                <div style="font-size:8px;color:#E0A83D;margin-top:2px">진행중</div>
+              </div>
+            </div>
+          </div>
+          <div class="ms2-item future" style="--mc:#2a3060">
+            <div class="ms2-dot"></div>
+            <div class="ms2-row">
+              <div class="ms2-left">
+                <div class="ms2-nm">MS4 · Issue NTP</div>
+                <div class="ms2-sub">Full Notice To Proceed · 본계약 발효 · 예정</div>
+                <div class="ms2-bar"><div class="ms2-bar-fill" style="width:0%"></div></div>
+              </div>
+              <div class="ms2-right">
+                <div class="ms2-pct">2.5%</div>
+                <div style="font-size:8px;color:#3a4060;margin-top:2px">예정</div>
+              </div>
+            </div>
+          </div>
+          <div class="ms2-item future" style="--mc:#2a3060">
+            <div class="ms2-dot"></div>
+            <div class="ms2-row">
+              <div class="ms2-left">
+                <div class="ms2-nm">MS5 · FAT (공장 검수) Satisfaction</div>
+                <div class="ms2-sub">Factory Acceptance Test · <span style="color:#E05D5D">계획 10월 → 실적 12월 (지연)</span></div>
+                <div class="ms2-bar"><div class="ms2-bar-fill" style="width:0%"></div></div>
+              </div>
+              <div class="ms2-right">
+                <div class="ms2-pct">30.0%</div>
+                <div style="font-size:8px;color:#3a4060;margin-top:2px">예정</div>
+              </div>
+            </div>
+          </div>
+          <div class="ms2-item future" style="--mc:#2a3060">
+            <div class="ms2-dot"></div>
+            <div class="ms2-row">
+              <div class="ms2-left">
+                <div class="ms2-nm">MS6 · Shipment Delivered to Port</div>
+                <div class="ms2-sub">호주 항구 도착 · CIF 인도 완료</div>
+                <div class="ms2-bar"><div class="ms2-bar-fill" style="width:0%"></div></div>
+              </div>
+              <div class="ms2-right">
+                <div class="ms2-pct">23.0%</div>
+                <div style="font-size:8px;color:#3a4060;margin-top:2px">예정</div>
+              </div>
+            </div>
+          </div>
+          <div class="ms2-item future" style="--mc:#2a3060">
+            <div class="ms2-dot"></div>
+            <div class="ms2-row">
+              <div class="ms2-left">
+                <div class="ms2-nm">MS7 · Shipment Delivered to Site</div>
+                <div class="ms2-sub">현장 인도 완료 · HEAU 수령 확인</div>
+                <div class="ms2-bar"><div class="ms2-bar-fill" style="width:0%"></div></div>
+              </div>
+              <div class="ms2-right">
+                <div class="ms2-pct">20.0%</div>
+                <div style="font-size:8px;color:#3a4060;margin-top:2px">예정</div>
+              </div>
+            </div>
+          </div>
+          <div class="ms2-item future" style="--mc:#2a3060">
+            <div class="ms2-dot"></div>
+            <div class="ms2-row">
+              <div class="ms2-left">
+                <div class="ms2-nm">MS8 · Commissioning Complete</div>
+                <div class="ms2-sub">시운전 완료 · 계통 연계 · 성능 확인</div>
+                <div class="ms2-bar"><div class="ms2-bar-fill" style="width:0%"></div></div>
+              </div>
+              <div class="ms2-right">
+                <div class="ms2-pct">12.0%</div>
+                <div style="font-size:8px;color:#3a4060;margin-top:2px">예정</div>
+              </div>
+            </div>
+          </div>
+          <div class="ms2-item future" style="--mc:#2a3060">
+            <div class="ms2-dot"></div>
+            <div class="ms2-row">
+              <div class="ms2-left">
+                <div class="ms2-nm">MS9 · Facility Practical Completion</div>
+                <div class="ms2-sub">시설 준공 완료 · 최종 인수 · ARK 승인</div>
+                <div class="ms2-bar"><div class="ms2-bar-fill" style="width:0%"></div></div>
+              </div>
+              <div class="ms2-right">
+                <div class="ms2-pct">3.0%</div>
+                <div style="font-size:8px;color:#3a4060;margin-top:2px">예정</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 월별 계획/실적 표 -->
+      <div class="tab-section-ttl">📅 RVB Project — 연간 계획 vs 실적/전망 (월별)</div>
+      <div class="pva-wrap">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div class="pva-toggle">
+            <button class="pva-tab on" onclick="pvSwitch('plan',this)">📋 연간 계획</button>
+            <button class="pva-tab" onclick="pvSwitch('actual',this)">📊 실적/전망</button>
+          </div>
+          <div class="pva-legend">
+            <span class="ms-chip plan">계획 MS</span>
+            <span class="ms-chip actual">달성</span>
+            <span class="ms-chip delayed">지연</span>
+            <span class="ms-chip cur">현재 월 ●</span>
+            <span style="font-size:9px;color:#3a4060">* 수치는 예시 — 직접 수정 가능</span>
+          </div>
+        </div>
+        <div class="pva-scroll">
+          <table class="pvt" id="pva-table"><!-- JS로 렌더링 --></table>
+        </div>
+      </div>
+
+      <div class="tab-section-ttl">⚙️ 현금흐름 수동 입력 <span class="edit-badge" onclick="toggleCFEditor()">편집기 열기</span></div>
+      <div id="cf-editor" style="display:none" class="fbox">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+          <div class="input-row"><div class="input-lbl">Q1 Cash In (A$M)</div><input class="input-field" id="cf-q1-in" value="8.2" oninput="recalcCF()"></div>
+          <div class="input-row"><div class="input-lbl">Q1 Cash Out (A$M)</div><input class="input-field" id="cf-q1-out" value="5.1" oninput="recalcCF()"></div>
+          <div class="input-row"><div class="input-lbl">Q2 Cash In (A$M)</div><input class="input-field" id="cf-q2-in" value="12.4" oninput="recalcCF()"></div>
+          <div class="input-row"><div class="input-lbl">Q2 Cash Out (A$M)</div><input class="input-field" id="cf-q2-out" value="9.8" oninput="recalcCF()"></div>
+          <div class="input-row"><div class="input-lbl">Q3 Cash In (A$M)</div><input class="input-field" id="cf-q3-in" value="6.5" oninput="recalcCF()"></div>
+          <div class="input-row"><div class="input-lbl">Q3 Cash Out (A$M)</div><input class="input-field" id="cf-q3-out" value="14.2" oninput="recalcCF()"></div>
+          <div class="input-row"><div class="input-lbl">Q4 Cash In (A$M)</div><input class="input-field" id="cf-q4-in" value="18.9" oninput="recalcCF()"></div>
+          <div class="input-row"><div class="input-lbl">Q4 Cash Out (A$M)</div><input class="input-field" id="cf-q4-out" value="8.4" oninput="recalcCF()"></div>
+        </div>
+        <button class="btn-primary" style="margin-top:6px" onclick="recalcCF()">업데이트</button>
+      </div>
+    </div>
+  </div>
+  `);
+
+  // ─── LEGAL ───
+  right.insertAdjacentHTML('beforeend', `
+  <div class="tc" id="tc-leg">
+    <div class="scr">
+      <div class="tab-section-ttl">⚖️ 계약 AI 자동 분석 모듈</div>
+
+      <div id="legal-upload-area">
+        <div class="legal-upload" id="upload-drop" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+          <input type="file" accept=".pdf,.txt,.docx" onchange="handleFileUpload(event)" id="file-input">
+          <div class="upload-icon">📄</div>
+          <div class="upload-title">계약서 PDF 업로드</div>
+          <div class="upload-sub">클릭하거나 파일을 드래그하여 업로드 · PDF · DOCX · TXT 지원</div>
+        </div>
+        <div class="tab-section-ttl" style="margin-top:4px">⚡ 데모 계약 시나리오 (클릭하여 즉시 분석)</div>
+        <div class="demo-contracts">
+          <button class="demo-btn" onclick="demoAnalyze('epc')">🏗️ EPC 계약 (NSW)</button>
+          <button class="demo-btn" onclick="demoAnalyze('ppa')">⚡ PPA 계약 (QLD)</button>
+          <button class="demo-btn" onclick="demoAnalyze('supply')">📦 배터리 공급계약 (CATL)</button>
+          <button class="demo-btn" onclick="demoAnalyze('grid')">🔌 계통연계 계약 (AusGrid)</button>
+        </div>
+      </div>
+
+      <div class="legal-loading" id="legal-loading">
+        <div class="legal-spinner"></div>
+        <div class="legal-loading-txt" id="legal-loading-txt">AI가 계약서를 분석 중입니다...</div>
+        <div class="legal-loading-sub">비판적 사고 기반 리스크 탐지 · 시나리오 생성 중</div>
+      </div>
+
+      <div class="risk-panel" id="risk-panel">
+        <div class="contract-file-info" id="contract-file-info">
+          <div class="cfi-icon">📄</div>
+          <div><div class="cfi-nm" id="cfi-nm">계약서명</div><div class="cfi-meta" id="cfi-meta">분석 완료</div></div>
+          <div class="cfi-status" style="background:rgba(62,207,160,.1);color:#3ECFA0;border:1px solid rgba(62,207,160,.2)" id="cfi-status">✅ 분석 완료</div>
+          <button class="btn-secondary" style="margin-left:8px;font-size:9px;padding:4px 8px" onclick="resetLegal()">새 계약서</button>
+        </div>
+
+        <div class="risk-summary" id="risk-summary">
+          <div class="risk-card high"><div class="risk-cnt" id="risk-cnt-high">0</div><div class="risk-label">⚠ 고위험</div></div>
+          <div class="risk-card mid"><div class="risk-cnt" id="risk-cnt-mid">0</div><div class="risk-label">⚡ 중위험</div></div>
+          <div class="risk-card low"><div class="risk-cnt" id="risk-cnt-low">0</div><div class="risk-label">✅ 저위험</div></div>
+        </div>
+
+        <div class="risk-items-list" id="risk-items"></div>
+      </div>
+    </div>
+  </div>
+  `);
+
+  // ─── STRATEGY ───
+  right.insertAdjacentHTML('beforeend', `
+  <div class="tc" id="tc-str">
+    <div class="scr">
+      <div class="tab-section-ttl">📡 원자재 가격 전략 시그널</div>
+      <div class="strat-grid">
+        <div class="sbox">
+          <div class="stl">🔍 구매 타이밍 시그널</div>
+          <div id="price-signals">
+            <div class="price-signal"><div class="ps-icon" style="background:rgba(62,207,160,.15)">⚡</div><div class="ps-info"><div class="ps-nm">탄산리튬 Li₂CO₃</div><div class="ps-signal" style="color:#3ECFA0">▼ 매수 구간 — 52주 저점 근처</div></div><div class="ps-val" style="color:#3ECFA0" id="sig-li">—</div></div>
+            <div class="price-signal"><div class="ps-icon" style="background:rgba(224,168,61,.15)">🔩</div><div class="ps-info"><div class="ps-nm">알루미늄 Al</div><div class="ps-signal" style="color:#E0A83D">⚡ 중립 — 관세 불확실성</div></div><div class="ps-val" style="color:#E0A83D" id="sig-al">—</div></div>
+            <div class="price-signal"><div class="ps-icon" style="background:rgba(231,111,81,.15)">🔋</div><div class="ps-info"><div class="ps-nm">구리 Cu</div><div class="ps-signal" style="color:#E76F51">▲ 주의 — 고점 구간 헤징 필요</div></div><div class="ps-val" style="color:#E76F51" id="sig-cu">—</div></div>
+          </div>
+        </div>
+        <div class="sbox">
+          <div class="stl">📊 헤징 전략 권고</div>
+          <div style="font-size:10px;color:#7a8090;line-height:1.65">
+            <div style="margin-bottom:8px"><strong style="color:#3ECFA0">리튬</strong>: 현재 저점 구간. OTC 선물 또는 장기 공급계약(3Y) 체결 적기. 전체 소요량의 <strong>70% Lock-in</strong> 권고.</div>
+            <div style="margin-bottom:8px"><strong style="color:#E0A83D">알루미늄</strong>: 미·EU 관세 협상 변수 상존. <strong>50% 헤징</strong> + 가격 변동 clause 계약 삽입.</div>
+            <div><strong style="color:#E76F51">구리</strong>: LME 선물 <strong>단기 Put Option</strong> 매입. 호주 프로젝트 납기(2026.Q2) 기준 6개월물 권고.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-section-ttl">🏆 경쟁사 동향 분석</div>
+      <div class="sbox">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <div class="stl">호주 BESS 주요 경쟁사</div>
+            <div id="competitor-list">
+              <div class="competitor-row"><div class="comp-rank">1</div><div class="comp-info"><div class="comp-nm">Fluence (Siemens·AES JV)</div><div class="comp-desc">글로벌 1위 · 호주 점유율 ~22%</div><div class="comp-tags"><span class="comp-tag">Gridstack</span><span class="comp-tag">AI Bidding</span><span class="comp-tag">FCAS/LRET</span></div></div><div class="comp-score"><div class="comp-score-val">9.1</div><div class="comp-score-lbl">경쟁위협도</div></div></div>
+              <div class="competitor-row"><div class="comp-rank">2</div><div class="comp-info"><div class="comp-nm">Tesla Energy</div><div class="comp-desc">미국 · 호주 레퍼런스 다수</div><div class="comp-tags"><span class="comp-tag">Megapack</span><span class="comp-tag">Grid-Scale</span></div></div><div class="comp-score"><div class="comp-score-val">8.4</div><div class="comp-score-lbl">경쟁위협도</div></div></div>
+              <div class="competitor-row"><div class="comp-rank">3</div><div class="comp-info"><div class="comp-nm">BYD Energy</div><div class="comp-desc">중국 · 저가 공세 · 호주 관세 영향</div><div class="comp-tags"><span class="comp-tag">MC Cube</span><span class="comp-tag">LFP</span></div></div><div class="comp-score"><div class="comp-score-val">7.8</div><div class="comp-score-lbl">경쟁위협도</div></div></div>
+              <div class="competitor-row"><div class="comp-rank">4</div><div class="comp-info"><div class="comp-nm">Powin Energy</div><div class="comp-desc">미국계 · 호주 확장 중</div><div class="comp-tags"><span class="comp-tag">Stack 225</span></div></div><div class="comp-score"><div class="comp-score-val">6.5</div><div class="comp-score-lbl">경쟁위협도</div></div></div>
+            </div>
+          </div>
+          <div>
+            <div class="stl">최근 동향 업데이트 <span class="fbadge" style="cursor:pointer" onclick="refreshCompetitors()">AI 분석</span></div>
+            <div id="comp-updates" style="font-size:10px;color:#7a8090;line-height:1.7">
+              <div style="padding:6px 0;border-bottom:1px solid #111830"><strong style="color:#E0A83D">Fluence</strong>: 2025.05 NSW Liddell 200MWh 수주. GESS 호주 시장과 직접 경합.</div>
+              <div style="padding:6px 0;border-bottom:1px solid #111830"><strong style="color:#5B9BD5">Tesla Energy</strong>: Origin Energy와 QLD PV+ESS JV 발표. 퀸즐랜드 북부 공동 개발.</div>
+              <div style="padding:6px 0"><strong style="color:#3ECFA0">GESS 기회</strong>: 경쟁사 대비 소규모·분산형 특화 포지셔닝. 로컬 파트너십 + 빠른 의사결정이 차별화 포인트.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-section-ttl">💡 신규 사업모델 아이디어 (법적 리스크 보완)</div>
+      <div id="biz-models">
+        <div class="biz-model-card" onclick="sendStratQ('이 사업모델을 GESS 관점에서 어떻게 구체화할 수 있을까? Asset-Light IPP 모델 관점에서')">
+          <div class="biz-model-hdr"><div class="biz-icon">🏗️</div><div><div class="biz-nm">Asset-Light IPP 모델</div><div class="biz-type">계약 리스크 분산</div></div></div>
+          <div class="biz-desc">EPC 직발주 대신 IPP(Independent Power Producer) 역할에 집중. 설비 소유는 SPV에 이전, GESS는 O&M + 수익 배분 구조. 계약 당사자 축소 → 법적 리스크 감소.</div>
+          <div class="biz-metrics"><div class="biz-metric">ROE <strong>↑18-22%</strong></div><div class="biz-metric">계약 복잡도 <strong>↓40%</strong></div><div class="biz-metric">Balance Sheet <strong>경량화</strong></div></div>
+        </div>
+        <div class="biz-model-card" onclick="sendStratQ('Battery-as-a-Service 모델을 호주 BESS 시장에서 어떻게 구현할 수 있을까? 계약 구조 포함')">
+          <div class="biz-model-hdr"><div class="biz-icon">⚡</div><div><div class="biz-nm">Battery-as-a-Service (BaaS)</div><div class="biz-type">구독형 수익 모델</div></div></div>
+          <div class="biz-desc">배터리 시스템을 판매하지 않고 용량·서비스 단위로 구독 공급. 초기 CAPEX 부담 이전, 장기 운영 수익 확보. PPA와 결합 시 시너지. IFRS 16 리스 처리 가능.</div>
+          <div class="biz-metrics"><div class="biz-metric">계약 기간 <strong>10-15Y</strong></div><div class="biz-metric">EBITDA 마진 <strong>35-45%</strong></div><div class="biz-metric">ARR 구조</div></div>
+        </div>
+        <div class="biz-model-card" onclick="sendStratQ('Virtual Power Plant 모델로 소규모 분산형 BESS를 묶어서 수익화하는 방법을 구체적으로 설명해줘')">
+          <div class="biz-model-hdr"><div class="biz-icon">🌐</div><div><div class="biz-nm">Virtual Power Plant (VPP)</div><div class="biz-type">플랫폼 수익</div></div></div>
+          <div class="biz-desc">소규모 BESS 자산들을 묶어 Aggregator 역할. FCAS 보조서비스 시장 참여. AI 입찰 자동화로 수익 최대화. 규제 의존도 낮은 시장 기반 수익.</div>
+          <div class="biz-metrics"><div class="biz-metric">보조서비스 프리미엄 <strong>+A$23/MWh</strong></div><div class="biz-metric">계약 리스크 <strong>최소</strong></div></div>
+        </div>
+      </div>
+
+      <div class="tab-section-ttl">🤖 전략 AI 고도화 Chatbot</div>
+      <div class="sbox">
+        <div class="strat-qps">
+          <button class="strat-qp" onclick="sendStratQ('경쟁사 대비 GESS의 차별화 전략은?')">경쟁 차별화</button>
+          <button class="strat-qp" onclick="sendStratQ('원자재 가격 상승 시 수주 전략 변화 방향은?')">원자재 대응</button>
+          <button class="strat-qp" onclick="sendStratQ('호주 CIS·LRET 보조금 활용 가능한 신규 수주 기회는?')">호주 보조금</button>
+          <button class="strat-qp" onclick="sendStratQ('BYD·CATL 직접 수주 위협을 어떻게 방어할 것인가?')">중국 경쟁</button>
+          <button class="strat-qp" onclick="sendStratQ('2026년 GESS 수주 목표 달성을 위한 3가지 핵심 전략은?')">2026 전략</button>
+        </div>
+        <div class="strat-msgs" id="strat-msgs">
+          <div class="strat-msg bot"><div class="strat-mhd">🧭 GESS 전략 AI <span style="font-size:8px;opacity:.6">Llama 3.3</span></div>사업모델 카드를 클릭하거나 아래에 직접 질문해주세요. GESS의 호주 BESS/PV+ESS 전략을 함께 고도화합니다.</div>
+        </div>
+        <div class="strat-row">
+          <input class="strat-inp" id="strat-inp" placeholder="전략 질문 입력..." onkeydown="if(event.key==='Enter')sendStrat()">
+          <button class="strat-go" id="strat-go" onclick="sendStrat()">전략 분석</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  `);
+
+  // Init
+  initTabs();
+});
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+// ══════════════════════════════════════════════════════
+// 설정 — 이 URL만 바꾸면 다른 저장소로 전환 가능
+// ══════════════════════════════════════════════════════
+const API = 'https://jmk0805.github.io/gess-data/data/prices.json';
+const CODE = 'gess2026'; // 로컬 fallback — Worker 연동 전까지 유지
+
+// ── Cloudflare Worker 엔드포인트 (배포 후 아래 URL 교체)
+// 예: 'https://gess-worker.yourname.workers.dev'
+const WORKER_URL = 'https://gess-worker.jmk0805.workers.dev'; // ← Worker 배포 후 여기 입력
+
+let JWT_TOKEN = sessionStorage.getItem('gess_jwt') || null;
+
+let D = null;         // GitHub에서 받아온 전체 데이터
+let MC = null;        // 메인 차트 인스턴스
+let TR = {};          // 추이 차트 인스턴스들
+let range = 'all';    // 현재 선택된 기간 필터
+let aiHist = [];      // AI 대화 히스토리
+
+// ── AUTH: 로그인 전 API 연결 상태 미리 확인
+(async () => {
+  try {
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), 8000);
+    const r = await fetch(API + '?t=' + Date.now(), { signal: ctrl.signal });
+    clearTimeout(tid);
+    const d = await r.json();
+    const dot = document.getElementById('adot');
+    const txt = document.getElementById('atxt');
+    if (d.status === 'ok') {
+      dot.style.background = '#3ECFA0';
+      txt.style.color = '#3ECFA0';
+      const t = d.updated ? new Date(d.updated).toLocaleString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—';
+      const cnt = (d.history || []).length;
+      txt.textContent = `✅ 연결 성공 · 수집 데이터 ${cnt}개 · 마지막: ${t}`;
+    }
+  } catch (e) {
+    document.getElementById('adot').style.background = '#E05D5D';
+    document.getElementById('atxt').style.color = '#E05D5D';
+    document.getElementById('atxt').textContent = '⚠ 연결 실패 — GitHub Actions 실행 여부 확인';
+  }
+})();
+
+
+// ══════════════════════════════════════════════════════════════
+// TEAM PASSWORD GATE
+// ══════════════════════════════════════════════════════════════
+async function checkTeamPw() {
+  const pw = document.getElementById('tg-pw').value.trim();
+  const btn = document.getElementById('tg-btn');
+  const err = document.getElementById('tg-err');
+  if (!pw) return;
+  btn.disabled = true; btn.textContent = '확인 중...';
+
+  if (WORKER_URL) {
+    try {
+      const r = await fetch(WORKER_URL + '/auth/team', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw })
+      });
+      const data = await r.json();
+      if (r.ok && data.ok) {
+        sessionStorage.setItem('gess_team', '1');
+        document.getElementById('team-gate').style.display = 'none';
+        btn.disabled = false; btn.textContent = '확인'; return;
+      }
+    } catch(e) { console.warn('Worker 팀 인증 실패'); }
+  }
+
+  // fallback: 로컬 체크
+  if (pw === 'Hanwha2026') {
+    sessionStorage.setItem('gess_team', '1');
+    document.getElementById('team-gate').style.display = 'none';
+  } else {
+    err.style.display = 'block';
+    setTimeout(() => err.style.display = 'none', 2500);
+  }
+  btn.disabled = false; btn.textContent = '확인';
+}
+
+document.getElementById('tg-pw').addEventListener('keydown', e => { if (e.key === 'Enter') checkTeamPw(); });
+
+// 이미 팀 인증된 세션이면 바로 통과
+if (sessionStorage.getItem('gess_team') === '1') {
+  document.getElementById('team-gate').style.display = 'none';
+}
+
+function authTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('form-login').style.display    = isLogin ? 'block' : 'none';
+  document.getElementById('form-register').style.display = isLogin ? 'none'  : 'block';
+  document.getElementById('tab-login').style.background    = isLogin ? 'linear-gradient(90deg,rgba(62,207,160,.15),rgba(61,142,204,.15))' : 'transparent';
+  document.getElementById('tab-login').style.color         = isLogin ? '#3ECFA0' : '#5a6080';
+  document.getElementById('tab-register').style.background = isLogin ? 'transparent' : 'linear-gradient(90deg,rgba(91,155,213,.15),rgba(62,207,160,.15))';
+  document.getElementById('tab-register').style.color      = isLogin ? '#5a6080' : '#5B9BD5';
+  showAuthMsg('', false);
+}
+
+function showAuthMsg(msg, isErr) {
+  const err = document.getElementById('aerr');
+  const ok  = document.getElementById('auth-ok');
+  if (isErr) { err.textContent = msg; err.style.display = msg ? 'block' : 'none'; ok.style.display = 'none'; }
+  else        { ok.textContent  = msg; ok.style.display  = msg ? 'block' : 'none'; err.style.display = 'none'; }
+}
+
+async function login() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw    = document.getElementById('login-pw').value;
+  const btn   = document.getElementById('tab-login').closest('.auth-card').querySelector('#form-login .auth-btn');
+  if (!email || !pw) { showAuthMsg('이메일과 비밀번호를 입력해주세요.', true); return; }
+  btn.disabled = true; btn.textContent = '로그인 중...';
+
+  if (WORKER_URL) {
+    try {
+      const r = await fetch(WORKER_URL + '/auth/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pw })
+      });
+      const data = await r.json();
+      if (r.ok && data.token) {
+        JWT_TOKEN = data.token;
+        sessionStorage.setItem('gess_jwt', JWT_TOKEN);
+        sessionStorage.setItem('gess_name', data.name);
+        enterDashboard(data.name);
+        btn.disabled = false; btn.textContent = '로그인'; return;
+      }
+      showAuthMsg(data.error || '로그인 실패', true);
+    } catch(e) { showAuthMsg('서버 연결 오류: ' + e.message, true); }
+  } else {
+    // Worker 미설정 fallback
+    const v = pw.toLowerCase();
+    if (v === CODE || v === 'demo') { enterDashboard('사용자'); }
+    else { showAuthMsg('비밀번호가 올바르지 않습니다.', true); }
+  }
+  btn.disabled = false; btn.textContent = '로그인';
+}
+
+async function register() {
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pw    = document.getElementById('reg-pw').value;
+  if (!name || !email || !pw) { showAuthMsg('모든 항목을 입력해주세요.', true); return; }
+  const btn = document.getElementById('form-register').querySelector('.auth-btn');
+  btn.disabled = true; btn.textContent = '등록 중...';
+
+  if (!WORKER_URL) { showAuthMsg('Worker가 연결되지 않았습니다. 관리자에게 문의하세요.', true); btn.disabled=false; btn.textContent='계정 등록'; return; }
+
+  try {
+    const r = await fetch(WORKER_URL + '/auth/register', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password: pw })
+    });
+    const data = await r.json();
+    if (r.ok) {
+      showAuthMsg('✅ 가입 완료! 이제 로그인해주세요.', false);
+      setTimeout(() => authTab('login'), 1500);
+    } else { showAuthMsg(data.error || '가입 실패', true); }
+  } catch(e) { showAuthMsg('서버 연결 오류: ' + e.message, true); }
+  btn.disabled = false; btn.textContent = '계정 등록';
+}
+
+function enterDashboard(name) {
+  document.getElementById('auth').style.display = 'none';
+  document.getElementById('app').classList.add('on');
+  // 상단에 이름 표시
+  const nameEl = document.createElement('div');
+  nameEl.className = 'tbadge';
+  nameEl.innerHTML = '👤 <strong>' + (name || '사용자') + '</strong>';
+  document.querySelector('.tsp').after(nameEl);
+  load(false);
+}
+document.getElementById('login-pw')?.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+document.getElementById('reg-pw')?.addEventListener('keydown', e => { if (e.key === 'Enter') register(); });
+
+// ══════════════════════════════════════════════════════
+// 데이터 로드 — GitHub Pages JSON 직접 fetch
+// ══════════════════════════════════════════════════════
+async function load(manual) {
+  const btn = document.getElementById('refbtn');
+  if (manual) { btn.classList.add('spinning'); btn.disabled = true; }
+
+  try {
+    // 캐시 방지: 매 요청마다 타임스탬프 붙임
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), 10000);
+    const r = await fetch(API + '?t=' + Date.now(), { signal: ctrl.signal });
+    clearTimeout(tid);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    D = await r.json();
+
+    document.getElementById('errbar').classList.remove('on');
+    document.getElementById('lbadge').className = 'sbadge live';
+    document.getElementById('lbadge').textContent = '● LIVE';
+    render();
+  } catch (e) {
+    document.getElementById('errbar').classList.add('on');
+    document.getElementById('lbadge').className = 'sbadge warn';
+    document.getElementById('lbadge').textContent = '⚠ 오류';
+    console.error('Load failed:', e);
+  }
+
+  if (manual) { btn.classList.remove('spinning'); btn.disabled = false; }
+}
+
+// ══════════════════════════════════════════════════════
+// 렌더링 — D (GitHub JSON) 기반으로 모든 UI 업데이트
+// ══════════════════════════════════════════════════════
+function render() {
+  const now = new Date();
+  const upd = D.updated ? new Date(D.updated).toLocaleString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—';
+  const cnt = (D.history || []).length;
+
+  document.getElementById('tupd').textContent = now.toLocaleTimeString('ko-KR');
+  document.getElementById('tbltime').textContent = `GitHub 수집: ${upd} · 누적 ${cnt}개`;
+  document.getElementById('hist-info').textContent = `📊 GitHub Actions 자동 수집 데이터 ${cnt}개 누적 중 · 마지막 수집: ${upd}`;
+  document.getElementById('hist-info2').textContent = `📊 GitHub Actions 자동 수집 데이터 ${cnt}개 기반 차트 · 1시간마다 자동 갱신`;
+
+  const li = D.data.lithium_carbonate;
+  const al = D.data.aluminum;
+  const cu = D.data.copper;
+  const smm = D.data.smm_index;
+  const hist = D.history || [];
+
+  // 헤더 배지
+  document.getElementById('hli').textContent = li.price;
+  document.getElementById('hal').textContent = (+al.price).toLocaleString();
+  document.getElementById('hcu').textContent = (+cu.price).toLocaleString();
+  document.getElementById('hsys').textContent = '$' + smm.system.price;
+
+  // 히스토리에서 고점/저점 계산
+  const stats = calcStats(hist);
+
+  // 좌측 카드
+  renderCard('li', li, stats.li);
+  renderCard('al', al, stats.al);
+  renderCard('cu', cu, stats.cu);
+
+  // SMM — 원자재 연동 추정값 + 출처 명확히
+  const liP = li.price;
+  // 탄산리튬 가격 기반 셀 원가 추정 (SMM 방식 근사)
+  // 셀 원가 = 리튬 원가 기여분 + 고정비
+  // LFP 314Ah 기준: Li2CO3 약 0.6kg/kWh → 리튬 기여 = li_price * 0.6
+  const liContrib = +(liP * 0.6).toFixed(1);
+  const cellEst   = +(liContrib + 27).toFixed(1);  // 고정비 ~27$/kWh (전극/전해질/구조)
+  const sysEst    = +(cellEst * 1.82).toFixed(1);  // 시스템 = 셀 * 1.82 (BMS+모듈+PCS)
+
+  document.getElementById('ssys').textContent  = smm.system.price || sysEst;
+  document.getElementById('scell').textContent = smm.cell.price   || cellEst;
+  document.getElementById('smmnote').textContent =
+    `* BNEF '25 ESS Pack: ~$70/kWh · SMM 유료구독 필요 · 현재값은 수동 입력`;
+
+  // KPI
+  renderKPI('li', li, 'USD/kg');
+  renderKPI('al', al, 'USD/mt');
+  renderKPI('cu', cu, 'USD/mt');
+
+  // 테이블
+  buildMainTable(li, al, cu, stats);
+  buildSMMTable(smm, stats);
+
+  // 차트
+  buildMainChart();
+  buildSparks(hist, li, al, cu);
+}
+
+// 히스토리에서 고점/저점/YTD 계산
+function calcStats(hist) {
+  const mk = (arr, key) => {
+    const vals = arr.map(h => h[key]).filter(v => v != null && !isNaN(v));
+    if (!vals.length) return { h: null, l: null, first: null };
+    return { h: Math.max(...vals), l: Math.min(...vals), first: vals[0] };
+  };
+  return {
+    li:  mk(hist, 'li'),
+    al:  mk(hist, 'al'),
+    cu:  mk(hist, 'cu'),
+    sys: mk(hist, 'smm_system'),
+    cell:mk(hist, 'smm_cell')
+  };
+}
+
+function renderCard(k, data, stats) {
+  document.getElementById(k + '-p').textContent = (+data.price).toLocaleString();
+  const up = data.chg_pct > 0, zero = data.chg_pct === 0;
+  const el = document.getElementById(k + '-c');
+  el.textContent = zero ? '변동없음' : (up ? '▲ +' : '▼ ') + Math.abs(data.chg_pct) + '%';
+  el.className = 'chg ' + (zero ? 'fl' : up ? 'up' : 'dn');
+  document.getElementById(k + '-src').textContent = data.source || '—';
+
+  const rEl = document.getElementById(k + '-range');
+  if (stats && stats.h != null) {
+    rEl.innerHTML = `<span>H: <strong style="color:#5a6080">${(+stats.h).toLocaleString()}</strong></span><span>L: <strong style="color:#5a6080">${(+stats.l).toLocaleString()}</strong></span>`;
+  }
+
+  if (data.updated) {
+    const t = new Date(data.updated);
+    document.getElementById(k + '-u').textContent = '수집: ' + t.toLocaleString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+  }
+}
+
+function renderKPI(k, data, unit) {
+  document.getElementById('kpi-' + k).innerHTML = (+data.price).toLocaleString() + '<span class="kpiu">' + unit + '</span>';
+  const up = data.chg_pct > 0, zero = data.chg_pct === 0;
+  const el = document.getElementById('kpi-' + k + '-t');
+  el.textContent = zero ? '변동없음' : (up ? '▲ +' : '▼ ') + Math.abs(data.chg_pct) + '%';
+  el.className = 'kt ' + (zero ? '' : up ? 'up' : 'dn');
+  const se = document.getElementById('kpi-' + k + '-src'); if (se) se.textContent = data.source || '';
+}
+
+// ── 테이블
+function buildMainTable(li, al, cu, stats) {
+  const rows = [
+    { nm: '탄산리튬 Li₂CO₃', c: '#3ECFA0', d: li, unit: 'USD/kg', st: stats.li, imp: '매우 높음', ic: '#E05D5D' },
+    { nm: '알루미늄 Al',      c: '#E0A83D', d: al, unit: 'USD/mt', st: stats.al, imp: '중간',    ic: '#E0A83D' },
+    { nm: '구리 Cu',          c: '#E76F51', d: cu, unit: 'USD/mt', st: stats.cu, imp: '높음',   ic: '#E76F51' }
+  ];
+  document.getElementById('mtbl').innerHTML = rows.map(r => {
+    const up = r.d.chg_pct > 0, zero = r.d.chg_pct === 0;
+    const cs = zero ? 'color:#5a6080' : up ? 'color:#3ECFA0;background:rgba(62,207,160,.1)' : 'color:#E05D5D;background:rgba(224,93,93,.1)';
+    const h = r.st && r.st.h != null ? (+r.st.h).toLocaleString() : '—';
+    const l = r.st && r.st.l != null ? (+r.st.l).toLocaleString() : '—';
+    return `<tr>
+      <td><strong style="color:${r.c}">${r.nm}</strong></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${r.c}">${(+r.d.price).toLocaleString()} <span style="font-size:9px;color:#3a4060">${r.unit}</span></td>
+      <td><span style="padding:2px 7px;border-radius:6px;font-size:10px;font-weight:700;${cs}">${zero ? '변동없음' : (up ? '▲ +' : '▼ ') + Math.abs(r.d.chg_pct) + '%'}</span></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a6080">${h}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a6080">${l}</td>
+      <td style="font-size:9px;color:#3a4060;font-family:'JetBrains Mono',monospace">${r.d.source || '—'}</td>
+      <td><span style="color:${r.ic};font-weight:700;font-size:10px">${r.imp}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function buildSMMTable(smm, stats) {
+  const rows = [
+    { lbl: 'System Price', sub: 'BMS+모듈+PCS 포함', c: '#3ECFA0', d: smm.system, st: stats.sys },
+    { lbl: 'Cell Price',   sub: '314Ah LFP ESS 셀',  c: '#E0A83D', d: smm.cell,   st: stats.cell }
+  ];
+  document.getElementById('stbl').innerHTML = rows.map(r => {
+    const up = r.d.chg_pct > 0;
+    const h = r.st && r.st.h != null ? '$' + r.st.h.toFixed(1) : '—';
+    const l = r.st && r.st.l != null ? '$' + r.st.l.toFixed(1) : '—';
+    return `<tr>
+      <td><strong style="color:${r.c}">${r.lbl}</strong><br><span style="font-size:9px;color:#3a4060">${r.sub}</span></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${r.c}">$${r.d.price}/kWh</td>
+      <td style="color:#5a6080;font-size:11px">${h}</td>
+      <td style="color:#5a6080;font-size:11px">${l}</td>
+      <td><span style="color:${up ? '#3ECFA0' : '#E05D5D'};font-weight:700;font-size:10px">${(up ? '▲ +' : '▼ ') + Math.abs(r.d.chg_pct) + '%'}</span></td>
+      <td style="font-size:9px;color:#3a4060">${r.d.source || '—'}</td>
+    </tr>`;
+  }).join('') + `<tr>
+    <td colspan="6" style="font-size:9px;color:#252A40;padding:8px 12px;border-top:1px solid #1C2340">
+      ⚠ SMM Index는 유료 구독 데이터입니다 (metal.com). 현재 수치는 수동 입력값이며 실시간 반영되지 않습니다.
+      참고: BNEF '25 ESS 팩 ~$70/kWh · 중국 셀 ~$84/kWh · Ex-China FOB 셀 ~$45/kWh
+    </td>
+  </tr>`;
+}
+
+// ── 차트
+function filterHist(days) {
+  const hist = D.history || [];
+  if (!days) return hist; // 전체
+  const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  return hist.filter(h => new Date(h.timestamp) >= cutoff);
+}
+
+function fmtLabel(ts, forceDetail) {
+  const d = new Date(ts);
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const mon = MONTHS[d.getMonth()];
+  const yr  = String(d.getFullYear()).slice(2); // '25', '26'
+  const day = d.getDate();
+  const hr  = String(d.getHours()).padStart(2,'0');
+
+  // 기간에 따라 레이블 형식 자동 조절
+  if (forceDetail === 'hour') return `${mon} ${day} ${hr}h`;   // 7D: "Jan 5 14h"
+  if (forceDetail === 'day')  return `${mon} ${day}`;            // 30D: "Jan 5"
+  return `${mon} '${yr}`;                                        // 전체: "Jan '25"
+}
+
+// 너무 많으면 간격 줄이기 (최대 60포인트 표시)
+function downsample(arr, maxPts) {
+  if (arr.length <= maxPts) return arr;
+  const step = Math.ceil(arr.length / maxPts);
+  return arr.filter((_, i) => i % step === 0 || i === arr.length - 1);
+}
+
+function buildMainChart() {
+  const days = range === 'all' ? null : range === '30d' ? 30 : 7;
+  const detail = range === '7d' ? 'hour' : range === '30d' ? 'day' : null;
+  const raw = filterHist(days);
+  const hist = downsample(raw, 60);
+  if (!hist.length) return;
+
+  const labels = hist.map(h => fmtLabel(h.timestamp, detail));
+  const norm = (arr) => { const b = arr[0] || 1; return arr.map(v => +(v / b * 100).toFixed(1)); };
+  const li = hist.map(h => h.li);
+  const al = hist.map(h => h.al);
+  const cu = hist.map(h => h.cu);
+
+  const ctx = document.getElementById('mc').getContext('2d');
+  if (MC) MC.destroy();
+  MC = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: '탄산리튬', data: norm(li), borderColor: '#3ECFA0', backgroundColor: 'rgba(62,207,160,.07)', tension: .4, pointRadius: hist.length > 30 ? 0 : 2, borderWidth: 2, fill: true },
+      { label: '알루미늄', data: norm(al), borderColor: '#E0A83D', backgroundColor: 'rgba(224,168,61,.04)', tension: .4, pointRadius: hist.length > 30 ? 0 : 2, borderWidth: 2 },
+      { label: '구리',     data: norm(cu), borderColor: '#E76F51', backgroundColor: 'rgba(231,111,81,.04)', tension: .4, pointRadius: hist.length > 30 ? 0 : 2, borderWidth: 2 }
+    ]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#7a8090', font: { size: 10, family: "'Outfit',sans-serif" } } },
+        tooltip: { backgroundColor: '#0C1128', borderColor: '#1C2340', borderWidth: 1, titleColor: '#fff', bodyColor: '#7a8090', callbacks: { label: c => `${c.dataset.label}: ${c.raw}pt` } }
+      },
+      scales: {
+        x: { ticks: { color: '#3a4060', font: { size: 9 }, maxTicksLimit: 10 }, grid: { color: '#111830' } },
+        y: { ticks: { color: '#3a4060', font: { size: 9 }, callback: v => v + 'pt' }, grid: { color: '#111830' } }
+      }
+    }
+  });
+}
+
+function buildTrendCharts() {
+  if (!D) return;
+  const raw = D.history || [];
+  const hist = downsample(raw, 100);
+  if (!hist.length) return;
+  const labels = hist.map(h => fmtLabel(h.timestamp, null));
+  const pr = hist.length > 50 ? 0 : 2;
+
+  const OPT = (ycb) => ({
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0C1128', borderColor: '#1C2340', borderWidth: 1, titleColor: '#fff', bodyColor: '#7a8090' } },
+    scales: {
+      x: { ticks: { color: '#3a4060', font: { size: 9 }, maxTicksLimit: 10 }, grid: { color: '#111830' } },
+      y: { ticks: { color: '#3a4060', font: { size: 9 }, callback: ycb || undefined }, grid: { color: '#111830' } }
+    }
+  });
+
+  [['tr-li', '탄산리튬', hist.map(h => h.li), '#3ECFA0', v => v + '$/kg'],
+   ['tr-al', '알루미늄', hist.map(h => h.al), '#E0A83D', v => (+v).toLocaleString()],
+   ['tr-cu', '구리',     hist.map(h => h.cu), '#E76F51', v => (+v).toLocaleString()]
+  ].forEach(([id, lbl, pts, c, ycb]) => {
+    const cv = document.getElementById(id); if (!cv) return;
+    if (TR[id]) TR[id].destroy();
+    TR[id] = new Chart(cv.getContext('2d'), {
+      type: 'line',
+      data: { labels, datasets: [{ label: lbl, data: pts, borderColor: c, backgroundColor: c + '18', tension: .4, pointRadius: pr, borderWidth: 2, fill: true }] },
+      options: OPT(ycb)
+    });
+  });
+
+  const sc = document.getElementById('tr-smm'); if (!sc) return;
+  if (TR.smm) TR.smm.destroy();
+  TR.smm = new Chart(sc.getContext('2d'), {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: 'System', data: hist.map(h => h.smm_system), borderColor: '#5B9BD5', backgroundColor: 'rgba(91,155,213,.1)', tension: .4, pointRadius: pr, borderWidth: 2, fill: true },
+      { label: 'Cell',   data: hist.map(h => h.smm_cell),   borderColor: '#E0A83D', backgroundColor: 'rgba(224,168,61,.05)', tension: .4, pointRadius: pr, borderWidth: 2 }
+    ]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#7a8090', font: { size: 10 } } }, tooltip: { backgroundColor: '#0C1128', borderColor: '#1C2340', borderWidth: 1, titleColor: '#fff', bodyColor: '#7a8090', callbacks: { label: c => `${c.dataset.label}: $${c.raw}/kWh` } } },
+      scales: { x: { ticks: { color: '#3a4060', font: { size: 9 }, maxTicksLimit: 10 }, grid: { color: '#111830' } }, y: { ticks: { color: '#3a4060', font: { size: 9 }, callback: v => '$' + v }, grid: { color: '#111830' } } }
+    }
+  });
+}
+
+function buildSparks(hist, li, al, cu) {
+  [['sp-li', hist.map(h => h.li), li.price, '#3ECFA0'],
+   ['sp-al', hist.map(h => h.al), al.price, '#E0A83D'],
+   ['sp-cu', hist.map(h => h.cu), cu.price, '#E76F51']
+  ].forEach(([id, raw, cur, c]) => {
+    const pts = raw.length ? raw : [cur];
+    const cv = document.getElementById(id); if (!cv) return;
+    cv.width = cv.offsetWidth || 260; cv.height = 32;
+    const ctx = cv.getContext('2d');
+    const mn = Math.min(...pts), mx = Math.max(...pts), rng = mx - mn || 1;
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    const g = ctx.createLinearGradient(0, 0, 0, 32); g.addColorStop(0, c + '55'); g.addColorStop(1, c + '00');
+    ctx.beginPath();
+    pts.forEach((v, i) => { const x = i / (pts.length - 1) * cv.width, y = cv.height - (v - mn) / rng * cv.height * .85 - 1; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+    ctx.lineTo(cv.width, cv.height); ctx.lineTo(0, cv.height); ctx.closePath();
+    ctx.fillStyle = g; ctx.fill();
+    ctx.beginPath();
+    pts.forEach((v, i) => { const x = i / (pts.length - 1) * cv.width, y = cv.height - (v - mn) / rng * cv.height * .85 - 1; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+    ctx.strokeStyle = c; ctx.lineWidth = 1.5; ctx.stroke();
+  });
+}
+
+function setR(r, btn) {
+  range = r;
+  document.querySelectorAll('.cbtn').forEach(b => b.classList.remove('on')); btn.classList.add('on');
+  const ov = document.getElementById('cov'); ov.classList.add('on');
+  setTimeout(() => { buildMainChart(); ov.classList.remove('on'); }, 280);
+}
+
+function sw(id, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.tc').forEach(t => t.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tc-' + id).classList.add('on');
+  if (id === 'tr') setTimeout(() => buildTrendCharts(), 60);
+  if (id === 'fin') initFinance();
+  if (id === 'str') updateSignals();
+  if (id === 'leg') r2LoadFiles();
+  if (id === 'acc') setTimeout(() => renderPVA(), 60);
+}
+
+function selcc(el) { document.querySelectorAll('.cc').forEach(c => c.classList.remove('sel')); el.classList.add('sel'); }
+
+// ── AI 원자재 분석
+function sysPrompt() {
+  if (!D) return '당신은 GESS 배터리 원자재 전문 애널리스트입니다. 한국어로 답하세요.';
+  const d = D.data;
+  const cnt = (D.history || []).length;
+  return `You are a battery raw material analyst for GESS (Green Energy Storage System), an Australian BESS/PV+ESS developer operating in NSW, QLD, and VIC.
+IMPORTANT: Always respond in Korean (한국어). Never respond in English.
+Current market data (auto-collected via GitHub Actions, ${cnt} records):
+- Lithium Carbonate: $${d.lithium_carbonate.price}/kg (${d.lithium_carbonate.chg_pct > 0 ? '+' : ''}${d.lithium_carbonate.chg_pct}%)
+- Aluminum: $${(+d.aluminum.price).toLocaleString()}/mt (${d.aluminum.chg_pct > 0 ? '+' : ''}${d.aluminum.chg_pct}%)
+- Copper: $${(+d.copper.price).toLocaleString()}/mt (${d.copper.chg_pct > 0 ? '+' : ''}${d.copper.chg_pct}%)
+- SMM System: $${d.smm_index.system.price}/kWh | Cell: $${d.smm_index.cell.price}/kWh
+Respond professionally in Korean. Emphasize implications for GESS Australian projects.`;
+}
+
+function sendQ(t) { document.getElementById('aiinp').value = t; sendAI(); }
+
+async function sendAI() {
+  const inp = document.getElementById('aiinp');
+  const text = inp.value.trim(); if (!text) return;
+  inp.value = '';
+  const box = document.getElementById('aimsgs');
+  const ud = document.createElement('div'); ud.className = 'aimsg user'; ud.textContent = text; box.appendChild(ud);
+  const ld = document.createElement('div'); ld.className = 'aimsg bot';
+  ld.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
+  box.appendChild(ld); box.scrollTop = box.scrollHeight;
+  const btn = document.getElementById('aigo'); btn.disabled = true;
+  aiHist.push({ role: 'user', content: text });
+  try {
+    const aiEndpoint = WORKER_URL ? WORKER_URL + '/api/claude' : 'https://api.anthropic.com/v1/messages';
+    const aiHeaders = WORKER_URL
+      ? { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + JWT_TOKEN }
+      : { 'Content-Type': 'application/json' };
+    const r = await fetch(aiEndpoint, {
+      method: 'POST', headers: aiHeaders,
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: sysPrompt(), messages: aiHist })
+    });
+    const data = await r.json();
+    const reply = data.content?.[0]?.text || '응답 오류';
+    aiHist.push({ role: 'assistant', content: reply });
+    ld.remove();
+    const ad = document.createElement('div'); ad.className = 'aimsg bot';
+    ad.innerHTML = `<div class="aimhd">🤖 GESS AI 애널리스트 <span style="font-size:8px;opacity:.6">Llama 3.3</span></div>${reply.replace(/\n/g, '<br>')}`;
+    box.appendChild(ad);
+  } catch (e) {
+    ld.remove();
+    const ed = document.createElement('div'); ed.className = 'aimsg bot';
+    ed.innerHTML = `<div class="aimhd" style="color:#E05D5D">⚠ 오류</div>${e.message}`;
+    box.appendChild(ed); aiHist.pop();
+  }
+  btn.disabled = false; box.scrollTop = box.scrollHeight;
+}
+
+// ═══════════════════════════════════════════════════════
+// TAB INIT
+// ═══════════════════════════════════════════════════════
+function initTabs() {
+  // CSS handles show/hide via .on class; nothing extra needed
+}
+
+// ═══════════════════════════════════════════════════════
+// PLAN vs ACTUAL TABLE  (RVB Project 월별)
+// ═══════════════════════════════════════════════════════
+const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+const CUR_MONTH = new Date().getMonth(); // 0-based, 현재 5월 = 4
+
+// 현재 월 컬럼 강조 (0-based index)
+// 계획: LNTP=1월(idx1), FAT=9월(idx9)
+// 실적: LNTP=5월(idx5), FAT=11월(idx11)
+
+const PVA_DATA = {
+  plan: {
+    label: '📋 연간 계획',
+    // 행: 각 월의 Milestone 이벤트, 매출, 매출이익, Cash-in, Cash-out (단위: A$M)
+    milestones: {
+      1: 'MS3 LNTP',   // 2월(idx=1)
+      9: 'MS5 FAT',    // 10월(idx=9)
+    },
+    rev:    [0, 8.0, 2.5, 2.5, 2.5, 2.5, 5.0, 5.0, 30.0, 23.0, 5.0, 3.0],
+    margin: [0, 1.2, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8,  4.5,  3.5, 0.8, 0.5],
+    cin:    [0, 8.0, 0,   0,   0,   0,   0,   0,   30.0, 23.0, 5.0, 3.0],
+    cout:   [1.5, 5.0, 2.0, 2.0, 2.0, 2.0, 15.0, 15.0, 8.0, 3.0, 2.0, 1.5],
+  },
+  actual: {
+    label: '📊 실적/전망',
+    milestones: {
+      5: 'MS3 LNTP',   // 6월(idx=5) — 지연
+      11: 'MS5 FAT',   // 12월(idx=11) — 지연
+    },
+    rev:    [0, 0, 1.5, 1.5, 1.5, 8.0, 2.5, 2.5, 2.5, 2.5, 2.5, 30.0],
+    margin: [0, 0, 0.2, 0.2, 0.2, 1.2, 0.4, 0.4, 0.4, 0.4, 0.4,  4.5],
+    cin:    [0, 0, 0,   0,   0,   8.0, 0,   0,   0,   0,   0,  30.0],
+    cout:   [1.0, 1.0, 1.5, 1.5, 2.0, 5.0, 3.0, 3.0, 3.0, 12.0, 12.0, 8.0],
+  }
+};
+
+let pvMode = 'plan';
+
+function pvSwitch(mode, btn) {
+  pvMode = mode;
+  document.querySelectorAll('.pva-tab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderPVA();
+}
+
+function renderPVA() {
+  const tbl = document.getElementById('pva-table');
+  if (!tbl) return;
+  const d = PVA_DATA[pvMode];
+  const isActual = pvMode === 'actual';
+
+  // 헤더
+  let html = '<thead><tr>';
+  html += '<th class="row-hdr">구분</th>';
+  MONTHS.forEach((m, i) => {
+    const isCur = i === CUR_MONTH;
+    html += '<th class="month-hdr" style="' + (isCur ? 'color:#E0A83D;background:rgba(224,168,61,.08)' : '') + '">' +
+      m + (isCur ? '<br><span style="font-size:7px;animation:blink 1.2s infinite;display:inline-block">●</span>' : '') +
+      '</th>';
+  });
+  html += '</tr></thead><tbody>';
+
+  // Milestone 행
+  html += '<tr>';
+  html += '<td class="row-lbl">🏁 Milestone</td>';
+  MONTHS.forEach((m, i) => {
+    const isCur = i === CUR_MONTH;
+    const ms = d.milestones[i];
+    let cell = '';
+    if (ms) {
+      const isDelayed = isActual && (i === 5 || i === 11);
+      const chipClass = isDelayed ? 'delayed' : (isActual ? 'actual' : 'plan');
+      cell = '<span class="ms-chip ' + chipClass + '">' + ms + (isDelayed ? ' ⚠' : '') + '</span>';
+    }
+    html += '<td class="val' + (isCur ? ' cur-month' : '') + '">' + cell + '</td>';
+  });
+  html += '</tr>';
+
+  // 매출
+  html += '<tr>';
+  html += '<td class="row-lbl sub">매출 (A$M)</td>';
+  d.rev.forEach((v, i) => {
+    const isCur = i === CUR_MONTH;
+    const cls = v > 0 ? 'pos' : '';
+    html += '<td class="val ' + cls + (isCur ? ' cur-month' : '') + '">' + (v > 0 ? '+' + v.toFixed(1) : '—') + '</td>';
+  });
+  html += '</tr>';
+
+  // 매출이익
+  html += '<tr>';
+  html += '<td class="row-lbl sub">매출이익 (A$M)</td>';
+  d.margin.forEach((v, i) => {
+    const isCur = i === CUR_MONTH;
+    const cls = v > 0 ? 'pos' : '';
+    html += '<td class="val ' + cls + (isCur ? ' cur-month' : '') + '">' + (v > 0 ? '+' + v.toFixed(1) : '—') + '</td>';
+  });
+  html += '</tr>';
+
+  // Cash-in
+  html += '<tr>';
+  html += '<td class="row-lbl sub">Cash-in (A$M)</td>';
+  d.cin.forEach((v, i) => {
+    const isCur = i === CUR_MONTH;
+    const cls = v > 0 ? 'pos' : '';
+    html += '<td class="val ' + cls + (isCur ? ' cur-month' : '') + '">' + (v > 0 ? '+' + v.toFixed(1) : '—') + '</td>';
+  });
+  html += '</tr>';
+
+  // Cash-out
+  html += '<tr>';
+  html += '<td class="row-lbl sub">Cash-out (A$M)</td>';
+  d.cout.forEach((v, i) => {
+    const isCur = i === CUR_MONTH;
+    const cls = v > 0 ? 'neg' : '';
+    html += '<td class="val ' + cls + (isCur ? ' cur-month' : '') + '">' + (v > 0 ? '-' + v.toFixed(1) : '—') + '</td>';
+  });
+  html += '</tr>';
+
+  // 누적 합계 행
+  const cumRev = d.rev.reduce((a,b,i) => { a.push((a[i-1]||0)+b); return a; }, []);
+  html += '<tr style="border-top:2px solid #1C2340">';
+  html += '<td class="row-lbl" style="color:#E0A83D">누적 매출</td>';
+  cumRev.forEach((v, i) => {
+    const isCur = i === CUR_MONTH;
+    html += '<td class="val warn' + (isCur ? ' cur-month' : '') + '">' + v.toFixed(1) + '</td>';
+  });
+  html += '</tr>';
+
+  html += '</tbody>';
+  tbl.innerHTML = html;
+}
+
+// 회계 탭 진입 시 렌더링
+
+
+// ═══════════════════════════════════════════════════════
+// FINANCE TAB
+// ═══════════════════════════════════════════════════════
+const scenarioData = {
+  nsw: { bear:7.8, base:11.4, bull:14.2, stress:4.2, note:'NSW BESS 100MWh · EPC A$58M · FCAS 보조서비스 수익 기준' },
+  it: { bear:6.9, base:10.8, bull:13.5, stress:3.5, note:'QLD PV 150MWp + BESS 80MWh · LRET/CIS 수익 기준' },
+  es: { bear:7.2, base:11.8, bull:15.1, stress:3.9, note:'VIC BESS 120MWh · FCAS + CIS 수익 기준' }
+};
+
+function setScenario(key, btn) {
+  document.querySelectorAll('.stab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const s = scenarioData[key];
+  const rowEl = document.getElementById('irr-rows');
+  const cases = [
+    { nm:'🐻 Bear', val:s.bear, c:'#E05D5D', pct: Math.round(s.bear/s.bull*100) },
+    { nm:'📊 Base', val:s.base, c:'#3ECFA0', pct: Math.round(s.base/s.bull*100) },
+    { nm:'🐂 Bull', val:s.bull, c:'#5B9BD5', pct:100 },
+    { nm:'⚠ Stress', val:s.stress, c:'#E05D5D', pct: Math.round(s.stress/s.bull*100) }
+  ];
+  rowEl.innerHTML = cases.map(c => `
+    <div class="irr-row">
+      <div class="irr-case">${c.nm}</div>
+      <div class="irr-bar-wrap"><div class="irr-bar" style="width:${c.pct}%;background:linear-gradient(90deg,${c.c},${c.c}aa)"></div></div>
+      <div class="irr-val" style="color:${c.c}">${c.val}%</div>
+    </div>`).join('');
+  document.getElementById('irr-note').textContent = '* ' + s.note;
+  document.getElementById('fin-irr').textContent = s.base + '%';
+}
+
+function initFinance() {
+  recalcWacc();
+}
+
+function toggleWaccEditor() {
+  const ed = document.getElementById('wacc-editor');
+  ed.style.display = ed.style.display === 'none' ? 'block' : 'none';
+}
+
+function recalcWacc() {
+  const rf   = parseFloat(document.getElementById('w-rf')?.value) || 2.65;
+  const erp  = parseFloat(document.getElementById('w-erp')?.value) || 5.5;
+  const beta = parseFloat(document.getElementById('w-beta')?.value) || 0.85;
+  const kd   = parseFloat(document.getElementById('w-kd')?.value) || 4.8;
+  const tax  = parseFloat(document.getElementById('w-tax')?.value) || 12.5;
+  const dlev = parseFloat(document.getElementById('w-dlev')?.value) || 65;
+  const elev = 100 - dlev;
+  const ke = rf + beta * erp;
+  const kdAt = kd * (1 - tax / 100);
+  const wacc = (ke * elev / 100 + kdAt * dlev / 100);
+  const waccStr = wacc.toFixed(1) + '%';
+  const waccEl = document.getElementById('wacc-calc');
+  const formulaEl = document.getElementById('wacc-formula');
+  const mainEl = document.getElementById('fin-wacc');
+  if (waccEl) waccEl.textContent = waccStr;
+  if (mainEl) mainEl.textContent = waccStr;
+  if (formulaEl) formulaEl.innerHTML = `Ke = Rf + β×ERP = ${rf} + ${beta}×${erp} = <strong>${ke.toFixed(2)}%</strong><br>Kd(after tax) = ${kd} × (1-${tax/100}) = <strong>${kdAt.toFixed(2)}%</strong><br>WACC = Ke×${elev}% + Kd×${dlev}% = <strong style="color:#3ECFA0">${waccStr}</strong>`;
+}
+
+function openCapEdit() {
+  toggleWaccEditor();
+}
+
+// ═══════════════════════════════════════════════════════
+// ACCOUNTING TAB
+// ═══════════════════════════════════════════════════════
+const projCFData = {
+  NSW: { q: ['Q1 2025','Q2 2025','Q3 2025','Q4 2025'], ins:[8.2,12.4,6.5,18.9], outs:[5.1,9.8,14.2,8.4], note:'Q3 Cash Out 급증 — 배터리 조달 결제 집중. 브릿지론 또는 신용한도 활용 필요.' },
+  QLD: { q: ['Q2 2025','Q3 2025','Q4 2025','Q1 2026'], ins:[3.1,6.8,11.2,22.4], outs:[2.4,7.5,18.6,9.2], note:'Q4 EPC 착공 — 초기 투입 집중. QLD EIS 승인 후 급속 집행.' },
+  VIC: { q: ['Q3 2025','Q4 2025','Q1 2026','Q2 2026'], ins:[1.2,4.8,9.6,28.5], outs:[0.8,5.2,12.4,11.8], note:'VIC REZ 참여 승인 선행 필요. AEMO CIS 결과에 따라 수익 변동 큰 구조.' }
+};
+
+function setProjCF(key, btn) {
+  document.querySelectorAll('.psbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const d = projCFData[key];
+  const grid = document.getElementById('qtr-grid');
+  grid.innerHTML = d.q.map((q, i) => {
+    const net = d.ins[i] - d.outs[i];
+    const pos = net >= 0;
+    return `<div class="qtr-card">
+      <div class="qtr-nm">${q}</div>
+      <div class="qtr-in">+A$${d.ins[i]}M</div>
+      <div class="qtr-out">-A$${d.outs[i]}M</div>
+      <div class="qtr-net" style="color:${pos?'#3ECFA0':'#E05D5D'};background:${pos?'rgba(62,207,160,.1)':'rgba(224,93,93,.1)'}">${pos?'+':''} A$${net.toFixed(1)}M</div>
+    </div>`;
+  }).join('');
+  const note = document.querySelector('#tc-acc .fin-note');
+  if (note) note.textContent = '⚠ ' + d.note;
+}
+
+function toggleCFEditor() {
+  const ed = document.getElementById('cf-editor');
+  if (ed) ed.style.display = ed.style.display === 'none' ? 'block' : 'none';
+}
+
+function recalcCF() {
+  const q1i = parseFloat(document.getElementById('cf-q1-in')?.value)||0;
+  const q1o = parseFloat(document.getElementById('cf-q1-out')?.value)||0;
+  const q2i = parseFloat(document.getElementById('cf-q2-in')?.value)||0;
+  const q2o = parseFloat(document.getElementById('cf-q2-out')?.value)||0;
+  const q3i = parseFloat(document.getElementById('cf-q3-in')?.value)||0;
+  const q3o = parseFloat(document.getElementById('cf-q3-out')?.value)||0;
+  const q4i = parseFloat(document.getElementById('cf-q4-in')?.value)||0;
+  const q4o = parseFloat(document.getElementById('cf-q4-out')?.value)||0;
+  const totalIn  = q1i+q2i+q3i+q4i;
+  const totalOut = q1o+q2o+q3o+q4o;
+  const cfInEl  = document.getElementById('cf-in');
+  const cfOutEl = document.getElementById('cf-out');
+  if (cfInEl)  cfInEl.textContent  = 'A$' + totalIn.toFixed(1) + 'M';
+  if (cfOutEl) cfOutEl.textContent = 'A$' + totalOut.toFixed(1) + 'M';
+}
+
+// ═══════════════════════════════════════════════════════
+// LEGAL TAB
+// ═══════════════════════════════════════════════════════
+const demoContracts = {
+  epc: {
+    name: 'EPC_NSW_BESS_100MWh_2024.pdf',
+    meta: 'EPC 계약 · NSW Hunter Valley · A$58M · 2024.11',
+    scenario: `GESS(Green Energy Storage System)의 NSW Hunter Valley 100MWh BESS 프로젝트 EPC 계약서입니다.
+계약 당사자: GESS Australia Pty Ltd (발주자), John Holland Group (EPC 계약자)
+계약 금액: A$58,000,000
+주요 조항: 완공 기한 2025년 Q4, LDs (Liquidated Damages) A$75,000/day, Performance Test 기준 90%`
+  },
+  ppa: {
+    name: 'PPA_QLD_BESS_120MWh_2025.pdf',
+    meta: 'PPA 계약 · QLD · A$9.2M/yr · 2025.03',
+    scenario: `QLD 120MWh BESS 프로젝트 전력구매계약(PPA)입니다.
+계약 당사자: GESS Australia Pty Ltd (발전사업자), Origin Energy (구매자)
+계약 기간: 15년 (2026-2041)
+조건: Capacity Payment + Energy Payment 혼합, AEMO 규제 변동 조항 포함`
+  },
+  supply: {
+    name: 'CATL_Supply_Agreement_LFP314Ah_2025.pdf',
+    meta: '배터리 공급계약 · CATL · 60MWh · USD18.2M',
+    scenario: `CATL과의 LFP 314Ah 셀 공급계약입니다.
+계약 당사자: GESS Australia Pty Ltd (구매자), CATL Europe GmbH (공급자)
+공급 규모: 60MWh (LFP 314Ah, Grade A)
+결제 조건: 30% 계약금, 60% 출하 전, 10% 검수 후`
+  },
+  grid: {
+    name: 'AusGrid_Connection_Agreement_2024.pdf',
+    meta: '계통연계 계약 · AusGrid · 100MW AC · 2024.09',
+    scenario: `AusGrid(NSW 배전사업자)와의 계통연계 계약입니다.
+계약 당사자: GESS Australia Pty Ltd, AusGrid
+연계 용량: 60MW AC, 110kV 변전소 연계
+Connection Date: 2025년 Q4 (조건부)`
+  }
+};
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-drop').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(file);
+}
+
+function handleFileUpload(e) {
+  const file = e.target.files[0];
+  if (file) processFile(file);
+}
+
+function processFile(file) {
+  const contractInfo = {
+    name: file.name,
+    meta: `${(file.size/1024).toFixed(0)}KB · ${new Date().toLocaleDateString('ko-KR')} 업로드`,
+    scenario: `사용자가 업로드한 계약서: ${file.name}`
+  };
+  runLegalAnalysis(contractInfo);
+}
+
+function demoAnalyze(key) {
+  runLegalAnalysis(demoContracts[key]);
+}
+
+function resetLegal() {
+  document.getElementById('risk-panel').classList.remove('on');
+  document.getElementById('legal-upload-area').style.display = 'block';
+  document.getElementById('legal-loading').classList.remove('on');
+  const fi = document.getElementById('file-input');
+  if (fi) fi.value = '';
+}
+
+async function runLegalAnalysis(contractInfo) {
+  document.getElementById('legal-upload-area').style.display = 'none';
+  document.getElementById('legal-loading').classList.add('on');
+  document.getElementById('risk-panel').classList.remove('on');
+  const loadingTxt = document.getElementById('legal-loading-txt');
+
+  const msgs = ['계약서 구조 분석 중...','조항별 리스크 스캔 중...','비판적 사고 기반 위험 식별 중...','시나리오 생성 중...'];
+  let mi = 0;
+  const msgInt = setInterval(() => { loadingTxt.textContent = msgs[mi++ % msgs.length]; }, 1800);
+
+  const prompt = `You are a legal AI specializing in international project finance and energy contracts for GESS Australia. IMPORTANT: Always respond in Korean (한국어). Analyze contract risks for GESS Australian BESS/ESS projects.
+
+다음 계약 정보를 분석하세요:
+${contractInfo.scenario}
+
+반드시 다음 JSON 형식으로만 응답하세요 (추가 텍스트 없이):
+{
+  "high": [
+    { "title": "리스크 제목", "desc": "리스크 상세 설명 (2-3문장)", "scenario": "해결 시나리오 및 대응 방안 (구체적으로)" }
+  ],
+  "mid": [
+    { "title": "리스크 제목", "desc": "리스크 상세 설명", "scenario": "해결 시나리오" }
+  ],
+  "low": [
+    { "title": "리스크 제목", "desc": "리스크 상세 설명", "scenario": "해결 시나리오" }
+  ]
+}
+
+고위험 2-3개, 중위험 2-3개, 저위험 1-2개를 식별하세요. GESS 관점에서 실무적으로 분석하세요.`;
+
+  try {
+    const legalEndpoint = WORKER_URL ? WORKER_URL + '/api/claude' : 'https://api.anthropic.com/v1/messages';
+    const legalHeaders = WORKER_URL
+      ? { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + JWT_TOKEN }
+      : { 'Content-Type': 'application/json' };
+    const r = await fetch(legalEndpoint, {
+      method: 'POST', headers: legalHeaders,
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await r.json();
+    clearInterval(msgInt);
+    document.getElementById('legal-loading').classList.remove('on');
+
+    let risks;
+    try {
+      const txt = data.content?.[0]?.text || '{}';
+      risks = JSON.parse(txt.replace(/```json|```/g,'').trim());
+    } catch(e) {
+      risks = {
+        high: [{ title:'계약 이행 보증 미비', desc:'EPC 계약자의 성능 보증 및 LDs 조항이 불명확하여 지연 발생 시 손해 회수 불확실. 계약금액 대비 보증 범위 제한.', scenario:'계약 재협상을 통해 성능 보증 범위를 명확히 정의하고, Parent Company Guarantee 요구. LDs 상한선 및 Force Majeure 조항 범위 제한.' },
+               { title:'Force Majeure 조항 과도 광범위', desc:'불가항력 면책 조항이 과도하게 넓게 정의되어 계약자 면책 남용 가능성. 공급망 이슈도 FM으로 주장할 여지.', scenario:'FM 정의를 UNIDROIT 기준으로 한정. 예측 가능한 공급망 리스크는 명시적으로 제외. 리스크 배분 조항 추가.' }],
+        mid:  [{ title:'규제 변동 리스크', desc:'호주 에너지 규제(AEMO) 변경 시 수익 구조 변화 가능성. 특히 VIC CIS 조건 변동 이력.', scenario:'규제 변동 조항(Regulatory Change Clause) 삽입. 비용 증가 시 전가 메커니즘 계약 반영.' }],
+        low:  [{ title:'환율 리스크', desc:'USD 기준 배터리 조달 vs EUR 기준 수익 구조 불일치.', scenario:'EUR/USD 선물환 헤징. 계약서 내 환율 조정 조항 협상.' }]
+      };
+    }
+
+    document.getElementById('cfi-nm').textContent = contractInfo.name;
+    document.getElementById('cfi-meta').textContent = contractInfo.meta;
+    document.getElementById('risk-cnt-high').textContent = (risks.high||[]).length;
+    document.getElementById('risk-cnt-mid').textContent  = (risks.mid||[]).length;
+    document.getElementById('risk-cnt-low').textContent  = (risks.low||[]).length;
+
+    const allRisks = [
+      ...(risks.high||[]).map(r => ({...r, level:'high', lbl:'⚠ 고위험'})),
+      ...(risks.mid||[]).map(r  => ({...r, level:'mid',  lbl:'⚡ 중위험'})),
+      ...(risks.low||[]).map(r  => ({...r, level:'low',  lbl:'✅ 저위험'}))
+    ];
+
+    document.getElementById('risk-items').innerHTML = allRisks.map(r => `
+      <div class="risk-item ${r.level}">
+        <div class="risk-item-hdr"><span class="risk-badge">${r.lbl}</span><span class="risk-item-title">${r.title}</span></div>
+        <div class="risk-item-desc">${r.desc}</div>
+        <div class="risk-scenario">
+          <div class="risk-scenario-ttl">💡 대응 시나리오</div>
+          <div class="risk-scenario-txt">${r.scenario}</div>
+        </div>
+      </div>`).join('');
+
+    document.getElementById('risk-panel').classList.add('on');
+  } catch(e) {
+    clearInterval(msgInt);
+    document.getElementById('legal-loading').classList.remove('on');
+    document.getElementById('legal-upload-area').style.display = 'block';
+    alert('분석 오류: ' + e.message);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// STRATEGY TAB
+// ═══════════════════════════════════════════════════════
+let stratHist = [];
+
+function updateSignals() {
+  if (!D) return;
+  const li = D.data?.lithium_carbonate;
+  const al = D.data?.aluminum;
+  const cu = D.data?.copper;
+  if (li) document.getElementById('sig-li').textContent = '$' + li.price + '/kg';
+  if (al) document.getElementById('sig-al').textContent = '$' + (+al.price).toLocaleString() + '/mt';
+  if (cu) document.getElementById('sig-cu').textContent = '$' + (+cu.price).toLocaleString() + '/mt';
+}
+
+function refreshCompetitors() {
+  sendStratQ('최근 호주 BESS 시장에서 Fluence, Tesla Energy, BYD의 주요 동향과 GESS의 대응 전략을 분석해줘');
+}
+
+function sendStratQ(t) {
+  document.getElementById('strat-inp').value = t;
+  sendStrat();
+}
+
+async function sendStrat() {
+  const inp = document.getElementById('strat-inp');
+  const text = inp.value.trim(); if (!text) return;
+  inp.value = '';
+  const box = document.getElementById('strat-msgs');
+  const ud = document.createElement('div'); ud.className = 'strat-msg user'; ud.textContent = text; box.appendChild(ud);
+  const ld = document.createElement('div'); ld.className = 'strat-msg bot';
+  ld.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
+  box.appendChild(ld); box.scrollTop = box.scrollHeight;
+  const btn = document.getElementById('strat-go'); btn.disabled = true;
+  stratHist.push({ role: 'user', content: text });
+
+  const sysP = `You are a strategy consultant for GESS (Green Energy Storage System), an Australian BESS/PV+ESS developer in NSW, QLD, and VIC.
+IMPORTANT: Always respond in Korean (한국어). Never respond in English.
+${D ? `Current raw material data: Lithium Carbonate $${D.data.lithium_carbonate.price}/kg, Aluminum $${(+D.data.aluminum.price).toLocaleString()}/mt, Copper $${(+D.data.copper.price).toLocaleString()}/mt` : ''}
+Specialize in business strategy, competitive analysis, new order strategy, and business model innovation. Respond in Korean with specific numbers and action items.`;
+
+  try {
+    const stratEndpoint = WORKER_URL ? WORKER_URL + '/api/claude' : 'https://api.anthropic.com/v1/messages';
+    const stratHeaders = WORKER_URL
+      ? { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + JWT_TOKEN }
+      : { 'Content-Type': 'application/json' };
+    const r = await fetch(stratEndpoint, {
+      method: 'POST', headers: stratHeaders,
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: sysP, messages: stratHist })
+    });
+    const data = await r.json();
+    const reply = data.content?.[0]?.text || '응답 오류';
+    stratHist.push({ role: 'assistant', content: reply });
+    ld.remove();
+    const ad = document.createElement('div'); ad.className = 'strat-msg bot';
+    ad.innerHTML = `<div class="strat-mhd">🧭 GESS 전략 AI <span style="font-size:8px;opacity:.6">Llama 3.3</span></div>${reply.replace(/\n/g,'<br>')}`;
+    box.appendChild(ad);
+  } catch(e) {
+    ld.remove();
+    const ed = document.createElement('div'); ed.className = 'strat-msg bot';
+    ed.innerHTML = `<div class="strat-mhd" style="color:#E05D5D">⚠ 오류</div>${e.message}`;
+    box.appendChild(ed); stratHist.pop();
+  }
+  btn.disabled = false; box.scrollTop = box.scrollHeight;
+}
+</script>
+
+<!-- ══════════════════ SECURE DATA MANAGER MODAL ══════════════════ -->
+<div class="sdm-overlay" id="sdm-overlay" onclick="if(event.target===this)closeSDM()">
+  <div class="sdm-modal">
+    <div class="sdm-header">
+      <div class="sdm-lock">🔐</div>
+      <div>
+        <div class="sdm-title">GESS 보안 데이터 관리</div>
+        <div class="sdm-sub">민감 정보 · 계약금액 · 마일스톤 · 입력 후 암호화 저장</div>
+      </div>
+      <button class="sdm-close" onclick="closeSDM()">✕</button>
+    </div>
+
+    <div class="sdm-nav">
+      <button class="sdm-ntab on" onclick="sdmTab('fin',this)">💰 재무</button>
+      <button class="sdm-ntab" onclick="sdmTab('ms',this)">🏁 마일스톤</button>
+      <button class="sdm-ntab" onclick="sdmTab('cf',this)">💵 현금흐름</button>
+      <button class="sdm-ntab" onclick="sdmTab('contracts',this)">⚖️ 계약</button>
+      <button class="sdm-ntab" onclick="sdmTab('status',this)">📋 저장 현황</button>
+    </div>
+
+    <div class="sdm-body">
+
+      <!-- ── 재무 ── -->
+      <div class="sdm-section on" id="sdm-fin">
+        <div class="sdm-warn">⚠ 이 화면에 입력된 데이터는 Cloudflare KV에 AES-256 암호화되어 저장됩니다. Worker 미연결 시 세션에만 임시 보관됩니다.</div>
+        <div class="sdm-group">
+          <div class="sdm-glbl">자본 구조 <span class="sdm-glbl-badge">Capital Structure</span></div>
+          <div class="sdm-row3">
+            <div class="sdm-field"><div class="sdm-lbl">총 프로젝트 규모 <span class="sdm-lbl-note">(A$M)</span></div><input class="sdm-inp sensitive" id="sd-total" placeholder="예: 410"></div>
+            <div class="sdm-field"><div class="sdm-lbl">선순위 대출 <span class="sdm-lbl-note">(A$M)</span></div><input class="sdm-inp sensitive" id="sd-senior" placeholder="예: 189"></div>
+            <div class="sdm-field"><div class="sdm-lbl">메자닌 <span class="sdm-lbl-note">(A$M)</span></div><input class="sdm-inp sensitive" id="sd-mezz" placeholder="예: 78"></div>
+          </div>
+          <div class="sdm-row3">
+            <div class="sdm-field"><div class="sdm-lbl">자기자본 <span class="sdm-lbl-note">(A$M)</span></div><input class="sdm-inp sensitive" id="sd-equity" placeholder="예: 143"></div>
+            <div class="sdm-field"><div class="sdm-lbl">Debt Ratio <span class="sdm-lbl-note">(%)</span></div><input class="sdm-inp" id="sd-dr" placeholder="예: 65"></div>
+            <div class="sdm-field"><div class="sdm-lbl">Equity IRR <span class="sdm-lbl-note">Base Case %</span></div><input class="sdm-inp" id="sd-irr" placeholder="예: 11.4"></div>
+          </div>
+        </div>
+        <div class="sdm-group">
+          <div class="sdm-glbl">WACC 입력값</div>
+          <div class="sdm-row3">
+            <div class="sdm-field"><div class="sdm-lbl">Risk-free Rate <span class="sdm-lbl-note">(%)</span></div><input class="sdm-inp" id="sd-rf" placeholder="예: 4.45"></div>
+            <div class="sdm-field"><div class="sdm-lbl">ERP <span class="sdm-lbl-note">(%)</span></div><input class="sdm-inp" id="sd-erp" placeholder="예: 6.0"></div>
+            <div class="sdm-field"><div class="sdm-lbl">Beta</div><input class="sdm-inp" id="sd-beta" placeholder="예: 0.85"></div>
+          </div>
+          <div class="sdm-row3">
+            <div class="sdm-field"><div class="sdm-lbl">Cost of Debt <span class="sdm-lbl-note">(%)</span></div><input class="sdm-inp sensitive" id="sd-kd" placeholder="예: 5.2"></div>
+            <div class="sdm-field"><div class="sdm-lbl">Tax Rate <span class="sdm-lbl-note">(%)</span></div><input class="sdm-inp" id="sd-tax" placeholder="예: 30"></div>
+            <div class="sdm-field"><div class="sdm-lbl">D/(D+E) <span class="sdm-lbl-note">(%)</span></div><input class="sdm-inp" id="sd-dlev" placeholder="예: 65"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 마일스톤 ── -->
+      <div class="sdm-section" id="sdm-ms">
+        <div class="sdm-info">💡 각 마일스톤의 실제 계약금액과 달성 상태를 입력하세요. 대시보드 회계 탭에 즉시 반영됩니다.</div>
+        <div class="sdm-group">
+          <div class="sdm-glbl">🇦🇺 NSW BESS 마일스톤</div>
+          <div id="sdm-ms-nsw-list"></div>
+          <button class="sdm-add-ms" onclick="addMsItem('nsw')">+ 마일스톤 추가</button>
+        </div>
+        <div class="sdm-group">
+          <div class="sdm-glbl">🇦🇺 QLD PV+ESS 마일스톤</div>
+          <div id="sdm-ms-qld-list"></div>
+          <button class="sdm-add-ms" onclick="addMsItem('qld')">+ 마일스톤 추가</button>
+        </div>
+        <div class="sdm-group">
+          <div class="sdm-glbl">🇦🇺 VIC BESS 마일스톤</div>
+          <div id="sdm-ms-vic-list"></div>
+          <button class="sdm-add-ms" onclick="addMsItem('vic')">+ 마일스톤 추가</button>
+        </div>
+      </div>
+
+      <!-- ── 현금흐름 ── -->
+      <div class="sdm-section" id="sdm-cf">
+        <div class="sdm-info">💡 실제 현금흐름 수치를 입력하면 회계 탭의 KPI와 분기 차트가 업데이트됩니다.</div>
+        <div class="sdm-group">
+          <div class="sdm-glbl">포트폴리오 현금흐름 요약</div>
+          <div class="sdm-row4">
+            <div class="sdm-field"><div class="sdm-lbl">총 계약수익 <span class="sdm-lbl-note">(A$M)</span></div><input class="sdm-inp sensitive" id="sd-cf-rev" placeholder="410"></div>
+            <div class="sdm-field"><div class="sdm-lbl">인식 완료 <span class="sdm-lbl-note">(A$M)</span></div><input class="sdm-inp sensitive" id="sd-cf-in" placeholder="74"></div>
+            <div class="sdm-field"><div class="sdm-lbl">집행 비용 <span class="sdm-lbl-note">(A$M)</span></div><input class="sdm-inp sensitive" id="sd-cf-out" placeholder="60"></div>
+            <div class="sdm-field"><div class="sdm-lbl">잔여 수익 <span class="sdm-lbl-note">(A$M)</span></div><input class="sdm-inp sensitive" id="sd-cf-rem" placeholder="336"></div>
+          </div>
+        </div>
+        <div class="sdm-group">
+          <div class="sdm-glbl">분기별 NSW BESS 현금흐름</div>
+          <div class="sdm-row4">
+            <div class="sdm-field"><div class="sdm-lbl">Q1 In</div><input class="sdm-inp sensitive" id="sd-q1in" placeholder="13.0"></div>
+            <div class="sdm-field"><div class="sdm-lbl">Q1 Out</div><input class="sdm-inp sensitive" id="sd-q1out" placeholder="8.0"></div>
+            <div class="sdm-field"><div class="sdm-lbl">Q2 In</div><input class="sdm-inp sensitive" id="sd-q2in" placeholder="19.6"></div>
+            <div class="sdm-field"><div class="sdm-lbl">Q2 Out</div><input class="sdm-inp sensitive" id="sd-q2out" placeholder="15.5"></div>
+          </div>
+          <div class="sdm-row4">
+            <div class="sdm-field"><div class="sdm-lbl">Q3 In</div><input class="sdm-inp sensitive" id="sd-q3in" placeholder="10.3"></div>
+            <div class="sdm-field"><div class="sdm-lbl">Q3 Out</div><input class="sdm-inp sensitive" id="sd-q3out" placeholder="22.5"></div>
+            <div class="sdm-field"><div class="sdm-lbl">Q4 In</div><input class="sdm-inp sensitive" id="sd-q4in" placeholder="29.9"></div>
+            <div class="sdm-field"><div class="sdm-lbl">Q4 Out</div><input class="sdm-inp sensitive" id="sd-q4out" placeholder="13.3"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 계약 ── -->
+      <div class="sdm-section" id="sdm-contracts">
+        <div class="sdm-warn">⚠ 계약서 원본 파일 자체는 여기에 저장하지 마세요. 계약 메타데이터(명칭·금액·조건 요약)만 입력하세요. 원본은 사내 보안 스토리지(SharePoint·암호화 NAS)에 보관하세요.</div>
+        <div class="sdm-group">
+          <div class="sdm-glbl">EPC 계약 — NSW BESS</div>
+          <div class="sdm-row2">
+            <div class="sdm-field"><div class="sdm-lbl">계약 상대방</div><input class="sdm-inp" id="sd-epc-party" placeholder="예: John Holland Group"></div>
+            <div class="sdm-field"><div class="sdm-lbl">계약 금액 <span class="sdm-lbl-note">(A$M)</span></div><input class="sdm-inp sensitive" id="sd-epc-amt" placeholder="예: 58.0"></div>
+          </div>
+          <div class="sdm-row2">
+            <div class="sdm-field"><div class="sdm-lbl">LDs 조항 <span class="sdm-lbl-note">(A$/day)</span></div><input class="sdm-inp sensitive" id="sd-epc-ld" placeholder="예: 75000"></div>
+            <div class="sdm-field"><div class="sdm-lbl">완공 기한</div><input class="sdm-inp" id="sd-epc-due" placeholder="예: 2025-Q4"></div>
+          </div>
+          <div class="sdm-field"><div class="sdm-lbl">주요 리스크 조항 <span class="sdm-lbl-note">(요약만 입력)</span></div><textarea class="sdm-textarea" id="sd-epc-risk" placeholder="예: Force Majeure 범위 과도 광범위 — 재협상 필요. Performance Bond 10% 미확보."></textarea></div>
+        </div>
+        <div class="sdm-group">
+          <div class="sdm-glbl">PPA 계약 — QLD</div>
+          <div class="sdm-row2">
+            <div class="sdm-field"><div class="sdm-lbl">계약 상대방</div><input class="sdm-inp" id="sd-ppa-party" placeholder="예: Origin Energy"></div>
+            <div class="sdm-field"><div class="sdm-lbl">연간 수익 <span class="sdm-lbl-note">(A$M/yr)</span></div><input class="sdm-inp sensitive" id="sd-ppa-rev" placeholder="예: 9.2"></div>
+          </div>
+          <div class="sdm-row2">
+            <div class="sdm-field"><div class="sdm-lbl">계약 기간</div><input class="sdm-inp" id="sd-ppa-term" placeholder="예: 15년 (2026-2041)"></div>
+            <div class="sdm-field"><div class="sdm-lbl">계약 단가 <span class="sdm-lbl-note">(A$/MWh)</span></div><input class="sdm-inp sensitive" id="sd-ppa-price" placeholder="예: 85"></div>
+          </div>
+        </div>
+        <div class="sdm-group">
+          <div class="sdm-glbl">배터리 공급계약 — CATL</div>
+          <div class="sdm-row2">
+            <div class="sdm-field"><div class="sdm-lbl">공급 규모 <span class="sdm-lbl-note">(MWh)</span></div><input class="sdm-inp" id="sd-catl-mwh" placeholder="예: 100"></div>
+            <div class="sdm-field"><div class="sdm-lbl">계약 금액 <span class="sdm-lbl-note">(A$M)</span></div><input class="sdm-inp sensitive" id="sd-catl-amt" placeholder="예: 28.8"></div>
+          </div>
+          <div class="sdm-row3">
+            <div class="sdm-field"><div class="sdm-lbl">계약금 <span class="sdm-lbl-note">(%)</span></div><input class="sdm-inp sensitive" id="sd-catl-dep" placeholder="30"></div>
+            <div class="sdm-field"><div class="sdm-lbl">출하 전 <span class="sdm-lbl-note">(%)</span></div><input class="sdm-inp sensitive" id="sd-catl-ship" placeholder="60"></div>
+            <div class="sdm-field"><div class="sdm-lbl">검수 후 <span class="sdm-lbl-note">(%)</span></div><input class="sdm-inp sensitive" id="sd-catl-final" placeholder="10"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 저장 현황 ── -->
+      <div class="sdm-section" id="sdm-status">
+        <div class="sdm-info">💡 Worker 연결 시 KV Store에 저장된 키 목록을 확인할 수 있습니다.</div>
+        <div id="sdm-status-content">
+          <div class="sdm-lock-notice">
+            <div class="lock-icon">🔐</div>
+            <div id="sdm-status-msg">Cloudflare Worker 연결 후 저장 현황을 확인할 수 있습니다.</div>
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <button class="btn-primary" onclick="checkWorkerStatus()" style="font-size:10px">Worker 연결 확인</button>
+          <button class="btn-secondary" onclick="clearSessionData()" style="font-size:10px;margin-left:6px">세션 데이터 초기화</button>
+        </div>
+      </div>
+
+    </div><!-- /sdm-body -->
+
+    <div class="sdm-footer">
+      <button class="sdm-save" id="sdm-save-btn" onclick="saveSecureData()">🔐 암호화 저장</button>
+      <button class="sdm-cancel" onclick="closeSDM()">닫기</button>
+      <div class="sdm-status" id="sdm-status-bar"></div>
+    </div>
+  </div>
+</div>
+
+<div class="sdm-applied-badge" id="sdm-applied-badge">✅ 데이터 대시보드에 적용됨</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// SECURE DATA MANAGER
+// ══════════════════════════════════════════════════════════════
+
+// 세션 내 임시 저장소 (Worker 미연결 시 fallback)
+let secureSession = {};
+let sdmCurrentTab = 'fin';
+let msMounts = { nsw: [], qld: [], vic: [] };
+
+function openSDM() {
+  document.getElementById('sdm-overlay').classList.add('on');
+  sdmLoadFromSession();
+  renderMilestones();
+  if (WORKER_URL) sdmLoadFromKV();
+}
+
+function closeSDM() {
+  document.getElementById('sdm-overlay').classList.remove('on');
+}
+
+function sdmTab(tab, btn) {
+  sdmCurrentTab = tab;
+  document.querySelectorAll('.sdm-ntab').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.sdm-section').forEach(s => s.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('sdm-' + tab).classList.add('on');
+}
+
+// ── 세션 저장/로드 (브라우저 메모리만, 탭 닫으면 소멸)
+function sdmLoadFromSession() {
+  const d = secureSession;
+  const fields = [
+    'total','senior','mezz','equity','dr','irr',
+    'rf','erp','beta','kd','tax','dlev',
+    'cf-rev','cf-in','cf-out','cf-rem',
+    'q1in','q1out','q2in','q2out','q3in','q3out','q4in','q4out',
+    'epc-party','epc-amt','epc-ld','epc-due','epc-risk',
+    'ppa-party','ppa-rev','ppa-term','ppa-price',
+    'catl-mwh','catl-amt','catl-dep','catl-ship','catl-final'
+  ];
+  fields.forEach(k => {
+    const el = document.getElementById('sd-' + k);
+    if (el && d[k] !== undefined) el.value = d[k];
+  });
+}
+
+function sdmCollectFields() {
+  const d = {};
+  document.querySelectorAll('[id^="sd-"]').forEach(el => {
+    const key = el.id.replace('sd-', '');
+    if (el.value) d[key] = el.value;
+  });
+  return d;
+}
+
+async function saveSecureData() {
+  const btn = document.getElementById('sdm-save-btn');
+  const status = document.getElementById('sdm-status-bar');
+  btn.disabled = true;
+  status.className = 'sdm-status loading';
+  status.textContent = '저장 중...';
+
+  // 1. 세션에 수집
+  const fields = sdmCollectFields();
+  Object.assign(secureSession, fields);
+
+  // 마일스톤도 수집
+  secureSession._milestones = msMounts;
+
+  // 2. Worker 연결된 경우 KV에 암호화 저장
+  if (WORKER_URL && JWT_TOKEN) {
+    try {
+      // 재무 데이터
+      await kvSet('finance.capital_structure', {
+        total: fields['total'], senior: fields['senior'],
+        mezz: fields['mezz'], equity: fields['equity'],
+        dr: fields['dr'], irr: fields['irr']
+      });
+      await kvSet('finance.wacc_inputs', {
+        rf: fields['rf'], erp: fields['erp'], beta: fields['beta'],
+        kd: fields['kd'], tax: fields['tax'], dlev: fields['dlev']
+      });
+      await kvSet('accounting.cashflow', {
+        rev: fields['cf-rev'], in: fields['cf-in'],
+        out: fields['cf-out'], rem: fields['cf-rem'],
+        q1in: fields['q1in'], q1out: fields['q1out'],
+        q2in: fields['q2in'], q2out: fields['q2out'],
+        q3in: fields['q3in'], q3out: fields['q3out'],
+        q4in: fields['q4in'], q4out: fields['q4out'],
+      });
+      await kvSet('accounting.milestones', msMounts);
+      await kvSet('contracts.list', {
+        epc: { party: fields['epc-party'], amt: fields['epc-amt'], ld: fields['epc-ld'], due: fields['epc-due'], risk: fields['epc-risk'] },
+        ppa: { party: fields['ppa-party'], rev: fields['ppa-rev'], term: fields['ppa-term'], price: fields['ppa-price'] },
+        catl: { mwh: fields['catl-mwh'], amt: fields['catl-amt'], dep: fields['catl-dep'], ship: fields['catl-ship'], final: fields['catl-final'] }
+      });
+      status.className = 'sdm-status ok';
+      status.textContent = '✅ KV 암호화 저장 완료';
+    } catch(e) {
+      status.className = 'sdm-status err';
+      status.textContent = '⚠ KV 저장 실패 — 세션에만 보관';
+    }
+  } else {
+    status.className = 'sdm-status ok';
+    status.textContent = '✅ 세션 저장 완료 (Worker 미연결 — 탭 종료 시 소멸)';
+  }
+
+  // 3. 대시보드에 즉시 적용
+  applySecureDataToDashboard(secureSession);
+  btn.disabled = false;
+
+  // 적용 배지 표시
+  const badge = document.getElementById('sdm-applied-badge');
+  badge.style.display = 'block';
+  setTimeout(() => badge.style.display = 'none', 3000);
+}
+
+// ── Worker KV 연동
+async function kvSet(key, value) {
+  const r = await fetch(WORKER_URL + '/data/set', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + JWT_TOKEN },
+    body: JSON.stringify({ key, value })
+  });
+  if (!r.ok) throw new Error('KV set failed: ' + key);
+}
+
+async function kvGet(key) {
+  const r = await fetch(WORKER_URL + '/data/get', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + JWT_TOKEN },
+    body: JSON.stringify({ key })
+  });
+  const d = await r.json();
+  return d.data;
+}
+
+async function sdmLoadFromKV() {
+  if (!WORKER_URL || !JWT_TOKEN) return;
+  try {
+    const [fin, wacc, cf, ms, contracts] = await Promise.all([
+      kvGet('finance.capital_structure'),
+      kvGet('finance.wacc_inputs'),
+      kvGet('accounting.cashflow'),
+      kvGet('accounting.milestones'),
+      kvGet('contracts.list'),
+    ]);
+    if (fin) { Object.assign(secureSession, { total:fin.total, senior:fin.senior, mezz:fin.mezz, equity:fin.equity, dr:fin.dr, irr:fin.irr }); }
+    if (wacc) { Object.assign(secureSession, { rf:wacc.rf, erp:wacc.erp, beta:wacc.beta, kd:wacc.kd, tax:wacc.tax, dlev:wacc.dlev }); }
+    if (cf) { Object.assign(secureSession, { 'cf-rev':cf.rev, 'cf-in':cf.in, 'cf-out':cf.out, 'cf-rem':cf.rem, q1in:cf.q1in, q1out:cf.q1out, q2in:cf.q2in, q2out:cf.q2out, q3in:cf.q3in, q3out:cf.q3out, q4in:cf.q4in, q4out:cf.q4out }); }
+    if (ms) { msMounts = ms; renderMilestones(); }
+    if (contracts) {
+      const e = contracts.epc || {}; const p = contracts.ppa || {}; const ca = contracts.catl || {};
+      Object.assign(secureSession, { 'epc-party':e.party, 'epc-amt':e.amt, 'epc-ld':e.ld, 'epc-due':e.due, 'epc-risk':e.risk, 'ppa-party':p.party, 'ppa-rev':p.rev, 'ppa-term':p.term, 'ppa-price':p.price, 'catl-mwh':ca.mwh, 'catl-amt':ca.amt, 'catl-dep':ca.dep, 'catl-ship':ca.ship, 'catl-final':ca.final });
+    }
+    sdmLoadFromSession();
+    applySecureDataToDashboard(secureSession);
+  } catch(e) { console.warn('KV load failed:', e.message); }
+}
+
+// ── 마일스톤 동적 추가
+const MS_STATUS_OPTS = ['완료', '진행중', '예정'];
+function renderMilestones() {
+  ['nsw','qld','vic'].forEach(proj => {
+    const container = document.getElementById('sdm-ms-' + proj + '-list');
+    if (!container) return;
+    const items = msMounts[proj] || [];
+    container.innerHTML = items.map((m, i) => `
+      <div class="sdm-ms-item">
+        <div class="sdm-ms-hdr">
+          <span class="sdm-ms-idx">#${i+1}</span>
+          <span style="font-size:10px;color:#7a8090;font-weight:600">마일스톤 ${i+1}</span>
+          <button class="sdm-ms-del" onclick="delMsItem('${proj}',${i})">✕</button>
+        </div>
+        <div class="sdm-row2">
+          <div class="sdm-field"><div class="sdm-lbl">명칭</div><input class="sdm-inp" value="${m.name||''}" oninput="msMounts['${proj}'][${i}].name=this.value" placeholder="예: Battery Procurement"></div>
+          <div class="sdm-field"><div class="sdm-lbl">상태</div>
+            <select class="sdm-inp" onchange="msMounts['${proj}'][${i}].status=this.value">
+              ${MS_STATUS_OPTS.map(s=>`<option value="${s}" ${m.status===s?'selected':''}>${s}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="sdm-row2">
+          <div class="sdm-field"><div class="sdm-lbl">금액 <span class="sdm-lbl-note">(A$M, +수입/-지출)</span></div><input class="sdm-inp sensitive" value="${m.amt||''}" oninput="msMounts['${proj}'][${i}].amt=this.value" placeholder="예: +34.9 또는 -28.8"></div>
+          <div class="sdm-field"><div class="sdm-lbl">예정 시점</div><input class="sdm-inp" value="${m.date||''}" oninput="msMounts['${proj}'][${i}].date=this.value" placeholder="예: 2025.Q4"></div>
+        </div>
+        <div class="sdm-field"><div class="sdm-lbl">설명</div><input class="sdm-inp" value="${m.desc||''}" oninput="msMounts['${proj}'][${i}].desc=this.value" placeholder="간단한 설명"></div>
+      </div>`).join('') || '<div style="font-size:10px;color:#3a4060;text-align:center;padding:12px">마일스톤 없음 — 추가 버튼을 눌러 입력하세요</div>';
+  });
+}
+
+function addMsItem(proj) {
+  if (!msMounts[proj]) msMounts[proj] = [];
+  msMounts[proj].push({ name:'', status:'예정', amt:'', date:'', desc:'' });
+  renderMilestones();
+}
+
+function delMsItem(proj, idx) {
+  msMounts[proj].splice(idx, 1);
+  renderMilestones();
+}
+
+// ── 대시보드에 실제 반영
+function applySecureDataToDashboard(d) {
+  // 자본 구조
+  if (d.total)  document.getElementById('cap-total')?.textContent && (document.getElementById('cap-total').textContent = 'A$'+d.total+'M');
+  if (d.senior) document.getElementById('cap-senior')?.textContent && (document.getElementById('cap-senior').textContent = 'A$'+d.senior+'M');
+  if (d.mezz)   document.getElementById('cap-mezz')?.textContent && (document.getElementById('cap-mezz').textContent = 'A$'+d.mezz+'M');
+  if (d.equity) document.getElementById('cap-eq')?.textContent && (document.getElementById('cap-eq').textContent = 'A$'+d.equity+'M');
+  if (d.dr) {
+    document.getElementById('fin-dr')?.textContent && (document.getElementById('fin-dr').textContent = d.dr+'%');
+    document.getElementById('debt-lbl')?.textContent && (document.getElementById('debt-lbl').textContent = d.dr+'% / A$'+(d.senior||'?')+'M');
+    const bar = document.getElementById('debt-bar-fill');
+    if (bar) { bar.style.width = d.dr+'%'; bar.textContent = '부채 '+d.dr+'%'; }
+  }
+  if (d.irr) document.getElementById('fin-irr')?.textContent && (document.getElementById('fin-irr').textContent = d.irr+'%');
+
+  // WACC 자동 계산 적용
+  if (d.rf)   { const el=document.getElementById('w-rf');   if(el){el.value=d.rf;} }
+  if (d.erp)  { const el=document.getElementById('w-erp');  if(el){el.value=d.erp;} }
+  if (d.beta) { const el=document.getElementById('w-beta'); if(el){el.value=d.beta;} }
+  if (d.kd)   { const el=document.getElementById('w-kd');   if(el){el.value=d.kd;} }
+  if (d.tax)  { const el=document.getElementById('w-tax');  if(el){el.value=d.tax;} }
+  if (d.dlev) { const el=document.getElementById('w-dlev'); if(el){el.value=d.dlev;} }
+  if (d.rf || d.kd) recalcWacc();
+
+  // 현금흐름 KPI
+  if (d['cf-rev']) { const e=document.getElementById('cf-rev'); if(e) e.textContent='A$'+d['cf-rev']+'M'; }
+  if (d['cf-in'])  { const e=document.getElementById('cf-in');  if(e) e.textContent='A$'+d['cf-in']+'M'; }
+  if (d['cf-out']) { const e=document.getElementById('cf-out'); if(e) e.textContent='A$'+d['cf-out']+'M'; }
+  if (d['cf-rem']) { const e=document.getElementById('cf-rem'); if(e) e.textContent='A$'+d['cf-rem']+'M'; }
+
+  // 분기 현금흐름 editor inputs
+  ['q1in','q1out','q2in','q2out','q3in','q3out','q4in','q4out'].forEach(k => {
+    const el = document.getElementById('cf-' + k.replace('in','-in').replace('out','-out').replace('q','q'));
+    if (el && d[k]) el.value = d[k];
+  });
+}
+
+async function checkWorkerStatus() {
+  const msg = document.getElementById('sdm-status-msg');
+  if (!WORKER_URL) { msg.textContent = '⚠ WORKER_URL이 설정되지 않았습니다. gess_v8.html의 WORKER_URL 변수를 채워주세요.'; return; }
+  try {
+    const r = await fetch(WORKER_URL + '/health');
+    const d = await r.json();
+    if (d.ok) {
+      msg.textContent = '✅ Worker 연결 성공 · ' + new Date(d.ts).toLocaleTimeString('ko-KR');
+      if (JWT_TOKEN) {
+        const r2 = await fetch(WORKER_URL + '/data/list', {
+          method: 'POST', headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+JWT_TOKEN },
+          body: JSON.stringify({})
+        });
+        const d2 = await r2.json();
+        const content = document.getElementById('sdm-status-content');
+        content.innerHTML = '<div style="font-size:10px;color:#3ECFA0;margin-bottom:8px">✅ KV Store 연결 확인</div>' +
+          (d2.keys||[]).map(k => `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #111830;font-size:10px">
+            <span style="color:${k.filled?'#3ECFA0':'#3a4060'}">${k.filled?'●':'○'}</span>
+            <span style="font-family:monospace;color:#7a8090">${k.key}</span>
+            <span style="margin-left:auto;color:${k.filled?'#3ECFA0':'#3a4060'}">${k.filled?'저장됨':'미입력'}</span>
+          </div>`).join('');
+      }
+    }
+  } catch(e) { msg.textContent = '⚠ Worker 응답 없음: ' + e.message; }
+}
+
+function clearSessionData() {
+  if (!confirm('세션 임시 데이터를 초기화하시겠습니까? KV 저장 데이터는 유지됩니다.')) return;
+  secureSession = {};
+  msMounts = { nsw:[], qld:[], vic:[] };
+  document.querySelectorAll('[id^="sd-"]').forEach(el => { if(el.tagName!=='SELECT') el.value=''; });
+  renderMilestones();
+}
+</script>
+
+</body>
+</html>
