@@ -948,13 +948,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       <div class="tab-section-ttl" style="margin-top:14px">⚖️ AI 계약 리스크 분석</div>
       <div id="legal-upload-area">
-        <div class="tab-section-ttl" style="margin-top:4px;font-size:9px">⚡ 데모 시나리오 (Worker 미연결 시)</div>
-        <div class="demo-contracts">
-          <button class="demo-btn" onclick="demoAnalyze('epc')">🏗️ EPC (NSW)</button>
-          <button class="demo-btn" onclick="demoAnalyze('ppa')">⚡ PPA (QLD)</button>
-          <button class="demo-btn" onclick="demoAnalyze('supply')">📦 CATL 공급</button>
-          <button class="demo-btn" onclick="demoAnalyze('grid')">🔌 AusGrid</button>
-        </div>
+
       </div>
 
       <div class="legal-loading" id="legal-loading">
@@ -2266,41 +2260,79 @@ Specialize in business strategy, competitive analysis, new order strategy, and b
 
       <!-- ── 계약 ── -->
       <div class="sdm-section" id="sdm-contracts">
-        <div class="sdm-warn">⚠ 계약서 원본 파일 자체는 여기에 저장하지 마세요. 계약 메타데이터(명칭·금액·조건 요약)만 입력하세요. 원본은 사내 보안 스토리지(SharePoint·암호화 NAS)에 보관하세요.</div>
+        <div class="sdm-warn">⚠ 계약서 원본 파일은 법률 탭 R2 저장소에 업로드하세요. 여기서는 핵심 메타데이터(금액·조건 요약)만 입력합니다.</div>
+
+        <!-- RVB: SSA -->
         <div class="sdm-group">
-          <div class="sdm-glbl">EPC 계약 — NSW BESS</div>
+          <div class="sdm-glbl">⚡ RVB — SSA <span class="sdm-glbl-badge">Supply & Services Agreement</span></div>
+          <div style="font-size:10px;color:#5a6080;margin-bottom:10px;line-height:1.6">발주처(프로젝트 소유주) 대신 배터리 조달·SI 패키지 제공 계약. GESS가 System Integrator로서 공급 의무를 부담합니다.</div>
           <div class="sdm-row2">
-            <div class="sdm-field"><div class="sdm-lbl">계약 상대방</div><input class="sdm-inp" id="sd-epc-party" placeholder="예: John Holland Group"></div>
-            <div class="sdm-field"><div class="sdm-lbl">계약 금액 <span class="sdm-lbl-note">(A$M)</span></div><input class="sdm-inp sensitive" id="sd-epc-amt" placeholder="예: 58.0"></div>
+            <div class="sdm-field"><div class="sdm-lbl">발주처 (Principal)</div><input class="sdm-inp" id="sd-ssa-principal" placeholder="예: AGL Energy Ltd"></div>
+            <div class="sdm-field"><div class="sdm-lbl">계약 금액 <span class="sdm-lbl-note">(A$M)</span></div><input class="sdm-inp sensitive" id="sd-ssa-amt" placeholder="예: 45.0"></div>
           </div>
           <div class="sdm-row2">
-            <div class="sdm-field"><div class="sdm-lbl">LDs 조항 <span class="sdm-lbl-note">(A$/day)</span></div><input class="sdm-inp sensitive" id="sd-epc-ld" placeholder="예: 75000"></div>
-            <div class="sdm-field"><div class="sdm-lbl">완공 기한</div><input class="sdm-inp" id="sd-epc-due" placeholder="예: 2025-Q4"></div>
+            <div class="sdm-field"><div class="sdm-lbl">공급 규모 <span class="sdm-lbl-note">(MWh)</span></div><input class="sdm-inp" id="sd-ssa-mwh" placeholder="예: 100"></div>
+            <div class="sdm-field"><div class="sdm-lbl">납기 <span class="sdm-lbl-note">(목표일)</span></div><input class="sdm-inp" id="sd-ssa-due" placeholder="예: 2025-Q4"></div>
           </div>
-          <div class="sdm-field"><div class="sdm-lbl">주요 리스크 조항 <span class="sdm-lbl-note">(요약만 입력)</span></div><textarea class="sdm-textarea" id="sd-epc-risk" placeholder="예: Force Majeure 범위 과도 광범위 — 재협상 필요. Performance Bond 10% 미확보."></textarea></div>
+          <div class="sdm-field"><div class="sdm-lbl">주요 리스크 조항 요약</div><textarea class="sdm-textarea" id="sd-ssa-risk" placeholder="예: Performance Guarantee 조항, LDs 구조, Warranty 범위 등"></textarea></div>
         </div>
+
+        <!-- RVB: LTSA -->
         <div class="sdm-group">
-          <div class="sdm-glbl">PPA 계약 — QLD</div>
+          <div class="sdm-glbl">⚡ RVB — LTSA <span class="sdm-glbl-badge">Long Term Supply Agreement</span></div>
+          <div style="font-size:10px;color:#5a6080;margin-bottom:10px;line-height:1.6">배터리 제조사(CATL 등)와 장기 생산 Slot 확보 계약. GESS가 구매자로서 일정 물량을 장기 약정합니다.</div>
           <div class="sdm-row2">
-            <div class="sdm-field"><div class="sdm-lbl">계약 상대방</div><input class="sdm-inp" id="sd-ppa-party" placeholder="예: Origin Energy"></div>
-            <div class="sdm-field"><div class="sdm-lbl">연간 수익 <span class="sdm-lbl-note">(A$M/yr)</span></div><input class="sdm-inp sensitive" id="sd-ppa-rev" placeholder="예: 9.2"></div>
+            <div class="sdm-field"><div class="sdm-lbl">공급사 (Supplier)</div><input class="sdm-inp" id="sd-ltsa-supplier" placeholder="예: CATL Europe GmbH"></div>
+            <div class="sdm-field"><div class="sdm-lbl">연간 약정 물량 <span class="sdm-lbl-note">(MWh/yr)</span></div><input class="sdm-inp sensitive" id="sd-ltsa-mwh" placeholder="예: 200"></div>
           </div>
           <div class="sdm-row2">
-            <div class="sdm-field"><div class="sdm-lbl">계약 기간</div><input class="sdm-inp" id="sd-ppa-term" placeholder="예: 15년 (2026-2041)"></div>
-            <div class="sdm-field"><div class="sdm-lbl">계약 단가 <span class="sdm-lbl-note">(A$/MWh)</span></div><input class="sdm-inp sensitive" id="sd-ppa-price" placeholder="예: 85"></div>
+            <div class="sdm-field"><div class="sdm-lbl">계약 기간</div><input class="sdm-inp" id="sd-ltsa-term" placeholder="예: 3년 (2025-2027)"></div>
+            <div class="sdm-field"><div class="sdm-lbl">단가 <span class="sdm-lbl-note">(A$/kWh)</span></div><input class="sdm-inp sensitive" id="sd-ltsa-price" placeholder="예: 165"></div>
           </div>
+          <div class="sdm-field"><div class="sdm-lbl">Take-or-Pay 조항 요약</div><textarea class="sdm-textarea" id="sd-ltsa-top" placeholder="예: 연간 약정 물량의 80% 미달 시 페널티, Price escalation clause 포함"></textarea></div>
         </div>
+
+        <!-- RVB: 부속서류 -->
         <div class="sdm-group">
-          <div class="sdm-glbl">배터리 공급계약 — CATL</div>
+          <div class="sdm-glbl">📎 RVB — 부속서류 <span class="sdm-glbl-badge">SCG · PCG · Interface · PG Schedule</span></div>
+          <div style="font-size:10px;color:#5a6080;margin-bottom:10px;line-height:1.6">SCG(Supplier Corporate Guarantee) · PCG(Principal Corporate Guarantee) · Interface Agreement · Performance Guarantee Schedule</div>
           <div class="sdm-row2">
-            <div class="sdm-field"><div class="sdm-lbl">공급 규모 <span class="sdm-lbl-note">(MWh)</span></div><input class="sdm-inp" id="sd-catl-mwh" placeholder="예: 100"></div>
-            <div class="sdm-field"><div class="sdm-lbl">계약 금액 <span class="sdm-lbl-note">(A$M)</span></div><input class="sdm-inp sensitive" id="sd-catl-amt" placeholder="예: 28.8"></div>
+            <div class="sdm-field"><div class="sdm-lbl">SCG 제공 주체</div><input class="sdm-inp" id="sd-annex-scg" placeholder="예: CATL Co., Ltd (모회사)"></div>
+            <div class="sdm-field"><div class="sdm-lbl">PCG 제공 주체</div><input class="sdm-inp" id="sd-annex-pcg" placeholder="예: AGL Energy Ltd (모회사)"></div>
           </div>
+          <div class="sdm-field"><div class="sdm-lbl">Interface Agreement 당사자</div><input class="sdm-inp" id="sd-annex-interface" placeholder="예: GESS ↔ AusGrid ↔ AGL (3자 계약)"></div>
+          <div class="sdm-field"><div class="sdm-lbl">Performance Guarantee 핵심 지표</div><textarea class="sdm-textarea" id="sd-annex-pg" placeholder="예: Round-trip efficiency ≥87%, Capacity retention ≥80% at 10yr, Response time ≤200ms"></textarea></div>
+        </div>
+
+        <!-- PM: 특허 -->
+        <div class="sdm-group">
+          <div class="sdm-glbl">🔬 PM — 특허 출원 현황</div>
+          <div style="font-size:10px;color:#5a6080;margin-bottom:10px;line-height:1.6">국내 출원일 2025.04 기준 · PCT 출원 시 최대 30개월(~2027.10) 해외 진입 유예 가능</div>
           <div class="sdm-row3">
-            <div class="sdm-field"><div class="sdm-lbl">계약금 <span class="sdm-lbl-note">(%)</span></div><input class="sdm-inp sensitive" id="sd-catl-dep" placeholder="30"></div>
-            <div class="sdm-field"><div class="sdm-lbl">출하 전 <span class="sdm-lbl-note">(%)</span></div><input class="sdm-inp sensitive" id="sd-catl-ship" placeholder="60"></div>
-            <div class="sdm-field"><div class="sdm-lbl">검수 후 <span class="sdm-lbl-note">(%)</span></div><input class="sdm-inp sensitive" id="sd-catl-final" placeholder="10"></div>
+            <div class="sdm-field"><div class="sdm-lbl">국내 출원번호</div><input class="sdm-inp" id="sd-pat-kr" placeholder="예: 10-2025-XXXXXX"></div>
+            <div class="sdm-field"><div class="sdm-lbl">출원일</div><input class="sdm-inp" id="sd-pat-date" placeholder="예: 2025-04-XX"></div>
+            <div class="sdm-field"><div class="sdm-lbl">PCT 출원 기한</div><input class="sdm-inp" id="sd-pat-pct-due" placeholder="예: 2026-04-XX (12개월)"></div>
           </div>
+          <div class="sdm-row2">
+            <div class="sdm-field"><div class="sdm-lbl">호주 진입 기한</div><input class="sdm-inp" id="sd-pat-au-due" placeholder="예: 2027-10-XX (30개월)"></div>
+            <div class="sdm-field"><div class="sdm-lbl">출원 대리인</div><input class="sdm-inp" id="sd-pat-agent" placeholder="예: XX 특허법인"></div>
+          </div>
+          <div class="sdm-field"><div class="sdm-lbl">발명 요약</div><textarea class="sdm-textarea" id="sd-pat-summary" placeholder="예: BESS 시스템 최적화 알고리즘 관련 발명"></textarea></div>
+        </div>
+
+        <!-- BM -->
+        <div class="sdm-group">
+          <div class="sdm-glbl">📊 BM — 사업기획/개발 · 영업/수주</div>
+          <div style="font-size:10px;color:#5a6080;margin-bottom:10px;line-height:1.6">국내외 영업·수주 활동에 수반되는 계약 메타데이터</div>
+          <div class="sdm-row2">
+            <div class="sdm-field"><div class="sdm-lbl">고객사/파트너</div><input class="sdm-inp" id="sd-bm-partner" placeholder="예: Origin Energy, AGL, Neoen"></div>
+            <div class="sdm-field"><div class="sdm-lbl">계약 유형</div><input class="sdm-inp" id="sd-bm-type" placeholder="예: MOU, NDA, LOI, Framework Agreement"></div>
+          </div>
+          <div class="sdm-row2">
+            <div class="sdm-field"><div class="sdm-lbl">계약 금액 <span class="sdm-lbl-note">(A$M, 예상)</span></div><input class="sdm-inp sensitive" id="sd-bm-amt" placeholder="예: 80.0"></div>
+            <div class="sdm-field"><div class="sdm-lbl">수주 목표일</div><input class="sdm-inp" id="sd-bm-due" placeholder="예: 2025-Q3"></div>
+          </div>
+          <div class="sdm-field"><div class="sdm-lbl">비고</div><textarea class="sdm-textarea" id="sd-bm-note" placeholder="예: Competitive bid 진행 중, 주요 경쟁사: Fluence, Tesla Energy"></textarea></div>
         </div>
       </div>
 
