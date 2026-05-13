@@ -1093,12 +1093,11 @@ tr:hover td{background:rgba(255,255,255,.01)}
 
       <div class="tab-section-ttl">💵 현금흐름 요약 (Project Level)</div>
       <div class="cashflow-grid">
-           <div class="cf-card" style="--cc:#3ECFA0"><div class="cf-lbl">총 계약 수익</div><div class="cf-val" id="cf-rev">A$558M</div><div class="cf-sub">Battery+PCS+Control System</div></div>
-           <div class="cf-card" style="--cc:#5B9BD5"><div class="cf-lbl">인식 완료 매출</div><div class="cf-val" id="cf-in">A$6.9M</div><div class="cf-sub">누적 기준</div></div>
-           <div class="cf-card" style="--cc:#E05D5D"><div class="cf-lbl">영업 이익</div><div class="cf-val" id="cf-out">A$85M</div><div class="cf-sub">EPC·조달·인건비</div></div>
-           <div class="cf-card" style="--cc:#E0A83D"><div class="cf-lbl">HEC 인식 매출/영업이익</div><div class="cf-val" id="cf-rem">A$505M/A$75M</div><div class="cf-sub">미래 milestone</div></div>
-          </div>
-
+        <div class="cf-card" style="--cc:#3ECFA0"><div class="cf-lbl">총 계약 수익</div><div class="cf-val" id="cf-rev">A$410M</div><div class="cf-sub">BESS+PV 포트폴리오</div></div>
+        <div class="cf-card" style="--cc:#5B9BD5"><div class="cf-lbl">인식 완료 (Cash In)</div><div class="cf-val" id="cf-in">A$74M</div><div class="cf-sub">누적 milestone 달성</div></div>
+        <div class="cf-card" style="--cc:#E05D5D"><div class="cf-lbl">집행 비용 (Cash Out)</div><div class="cf-val" id="cf-out">A$60M</div><div class="cf-sub">EPC·조달·인건비</div></div>
+        <div class="cf-card" style="--cc:#E0A83D"><div class="cf-lbl">잔여 계약 수익</div><div class="cf-val" id="cf-rem">A$336M</div><div class="cf-sub">미래 milestone</div></div>
+      </div>
 
       <div class="acc-grid">
         <div class="fbox">
@@ -1191,7 +1190,7 @@ tr:hover td{background:rgba(255,255,255,.01)}
                 <div class="ms2-bar"><div class="ms2-bar-fill" style="width:0%"></div></div>
               </div>
               <div class="ms2-right">
-                <div class="ms2-pct" style="background:rgba(91,155,213,.12);color:#5B9BD5;border:1px solid rgba(91,155,213,.25)">0.0%</div>
+                <div class="ms2-pct" style="background:rgba(91,155,213,.12);color:#5B9BD5;border:1px solid rgba(91,155,213,.25)">8.0%</div>
                 <div style="font-size:8px;color:#3a4060;margin-top:2px">○ 미착수</div>
               </div>
             </div>
@@ -3102,25 +3101,25 @@ Specialize in business strategy, competitive analysis, new order strategy, and b
         <!-- RVB: SSA -->
         <div class="sdm-group">
           <div class="sdm-glbl">⚡ RVB — SSA <span class="sdm-glbl-badge">Supply &amp; Services Agreement</span></div>
-          <div style="font-size:10px;color:#5a6080;margin-bottom:10px;line-height:1.6">발주처(ARK) 대신 배터리 조달·SI 패키지 제공. GESS가 System Integrator로서 공급 의무를 부담합니다.</div>
+          <div style="font-size:10px;color:#5a6080;margin-bottom:10px;line-height:1.6">발주처(ARK) ↔ HEAU 간 BESS SI Package 공급계약. GESS가 System Integrator로서 Battery+PCS+Control 공급 의무 부담.</div>
           <div class="sdm-row2">
             <div class="sdm-field"><div class="sdm-lbl">발주처 (Principal)</div><input class="sdm-inp" id="sd-ssa-principal" placeholder="예: ARK Energy"></div>
-            <div class="sdm-field"><div class="sdm-lbl">계약 금액 <span class="sdm-lbl-note">(A$M)</span></div><input class="sdm-inp sensitive" id="sd-ssa-amt" placeholder="예: 45.0"></div>
+            <div class="sdm-field"><div class="sdm-lbl">계약 금액 <span class="sdm-lbl-note">(A$M)</span></div><input class="sdm-inp sensitive" id="sd-ssa-amt" placeholder="예: 350.0"></div>
           </div>
           <div class="sdm-row2">
-            <div class="sdm-field"><div class="sdm-lbl">공급 규모 <span class="sdm-lbl-note">(MWh)</span></div><input class="sdm-inp" id="sd-ssa-mwh" placeholder="예: 2200"></div>
+            <div class="sdm-field"><div class="sdm-lbl">공급 규모 <span class="sdm-lbl-note">(MW/MWh)</span></div><input class="sdm-inp" id="sd-ssa-mwh" placeholder="예: 275MW / 2,200MWh"></div>
             <div class="sdm-field"><div class="sdm-lbl">납기 <span class="sdm-lbl-note">(목표일)</span></div><input class="sdm-inp" id="sd-ssa-due" placeholder="예: 2026-Q2"></div>
           </div>
-          <div class="sdm-field"><div class="sdm-lbl">주요 리스크 조항 요약</div><textarea class="sdm-textarea" id="sd-ssa-risk" placeholder="예: Performance Guarantee, LDs, Warranty, Back-to-Back 조항"></textarea></div>
+          <div class="sdm-field"><div class="sdm-lbl">주요 리스크 조항 요약</div><textarea class="sdm-textarea" id="sd-ssa-risk" placeholder="예: Performance Guarantee, LDs, Warranty, Back-to-Back 조항 일치 여부"></textarea></div>
         </div>
 
         <!-- RVB: LTSA -->
         <div class="sdm-group">
           <div class="sdm-glbl">⚡ RVB — LTSA <span class="sdm-glbl-badge">Long Term Supply Agreement</span></div>
-          <div style="font-size:10px;color:#5a6080;margin-bottom:10px;line-height:1.6">CATL과 장기 배터리 생산 Slot 확보 계약. HEC가 구매자로서 일정 물량을 장기 약정합니다.</div>
+          <div style="font-size:10px;color:#5a6080;margin-bottom:10px;line-height:1.6">CATL과 장기 배터리 생산 Slot 확보 계약 (HEC ↔ CATL). LFP 314Ah 기준.</div>
           <div class="sdm-row2">
             <div class="sdm-field"><div class="sdm-lbl">공급사 (Supplier)</div><input class="sdm-inp" id="sd-ltsa-supplier" placeholder="예: CATL Europe GmbH"></div>
-            <div class="sdm-field"><div class="sdm-lbl">연간 약정 물량 <span class="sdm-lbl-note">(MWh/yr)</span></div><input class="sdm-inp sensitive" id="sd-ltsa-mwh" placeholder="예: 2200"></div>
+            <div class="sdm-field"><div class="sdm-lbl">연간 약정 물량 <span class="sdm-lbl-note">(MWh/yr)</span></div><input class="sdm-inp sensitive" id="sd-ltsa-mwh" placeholder="예: 2,200"></div>
           </div>
           <div class="sdm-row2">
             <div class="sdm-field"><div class="sdm-lbl">계약 기간</div><input class="sdm-inp" id="sd-ltsa-term" placeholder="예: 3년 (2025-2027)"></div>
@@ -3132,7 +3131,6 @@ Specialize in business strategy, competitive analysis, new order strategy, and b
         <!-- RVB: 부속서류 -->
         <div class="sdm-group">
           <div class="sdm-glbl">📎 RVB — 부속서류 <span class="sdm-glbl-badge">SCG · PCG · Interface · PG Schedule</span></div>
-          <div style="font-size:10px;color:#5a6080;margin-bottom:10px;line-height:1.6">SCG(Supplier Corporate Guarantee) · PCG(Principal Corporate Guarantee) · Interface Agreement · Performance Guarantee Schedule</div>
           <div class="sdm-row2">
             <div class="sdm-field"><div class="sdm-lbl">SCG 제공 주체</div><input class="sdm-inp" id="sd-annex-scg" placeholder="예: CATL Co., Ltd (모회사)"></div>
             <div class="sdm-field"><div class="sdm-lbl">PCG 제공 주체</div><input class="sdm-inp" id="sd-annex-pcg" placeholder="예: ARK Energy (모회사)"></div>
@@ -3144,7 +3142,6 @@ Specialize in business strategy, competitive analysis, new order strategy, and b
         <!-- PM: 특허 -->
         <div class="sdm-group">
           <div class="sdm-glbl">🔬 PM — 특허 출원 현황</div>
-          <div style="font-size:10px;color:#5a6080;margin-bottom:10px;line-height:1.6">국내 출원일 2025.04 기준 · PCT 출원 시 최대 30개월(~2027.10) 해외 진입 유예 가능</div>
           <div class="sdm-row3">
             <div class="sdm-field"><div class="sdm-lbl">국내 출원번호</div><input class="sdm-inp" id="sd-pat-kr" placeholder="예: 10-2025-XXXXXX"></div>
             <div class="sdm-field"><div class="sdm-lbl">출원일</div><input class="sdm-inp" id="sd-pat-date" placeholder="예: 2025-04-XX"></div>
@@ -3160,7 +3157,6 @@ Specialize in business strategy, competitive analysis, new order strategy, and b
         <!-- BM -->
         <div class="sdm-group">
           <div class="sdm-glbl">📊 BM — 사업기획/개발 · 영업/수주</div>
-          <div style="font-size:10px;color:#5a6080;margin-bottom:10px;line-height:1.6">국내외 영업·수주 활동에 수반되는 계약 메타데이터</div>
           <div class="sdm-row2">
             <div class="sdm-field"><div class="sdm-lbl">고객사/파트너</div><input class="sdm-inp" id="sd-bm-partner" placeholder="예: ARK Energy, Origin Energy, AGL"></div>
             <div class="sdm-field"><div class="sdm-lbl">계약 유형</div><input class="sdm-inp" id="sd-bm-type" placeholder="예: MOU, NDA, LOI, Framework Agreement"></div>
@@ -3199,6 +3195,7 @@ Specialize in business strategy, competitive analysis, new order strategy, and b
 </div>
 
 <div class="sdm-applied-badge" id="sdm-applied-badge">✅ 데이터 대시보드에 적용됨</div>
+
 
 <script>
 // ══════════════════════════════════════════════════════════════
@@ -3351,7 +3348,7 @@ async function sdmLoadFromKV() {
     if (fin) { Object.assign(secureSession, { total:fin.total, senior:fin.senior, mezz:fin.mezz, equity:fin.equity, dr:fin.dr, irr:fin.irr }); }
     if (wacc) { Object.assign(secureSession, { rf:wacc.rf, erp:wacc.erp, beta:wacc.beta, kd:wacc.kd, tax:wacc.tax, dlev:wacc.dlev }); }
     if (cf) { Object.assign(secureSession, { 'cf-rev':cf.rev, 'cf-in':cf.in, 'cf-out':cf.out, 'cf-rem':cf.rem, q1in:cf.q1in, q1out:cf.q1out, q2in:cf.q2in, q2out:cf.q2out, q3in:cf.q3in, q3out:cf.q3out, q4in:cf.q4in, q4out:cf.q4out }); }
-    if (ms) { msMounts = ms.design ? ms : { design: ms.nsw||[], proc: ms.qld||[] }; renderMilestones(); }
+    if (ms) { msMounts = ms; renderMilestones(); }
     if (contracts) {
       const e = contracts.epc || {}; const p = contracts.ppa || {}; const ca = contracts.catl || {};
       Object.assign(secureSession, { 'epc-party':e.party, 'epc-amt':e.amt, 'epc-ld':e.ld, 'epc-due':e.due, 'epc-risk':e.risk, 'ppa-party':p.party, 'ppa-rev':p.rev, 'ppa-term':p.term, 'ppa-price':p.price, 'catl-mwh':ca.mwh, 'catl-amt':ca.amt, 'catl-dep':ca.dep, 'catl-ship':ca.ship, 'catl-final':ca.final });
@@ -3446,73 +3443,6 @@ function addMsItem(proj) {
   renderMilestones();
 }
 
-function delMsItem(proj, idx) {
-  msMounts[proj].splice(idx, 1);
-  renderMilestones();
-}
-
-// ── 대시보드에 실제 반영
-function applySecureDataToDashboard(d) {
-  // 자본 구조
-  if (d.total)  document.getElementById('cap-total')?.textContent && (document.getElementById('cap-total').textContent = 'A$'+d.total+'M');
-  if (d.senior) document.getElementById('cap-senior')?.textContent && (document.getElementById('cap-senior').textContent = 'A$'+d.senior+'M');
-  if (d.mezz)   document.getElementById('cap-mezz')?.textContent && (document.getElementById('cap-mezz').textContent = 'A$'+d.mezz+'M');
-  if (d.equity) document.getElementById('cap-eq')?.textContent && (document.getElementById('cap-eq').textContent = 'A$'+d.equity+'M');
-  if (d.dr) {
-    document.getElementById('fin-dr')?.textContent && (document.getElementById('fin-dr').textContent = d.dr+'%');
-    document.getElementById('debt-lbl')?.textContent && (document.getElementById('debt-lbl').textContent = d.dr+'% / A$'+(d.senior||'?')+'M');
-    const bar = document.getElementById('debt-bar-fill');
-    if (bar) { bar.style.width = d.dr+'%'; bar.textContent = '부채 '+d.dr+'%'; }
-  }
-  if (d.irr) document.getElementById('fin-irr')?.textContent && (document.getElementById('fin-irr').textContent = d.irr+'%');
-
-  // WACC 자동 계산 적용
-  if (d.rf)   { const el=document.getElementById('w-rf');   if(el){el.value=d.rf;} }
-  if (d.erp)  { const el=document.getElementById('w-erp');  if(el){el.value=d.erp;} }
-  if (d.beta) { const el=document.getElementById('w-beta'); if(el){el.value=d.beta;} }
-  if (d.kd)   { const el=document.getElementById('w-kd');   if(el){el.value=d.kd;} }
-  if (d.tax)  { const el=document.getElementById('w-tax');  if(el){el.value=d.tax;} }
-  if (d.dlev) { const el=document.getElementById('w-dlev'); if(el){el.value=d.dlev;} }
-  if (d.rf || d.kd) recalcWacc();
-
-  // 현금흐름 KPI
-  if (d['cf-rev']) { const e=document.getElementById('cf-rev'); if(e) e.textContent='A$'+d['cf-rev']+'M'; }
-  if (d['cf-in'])  { const e=document.getElementById('cf-in');  if(e) e.textContent='A$'+d['cf-in']+'M'; }
-  if (d['cf-out']) { const e=document.getElementById('cf-out'); if(e) e.textContent='A$'+d['cf-out']+'M'; }
-  if (d['cf-rem']) { const e=document.getElementById('cf-rem'); if(e) e.textContent='A$'+d['cf-rem']+'M'; }
-
-  // 분기 현금흐름 editor inputs
-  ['q1in','q1out','q2in','q2out','q3in','q3out','q4in','q4out'].forEach(k => {
-    const el = document.getElementById('cf-' + k.replace('in','-in').replace('out','-out').replace('q','q'));
-    if (el && d[k]) el.value = d[k];
-  });
-}
-
-async function checkWorkerStatus() {
-  const msg = document.getElementById('sdm-status-msg');
-  if (!WORKER_URL) { msg.textContent = '⚠ WORKER_URL이 설정되지 않았습니다. gess_v8.html의 WORKER_URL 변수를 채워주세요.'; return; }
-  try {
-    const r = await fetch(WORKER_URL + '/health');
-    const d = await r.json();
-    if (d.ok) {
-      msg.textContent = '✅ Worker 연결 성공 · ' + new Date(d.ts).toLocaleTimeString('ko-KR');
-      if (JWT_TOKEN) {
-        const r2 = await fetch(WORKER_URL + '/data/list', {
-          method: 'POST', headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+JWT_TOKEN },
-          body: JSON.stringify({})
-        });
-        const d2 = await r2.json();
-        const content = document.getElementById('sdm-status-content');
-        content.innerHTML = '<div style="font-size:10px;color:#3ECFA0;margin-bottom:8px">✅ KV Store 연결 확인</div>' +
-          (d2.keys||[]).map(k => `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #111830;font-size:10px">
-            <span style="color:${k.filled?'#3ECFA0':'#3a4060'}">${k.filled?'●':'○'}</span>
-            <span style="font-family:monospace;color:#7a8090">${k.key}</span>
-            <span style="margin-left:auto;color:${k.filled?'#3ECFA0':'#3a4060'}">${k.filled?'저장됨':'미입력'}</span>
-          </div>`).join('');
-      }
-    }
-  } catch(e) { msg.textContent = '⚠ Worker 응답 없음: ' + e.message; }
-}
 
 function clearSessionData() {
   if (!confirm('세션 임시 데이터를 초기화하시겠습니까? KV 저장 데이터는 유지됩니다.')) return;
@@ -3522,6 +3452,5 @@ function clearSessionData() {
   renderMilestones();
 }
 </script>
-
 </body>
 </html>
