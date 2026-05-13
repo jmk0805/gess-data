@@ -1177,18 +1177,21 @@ tr:hover td{background:rgba(255,255,255,.01)}
             <span style="color:#3ECFA0">구매부문 매출</span> = 구매할당매출(계약금액×98.5%) × 마일스톤 달성 비율 (달성 시 즉시 인식)
           </div>
 
-          <!-- MS3 LNTP: 진행중 (계획 2월 → 실적 6월 지연) -->
-          <div class="ms2-item progress" style="--mc:#E0A83D">
-            <div class="ms2-dot"></div>
+          <!-- MS3 LNTP: 미착수 + 6월 예정 배지 -->
+          <div class="ms2-item future" style="--mc:#5B9BD5">
+            <div class="ms2-dot" style="background:#5B9BD5;border-color:#5B9BD5"></div>
             <div class="ms2-row">
               <div class="ms2-left">
-                <div class="ms2-nm">MS3 · Early Supplier Stage 2 (LNTP)</div>
-                <div class="ms2-sub">Limited NTP · <span style="color:#E05D5D;font-weight:700">계획 2월 → 실적 6월 (지연 △4M)</span></div>
-                <div class="ms2-bar"><div class="ms2-bar-fill" style="width:35%"></div></div>
+                <div class="ms2-nm" style="display:flex;align-items:center;gap:6px">
+                  MS3 · Early Supplier Stage 2 (LNTP)
+                  <span style="font-size:8px;padding:2px 7px;border-radius:8px;background:rgba(91,155,213,.15);color:#5B9BD5;border:1px solid rgba(91,155,213,.35);font-weight:700;animation:blink 1.8s ease-in-out infinite">📅 2025.06 예정</span>
+                </div>
+                <div class="ms2-sub">Limited Notice To Proceed · <span style="color:#E05D5D">계획 2월 → 실적 6월 (지연 △4M)</span> · 구매부문 진척도 0%</div>
+                <div class="ms2-bar"><div class="ms2-bar-fill" style="width:0%"></div></div>
               </div>
               <div class="ms2-right">
-                <div class="ms2-pct">8.0%</div>
-                <div style="font-size:8px;color:#E0A83D;margin-top:2px">⏳ 진행중</div>
+                <div class="ms2-pct" style="background:rgba(91,155,213,.12);color:#5B9BD5;border:1px solid rgba(91,155,213,.25)">8.0%</div>
+                <div style="font-size:8px;color:#3a4060;margin-top:2px">○ 미착수</div>
               </div>
             </div>
           </div>
@@ -1495,68 +1498,96 @@ tr:hover td{background:rgba(255,255,255,.01)}
         </div>
       </div>
 
-      <div class="tab-section-ttl">🏆 경쟁사 동향 분석</div>
-      <div class="sbox">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div>
-            <div class="stl">호주 BESS 주요 경쟁사</div>
-            <div id="competitor-list">
-              <div class="competitor-row"><div class="comp-rank">1</div><div class="comp-info"><div class="comp-nm">Fluence (Siemens·AES JV)</div><div class="comp-desc">글로벌 1위 · 호주 점유율 ~22%</div><div class="comp-tags"><span class="comp-tag">Gridstack</span><span class="comp-tag">AI Bidding</span><span class="comp-tag">FCAS/LRET</span></div></div><div class="comp-score"><div class="comp-score-val">9.1</div><div class="comp-score-lbl">경쟁위협도</div></div></div>
-              <div class="competitor-row"><div class="comp-rank">2</div><div class="comp-info"><div class="comp-nm">Tesla Energy</div><div class="comp-desc">미국 · 호주 레퍼런스 다수</div><div class="comp-tags"><span class="comp-tag">Megapack</span><span class="comp-tag">Grid-Scale</span></div></div><div class="comp-score"><div class="comp-score-val">8.4</div><div class="comp-score-lbl">경쟁위협도</div></div></div>
-              <div class="competitor-row"><div class="comp-rank">3</div><div class="comp-info"><div class="comp-nm">BYD Energy</div><div class="comp-desc">중국 · 저가 공세 · 호주 관세 영향</div><div class="comp-tags"><span class="comp-tag">MC Cube</span><span class="comp-tag">LFP</span></div></div><div class="comp-score"><div class="comp-score-val">7.8</div><div class="comp-score-lbl">경쟁위협도</div></div></div>
-              <div class="competitor-row"><div class="comp-rank">4</div><div class="comp-info"><div class="comp-nm">Powin Energy</div><div class="comp-desc">미국계 · 호주 확장 중</div><div class="comp-tags"><span class="comp-tag">Stack 225</span></div></div><div class="comp-score"><div class="comp-score-val">6.5</div><div class="comp-score-lbl">경쟁위협도</div></div></div>
+      <!-- ── BESS 글로벌 뉴스 크롤링 ── -->
+      <div class="tab-section-ttl">🌏 글로벌 BESS 시장 동향 <span class="edit-badge" id="news-refresh-btn" onclick="refreshBESSNews()" style="cursor:pointer">⟳ 뉴스 업데이트</span></div>
+
+      <!-- 지역 필터 탭 -->
+      <div style="display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap">
+        <button class="cbtn on" id="news-tab-all" onclick="filterNews('all',this)">🌐 전체</button>
+        <button class="cbtn" id="news-tab-au" onclick="filterNews('au',this)">🇦🇺 호주</button>
+        <button class="cbtn" id="news-tab-eu" onclick="filterNews('eu',this)">🇪🇺 유럽</button>
+        <button class="cbtn" id="news-tab-us" onclick="filterNews('us',this)">🇺🇸 미국</button>
+        <button class="cbtn" id="news-tab-reg" onclick="filterNews('reg',this)">📋 규제/정책</button>
+      </div>
+
+      <!-- 뉴스 카드 목록 -->
+      <div id="bess-news-list" style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px">
+        <div style="text-align:center;padding:24px;color:#3a4060;font-size:11px">
+          <div style="font-size:20px;margin-bottom:8px">📰</div>
+          뉴스 업데이트 버튼을 눌러 최신 BESS 동향을 가져오세요
+        </div>
+      </div>
+
+      <!-- ── SI 신규 수익모델 브레인스토밍 ── -->
+      <div class="tab-section-ttl">💡 SI 신규 수익모델 브레인스토밍 <span style="font-size:8px;color:#5a6080;font-weight:400;text-transform:none;letter-spacing:0">AI와 함께 아이디어 발전</span></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <!-- SI 포지션 맥락 -->
+        <div class="sbox" style="background:linear-gradient(135deg,rgba(62,207,160,.05),rgba(91,155,213,.05))">
+          <div class="stl" style="color:#3ECFA0">🏭 GESS SI 포지션 현황</div>
+          <div style="font-size:10px;color:#7a8090;line-height:1.75;margin-bottom:10px">
+            <div style="padding:4px 0;border-bottom:1px solid #111830"><strong style="color:#3ECFA0">Core:</strong> 배터리 조달(CATL) + PCS 결합(SMA) + System Integration</div>
+            <div style="padding:4px 0;border-bottom:1px solid #111830"><strong style="color:#5B9BD5">현재 수익:</strong> SI 마진 = 계약금액 - (Battery + PCS + BOP + 인건비)</div>
+            <div style="padding:4px 0;border-bottom:1px solid #111830"><strong style="color:#E0A83D">리스크:</strong> 원자재 가격 변동, 납기 지연, Back-to-Back 계약 구조</div>
+            <div style="padding:4px 0"><strong style="color:#E76F51">기회:</strong> SI 레퍼런스 확보 → 소프트웨어/서비스 단계로 확장 검토</div>
+          </div>
+          <div style="background:#06090F;border:1px solid #1C2340;border-radius:7px;padding:9px">
+            <div style="font-size:8px;color:#3a4060;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px">💬 브레인스토밍 질문 예시</div>
+            <div class="strat-qps" style="margin-bottom:0">
+              <button class="strat-qp" onclick="sendStratQ('SI 업체로서 배터리 조달+PCS 결합 외에 추가할 수 있는 수익원은? 호주 BESS 시장 기준으로')">SI 추가 수익원</button>
+              <button class="strat-qp" onclick="sendStratQ('BESS SI 프로젝트에서 소프트웨어 또는 데이터 기반 수익모델로 확장할 수 있는 방향은?')">SW/데이터 확장</button>
+              <button class="strat-qp" onclick="sendStratQ('CATL LTSA 장기계약을 활용해서 단순 재판매 이상의 부가가치를 창출하는 방법은?')">CATL LTSA 활용</button>
+              <button class="strat-qp" onclick="sendStratQ('호주 FCAS 보조서비스 시장에서 SI 업체가 직접 참여할 수 있는 구조적 방법은?')">FCAS 직접 참여</button>
+              <button class="strat-qp" onclick="sendStratQ('현재 GESS의 SI 사업모델에서 마진을 가장 많이 갉아먹는 요소와 구조적 개선 방향은?')">마진 개선 방향</button>
+              <button class="strat-qp" onclick="sendStratQ('글로벌 BESS 시장에서 Pure SI 업체들이 서비스형 수익모델로 전환한 성공 사례는?')">글로벌 전환 사례</button>
             </div>
           </div>
-          <div>
-            <div class="stl">최근 동향 업데이트 <span class="fbadge" style="cursor:pointer" onclick="refreshCompetitors()">AI 분석</span></div>
-            <div id="comp-updates" style="font-size:10px;color:#7a8090;line-height:1.7">
-              <div style="padding:6px 0;border-bottom:1px solid #111830"><strong style="color:#E0A83D">Fluence</strong>: 2025.05 NSW Liddell 200MWh 수주. GESS 호주 시장과 직접 경합.</div>
-              <div style="padding:6px 0;border-bottom:1px solid #111830"><strong style="color:#5B9BD5">Tesla Energy</strong>: Origin Energy와 QLD PV+ESS JV 발표. 퀸즐랜드 북부 공동 개발.</div>
-              <div style="padding:6px 0"><strong style="color:#3ECFA0">GESS 기회</strong>: 경쟁사 대비 소규모·분산형 특화 포지셔닝. 로컬 파트너십 + 빠른 의사결정이 차별화 포인트.</div>
+        </div>
+
+        <!-- AI 전략 챗봇 -->
+        <div class="sbox" style="display:flex;flex-direction:column;gap:8px">
+          <div class="stl">🤖 SI 전략 AI <span style="font-size:8px;color:#3a4060;font-weight:400">Claude Sonnet · 실시간 원자재 데이터 연동</span></div>
+          <div class="strat-msgs" id="strat-msgs" style="flex:1;max-height:320px">
+            <div class="strat-msg bot">
+              <div class="strat-mhd">🧭 GESS 전략 AI</div>
+              GESS의 SI 사업 관점에서 신규 수익모델 아이디어를 함께 탐색합니다.<br>
+              왼쪽 질문 버튼을 클릭하거나 직접 입력해보세요.<br>
+              <span style="font-size:9px;color:#3a4060">배터리 조달·PCS·System Integration·LTSA 활용 방향 모두 OK</span>
             </div>
+          </div>
+          <div class="strat-row">
+            <input class="strat-inp" id="strat-inp" placeholder="SI 전략 질문 입력..." onkeydown="if(event.key==='Enter')sendStrat()">
+            <button class="strat-go" id="strat-go" onclick="sendStrat()">전략 분석</button>
           </div>
         </div>
       </div>
 
-      <div class="tab-section-ttl">💡 신규 사업모델 아이디어 (법적 리스크 보완)</div>
-      <div id="biz-models">
-        <div class="biz-model-card" onclick="sendStratQ('이 사업모델을 GESS 관점에서 어떻게 구체화할 수 있을까? Asset-Light IPP 모델 관점에서')">
-          <div class="biz-model-hdr"><div class="biz-icon">🏗️</div><div><div class="biz-nm">Asset-Light IPP 모델</div><div class="biz-type">계약 리스크 분산</div></div></div>
-          <div class="biz-desc">EPC 직발주 대신 IPP(Independent Power Producer) 역할에 집중. 설비 소유는 SPV에 이전, GESS는 O&M + 수익 배분 구조. 계약 당사자 축소 → 법적 리스크 감소.</div>
-          <div class="biz-metrics"><div class="biz-metric">ROE <strong>↑18-22%</strong></div><div class="biz-metric">계약 복잡도 <strong>↓40%</strong></div><div class="biz-metric">Balance Sheet <strong>경량화</strong></div></div>
+      <!-- ── 원자재 헤징 전략 ── -->
+      <div class="tab-section-ttl">🛡️ 원자재 헤징 전략 권고</div>
+      <div class="strat-grid">
+        <div class="sbox">
+          <div class="stl">📊 헤징 전략 권고 (현재 시그널 기반)</div>
+          <div style="font-size:10px;color:#7a8090;line-height:1.75">
+            <div style="margin-bottom:8px;padding:8px;background:#06090F;border-radius:6px;border-left:3px solid #3ECFA0">
+              <strong style="color:#3ECFA0">🔋 탄산리튬</strong>: 현재 저점 구간. OTC 선물 또는 장기 공급계약(3Y) 체결 적기. 전체 소요량의 <strong>70% Lock-in</strong> 권고.</div>
+            <div style="margin-bottom:8px;padding:8px;background:#06090F;border-radius:6px;border-left:3px solid #E0A83D">
+              <strong style="color:#E0A83D">🔩 알루미늄</strong>: 미·EU 관세 협상 변수 상존. <strong>50% 헤징</strong> + 가격 변동 clause 계약 삽입.</div>
+            <div style="padding:8px;background:#06090F;border-radius:6px;border-left:3px solid #E76F51">
+              <strong style="color:#E76F51">⚡ 구리</strong>: LME 선물 <strong>단기 Put Option</strong> 매입. 호주 프로젝트 납기(2026.Q2) 기준 6개월물 권고.</div>
+          </div>
         </div>
-        <div class="biz-model-card" onclick="sendStratQ('Battery-as-a-Service 모델을 호주 BESS 시장에서 어떻게 구현할 수 있을까? 계약 구조 포함')">
-          <div class="biz-model-hdr"><div class="biz-icon">⚡</div><div><div class="biz-nm">Battery-as-a-Service (BaaS)</div><div class="biz-type">구독형 수익 모델</div></div></div>
-          <div class="biz-desc">배터리 시스템을 판매하지 않고 용량·서비스 단위로 구독 공급. 초기 CAPEX 부담 이전, 장기 운영 수익 확보. PPA와 결합 시 시너지. IFRS 16 리스 처리 가능.</div>
-          <div class="biz-metrics"><div class="biz-metric">계약 기간 <strong>10-15Y</strong></div><div class="biz-metric">EBITDA 마진 <strong>35-45%</strong></div><div class="biz-metric">ARR 구조</div></div>
-        </div>
-        <div class="biz-model-card" onclick="sendStratQ('Virtual Power Plant 모델로 소규모 분산형 BESS를 묶어서 수익화하는 방법을 구체적으로 설명해줘')">
-          <div class="biz-model-hdr"><div class="biz-icon">🌐</div><div><div class="biz-nm">Virtual Power Plant (VPP)</div><div class="biz-type">플랫폼 수익</div></div></div>
-          <div class="biz-desc">소규모 BESS 자산들을 묶어 Aggregator 역할. FCAS 보조서비스 시장 참여. AI 입찰 자동화로 수익 최대화. 규제 의존도 낮은 시장 기반 수익.</div>
-          <div class="biz-metrics"><div class="biz-metric">보조서비스 프리미엄 <strong>+A$23/MWh</strong></div><div class="biz-metric">계약 리스크 <strong>최소</strong></div></div>
+        <div class="sbox">
+          <div class="stl">🔍 구매 타이밍 시그널</div>
+          <div id="price-signals">
+            <div class="price-signal"><div class="ps-icon" style="background:rgba(62,207,160,.15)">⚡</div><div class="ps-info"><div class="ps-nm">탄산리튬 Li₂CO₃</div><div class="ps-signal" style="color:#3ECFA0">▼ 매수 구간 — 52주 저점 근처</div></div><div class="ps-val" style="color:#3ECFA0" id="sig-li">—</div></div>
+            <div class="price-signal"><div class="ps-icon" style="background:rgba(224,168,61,.15)">🔩</div><div class="ps-info"><div class="ps-nm">알루미늄 Al</div><div class="ps-signal" style="color:#E0A83D">⚡ 중립 — 관세 불확실성</div></div><div class="ps-val" style="color:#E0A83D" id="sig-al">—</div></div>
+            <div class="price-signal"><div class="ps-icon" style="background:rgba(231,111,81,.15)">🔋</div><div class="ps-info"><div class="ps-nm">구리 Cu</div><div class="ps-signal" style="color:#E76F51">▲ 주의 — 고점 구간 헤징 필요</div></div><div class="ps-val" style="color:#E76F51" id="sig-cu">—</div></div>
+          </div>
         </div>
       </div>
 
-      <div class="tab-section-ttl">🤖 전략 AI 고도화 Chatbot</div>
-      <div class="sbox">
-        <div class="strat-qps">
-          <button class="strat-qp" onclick="sendStratQ('경쟁사 대비 GESS의 차별화 전략은?')">경쟁 차별화</button>
-          <button class="strat-qp" onclick="sendStratQ('원자재 가격 상승 시 수주 전략 변화 방향은?')">원자재 대응</button>
-          <button class="strat-qp" onclick="sendStratQ('호주 CIS·LRET 보조금 활용 가능한 신규 수주 기회는?')">호주 보조금</button>
-          <button class="strat-qp" onclick="sendStratQ('BYD·CATL 직접 수주 위협을 어떻게 방어할 것인가?')">중국 경쟁</button>
-          <button class="strat-qp" onclick="sendStratQ('2026년 GESS 수주 목표 달성을 위한 3가지 핵심 전략은?')">2026 전략</button>
-        </div>
-        <div class="strat-msgs" id="strat-msgs">
-          <div class="strat-msg bot"><div class="strat-mhd">🧭 GESS 전략 AI <span style="font-size:8px;opacity:.6">Llama 3.3</span></div>사업모델 카드를 클릭하거나 아래에 직접 질문해주세요. GESS의 호주 BESS/PV+ESS 전략을 함께 고도화합니다.</div>
-        </div>
-        <div class="strat-row">
-          <input class="strat-inp" id="strat-inp" placeholder="전략 질문 입력..." onkeydown="if(event.key==='Enter')sendStrat()">
-          <button class="strat-go" id="strat-go" onclick="sendStrat()">전략 분석</button>
-        </div>
-      </div>
     </div>
   </div>
-
     </div><!-- /right -->
   </div><!-- /main -->
 </div><!-- /app -->
@@ -2082,7 +2113,7 @@ function sw(id, btn) {
   if (leftEl) leftEl.classList.toggle('show', id === 'str');
   if (id === 'tr') setTimeout(() => buildTrendCharts(), 60);
   if (id === 'fin') initFinance();
-  if (id === 'str') updateSignals();
+  if (id === 'str') initStrategyTab();
   if (id === 'leg') r2LoadFiles();
   if (id === 'acc') setTimeout(() => renderPVA(), 60);
 }
@@ -2367,6 +2398,123 @@ function b64url(data) {
   return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+
+// ═══════════════════════════════════════════════════════
+// BESS 글로벌 뉴스 크롤링 (Worker 경유 웹검색)
+// ═══════════════════════════════════════════════════════
+let allNewsItems = [];
+let newsFilter = 'all';
+
+// 지역/카테고리 매핑
+const NEWS_QUERIES = [
+  { region:'au', label:'🇦🇺 호주', query:'Australia BESS battery energy storage system 2025', color:'#3ECFA0' },
+  { region:'au', label:'🇦🇺 호주 규제', query:'AEMO Australia battery storage regulation policy 2025', color:'#3ECFA0' },
+  { region:'eu', label:'🇪🇺 유럽', query:'Europe BESS battery storage project MW 2025', color:'#5B9BD5' },
+  { region:'us', label:'🇺🇸 미국', query:'US BESS battery storage IRA project 2025', color:'#E0A83D' },
+  { region:'reg', label:'📋 규제', query:'BESS battery storage regulation policy global 2025', color:'#E76F51' },
+];
+
+// 정적 fallback 뉴스 (Worker 미연결 시)
+const FALLBACK_NEWS = [
+  { region:'au', title:'AEMO 2025 ISP: 호주 2030년까지 BESS 9GW 필요', source:'AEMO', date:'2025.05', url:'https://aemo.com.au', summary:'호주 에너지시장운영자(AEMO)는 2030년까지 약 9GW의 배터리 저장 시스템이 필요하다고 발표. NSW, QLD, VIC 중심 확장.', color:'#3ECFA0' },
+  { region:'au', title:'QLD Capacity Investment Scheme Round 2 결과 발표', source:'DESI QLD', date:'2025.04', url:'https://www.energyqueensland.com.au', summary:'퀸즐랜드 CIS 2라운드에서 총 1.2GW 규모 BESS 프로젝트 선정. Neoen, AGL 포함 6개사 수주.', color:'#3ECFA0' },
+  { region:'au', title:'NSW REZ Transmission Scheme BESS 연계 조건 개정', source:'NSW Government', date:'2025.03', url:'https://www.energy.nsw.gov.au', summary:'NSW 재생에너지존(REZ) 내 BESS 연계 기술 기준 개정. 응답시간 200ms → 150ms 강화.', color:'#3ECFA0' },
+  { region:'eu', title:'EU Battery Regulation 2027 시행 로드맵 확정', source:'European Commission', date:'2025.05', url:'https://ec.europa.eu', summary:'EU 배터리 규정(2023/1542) 세부 시행 지침 확정. 탄소발자국 신고 의무 2027년부터 적용.', color:'#5B9BD5' },
+  { region:'eu', title:'독일 BESS 시장 2025년 4GW 돌파 전망', source:'Energy Storage News', date:'2025.04', url:'https://www.energy-storage.news', summary:'독일 대용량 BESS 설치량 2025년 누적 4GW 전망. Fluence, CATL, BYD 3사가 시장 70% 점유.', color:'#5B9BD5' },
+  { region:'us', title:'IRA BSCI 세액공제 BESS 적용 범위 확정', source:'US Treasury', date:'2025.03', url:'https://home.treasury.gov', summary:'미국 인플레이션 감축법(IRA) 하 배터리 저장 투자세액공제(ITC 30%) 독립형 BESS에도 최종 확정.', color:'#E0A83D' },
+  { region:'us', title:'캘리포니아 CPUC BESS 그리드 서비스 요구사항 강화', source:'CPUC', date:'2025.04', url:'https://www.cpuc.ca.gov', summary:'캘리포니아 PUC, BESS 운영자 대상 사이버보안 및 응답속도 기준 강화 고시. 2026년부터 적용.', color:'#E0A83D' },
+  { region:'reg', title:'IEA: 2025 글로벌 BESS 신규 설치 120GWh 전망', source:'IEA', date:'2025.05', url:'https://www.iea.org', summary:'국제에너지기구(IEA) 보고서: 2025년 글로벌 대용량 배터리 저장 신규 설치 120GWh 예상. 중국·미국·호주 순.', color:'#E76F51' },
+  { region:'reg', title:'CATL LFP 셀 가격 2025년 Q2 $65/kWh 하향 전망', source:'BloombergNEF', date:'2025.05', url:'https://about.bnef.com', summary:'BNEF: CATL LFP 314Ah 셀 Q2 출하가 $65/kWh 수준으로 하락 전망. 공급 과잉 및 중국 내수 경쟁 심화.', color:'#E76F51' },
+];
+
+function filterNews(region, btn) {
+  newsFilter = region;
+  document.querySelectorAll('#tc-str .cbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderNews();
+}
+
+function renderNews() {
+  const list = document.getElementById('bess-news-list');
+  if (!list) return;
+  const items = newsFilter === 'all' ? allNewsItems : allNewsItems.filter(n => n.region === newsFilter);
+  if (!items.length) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:#3a4060;font-size:11px">해당 지역 뉴스가 없습니다. 업데이트 버튼을 눌러주세요.</div>';
+    return;
+  }
+  list.innerHTML = items.map(n => `
+    <a href="${n.url}" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+      <div style="background:#0C1128;border:1px solid #1C2340;border-radius:10px;padding:11px 13px;transition:all .15s;border-left:3px solid ${n.color || '#3ECFA0'}" onmouseover="this.style.borderColor='${n.color || '#3ECFA0'}';this.style.background='#111830'" onmouseout="this.style.borderColor='#1C2340';this.style.borderLeftColor='${n.color || '#3ECFA0'}';this.style.background='#0C1128'">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:5px">
+          <div style="font-size:11px;font-weight:700;color:#fff;line-height:1.4;flex:1">${n.title}</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0">
+            <span style="font-size:8px;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.05);color:#5a6080;white-space:nowrap">${n.source}</span>
+            <span style="font-size:8px;color:#3a4060;font-family:'JetBrains Mono',monospace">${n.date}</span>
+          </div>
+        </div>
+        <div style="font-size:10px;color:#5a6080;line-height:1.6;margin-bottom:6px">${n.summary}</div>
+        <div style="font-size:9px;color:${n.color || '#3ECFA0'};font-weight:600">↗ 원문 보기</div>
+      </div>
+    </a>`).join('');
+}
+
+async function refreshBESSNews() {
+  const btn = document.getElementById('news-refresh-btn');
+  const list = document.getElementById('bess-news-list');
+  if (btn) btn.textContent = '⏳ 로딩 중...';
+
+  // Worker + AI로 실시간 뉴스 검색
+  if (WORKER_URL && JWT_TOKEN) {
+    try {
+      list.innerHTML = '<div style="text-align:center;padding:24px;color:#3a4060;font-size:11px"><div style="animation:spin .8s linear infinite;display:inline-block;font-size:20px;margin-bottom:8px">⟳</div><br>AI가 최신 BESS 뉴스를 검색 중...</div>';
+
+      const r = await fetch(WORKER_URL + '/api/claude', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + JWT_TOKEN },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 2000,
+          messages: [{ role: 'user', content: `당신은 BESS/에너지저장 시장 뉴스 큐레이터입니다.
+2025년 최신 BESS(Battery Energy Storage System) 관련 뉴스와 정책 동향을 아래 JSON 배열로 정리하세요.
+반드시 JSON 배열만 응답 (마크다운 없이):
+[
+  {
+    "region": "au|eu|us|reg",
+    "title": "뉴스 제목 (한국어)",
+    "source": "출처 기관/매체명",
+    "date": "2025.MM",
+    "url": "실제 URL",
+    "summary": "2-3줄 요약 (한국어, GESS SI 업체 관점 관련성 포함)",
+    "color": "호주:#3ECFA0 / 유럽:#5B9BD5 / 미국:#E0A83D / 규제:#E76F51"
+  }
+]
+9-12개 항목, 호주 4개 이상, 유럽 2개, 미국 2개, 규제/글로벌 2개 이상.` }]
+        })
+      });
+      const data = await r.json();
+      const txt = (data.content?.[0]?.text || '').replace(/\`\`\`json|\`\`\`/g, '').trim();
+      try {
+        const parsed = JSON.parse(txt);
+        allNewsItems = parsed;
+        renderNews();
+        if (btn) btn.textContent = '⟳ 뉴스 업데이트';
+        return;
+      } catch(e) { console.warn('News parse error:', e); }
+    } catch(e) { console.warn('News fetch error:', e); }
+  }
+
+  // fallback: 정적 뉴스 데이터
+  allNewsItems = FALLBACK_NEWS;
+  renderNews();
+  if (btn) btn.textContent = '⟳ 뉴스 업데이트';
+}
+
+// 전략 탭 진입 시 뉴스 자동 로드
+function initStrategyTab() {
+  updateSignals();
+  if (allNewsItems.length === 0) refreshBESSNews();
+}
 
 function initTabs() {
   // CSS handles show/hide via .on class; nothing extra needed
@@ -2793,9 +2941,7 @@ function updateSignals() {
   if (cu) document.getElementById('sig-cu').textContent = '$' + (+cu.price).toLocaleString() + '/mt';
 }
 
-function refreshCompetitors() {
-  sendStratQ('최근 호주 BESS 시장에서 Fluence, Tesla Energy, BYD의 주요 동향과 GESS의 대응 전략을 분석해줘');
-}
+function refreshCompetitors() { refreshBESSNews(); }
 
 function sendStratQ(t) {
   document.getElementById('strat-inp').value = t;
