@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "updated": "2026-08-26T05:39:07.788655+00:00",
+  "updated": "2026-08-26T06:57:38.359369+00:00",
   "data": {
     "lithium_carbonate": {
       "price": 19.46,
@@ -15,8 +15,8 @@
       "source": "Yahoo Finance (LME ALI=F)"
     },
     "copper": {
-      "price": 14916.0,
-      "chg_pct": 2.83,
+      "price": 14828.0,
+      "chg_pct": 2.22,
       "unit": "USD/mt",
       "source": "Yahoo Finance (COMEX HG=F)"
     },
@@ -33,7 +33,7 @@
         "chg_pct": -3.6,
         "source": "SMM(수동갱신)"
       },
-      "updated": "2026-08-26T05:39:07.788655+00:00"
+      "updated": "2026-08-26T06:57:38.359369+00:00"
     }
   },
   "history": [
@@ -11762,6 +11762,14 @@
       "li": 19.46,
       "al": 3416.0,
       "cu": 14916.0,
+      "smm_system": 82.6,
+      "smm_cell": 45.1
+    },
+    {
+      "timestamp": "2026-08-26T06:57:38.359369+00:00",
+      "li": 19.46,
+      "al": 3416.0,
+      "cu": 14828.0,
       "smm_system": 82.6,
       "smm_cell": 45.1
     }
